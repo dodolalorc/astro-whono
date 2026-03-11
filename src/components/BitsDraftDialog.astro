@@ -1,13 +1,15 @@
 ---
 import Icon from './Icon.astro';
-import { site } from '../../site.config.mjs';
+import { getThemeSettings } from '../lib/theme-settings';
+
+const { settings } = getThemeSettings();
 ---
 <dialog
   class="bits-draft-dialog"
   id="bits-draft-dialog"
   aria-labelledby="bits-draft-title"
-  data-default-author-name={site.author ?? ''}
-  data-default-author-avatar={site.authorAvatar ?? ''}
+  data-default-author-name={settings.site.author ?? ''}
+  data-default-author-avatar={settings.site.authorAvatar ?? ''}
 >
   <form class="bits-draft-form" data-bits-draft-form>
     <div class="bits-draft-head">

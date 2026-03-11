@@ -1,0 +1,555 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getThemeSettings, type SidebarNavId } from '../../lib/theme-settings';
+import { createWithBase } from '../../utils/format';
+
+const isDev = import.meta.env.DEV;
+const base = import.meta.env.BASE_URL ?? '/';
+const withBase = createWithBase(base);
+const settingsEndpoint = withBase('/api/admin/settings/');
+
+const navIdOrder: SidebarNavId[] = ['essay', 'bits', 'memo', 'archive', 'about'];
+const navLabelFallback: Record<SidebarNavId, string> = {
+  essay: '随笔',
+  bits: '絮语',
+  memo: '小记',
+  archive: '归档',
+  about: '关于'
+};
+
+const initialResolved = getThemeSettings();
+const initialNavMap = new Map(
+  initialResolved.settings.home.sidebarNav.map((item) => [item.id, item])
+);
+
+const initialPayload = {
+  settings: {
+    ...initialResolved.settings,
+    home: {
+      ...initialResolved.settings.home,
+      sidebarNav: navIdOrder.map((id, index) => {
+        const current = initialNavMap.get(id);
+        if (current) return current;
+        return {
+          id,
+          label: navLabelFallback[id],
+          visible: true,
+          order: index + 1
+        };
+      })
+    }
+  },
+  sources: initialResolved.sources
+};
+
+const bootstrapJson = JSON.stringify(initialPayload).replace(/</g, '\\u003c');
+---
+
+<BaseLayout title="Theme Console" bodyClass="admin-page">
+  <Fragment slot="head">
+    <meta name="robots" content="noindex,nofollow" />
+  </Fragment>
+
+  {
+    isDev ? (
+      <section class="admin-console" data-admin-root data-settings-endpoint={settingsEndpoint}>
+        <header class="page-header page-header--admin">
+          <div class="admin-heading">
+            <h1 class="page-title">Theme Console</h1>
+            <span class="page-subtitle">主题设置</span>
+          </div>
+          <p id="admin-status" class="admin-status" data-state="idle">等待加载</p>
+        </header>
+
+        <p class="admin-hint">
+          当前阶段仅开放受约束字段：<code>site</code> / <code>home</code> / <code>ui</code>。
+          保存后会写入 <code>src/data/settings/*.json</code>。
+        </p>
+
+        <p id="admin-dirty-banner" class="admin-banner" hidden>你有未保存更改，离开页面会触发提醒。</p>
+        <p id="admin-error-banner" class="admin-banner admin-banner--error" hidden></p>
+
+        <form id="admin-form" class="admin-form" novalidate>
+          <fieldset class="admin-group">
+            <legend>General</legend>
+            <div class="admin-grid">
+              <label class="admin-field">
+                <span class="admin-label">站点标题（用于浏览器标题/RSS/分享）</span>
+                <input id="site-title" type="text" autocomplete="off" />
+              </label>
+              <label class="admin-field">
+                <span class="admin-label">侧栏站点名</span>
+                <input id="site-brand-title" type="text" autocomplete="off" />
+              </label>
+              <label class="admin-field admin-field--full">
+                <span class="admin-label">默认 SEO 描述（用于未单独设置 description 的页面）</span>
+                <textarea id="site-description" rows="3"></textarea>
+              </label>
+              <label class="admin-field">
+                <span class="admin-label">bits页默认作者</span>
+                <input id="site-author" type="text" autocomplete="off" />
+              </label>
+              <label class="admin-field">
+                <span class="admin-label">bits页默认头像（相对路径）</span>
+                <input id="site-author-avatar" type="text" autocomplete="off" />
+              </label>
+              <label class="admin-field">
+                <span class="admin-label">默认语言</span>
+                <input id="site-default-locale" type="text" autocomplete="off" />
+              </label>
+            </div>
+          </fieldset>
+
+          <fieldset class="admin-group">
+            <legend>Home</legend>
+            <div class="admin-grid">
+              <label class="admin-field admin-field--full">
+                <span class="admin-label">侧栏引用文案</span>
+                <textarea id="home-quote" rows="4"></textarea>
+              </label>
+              <label class="admin-field">
+                <span class="admin-label">Hero 预置</span>
+                <select id="home-hero-preset">
+                  <option value="default">default</option>
+                  <option value="minimal">minimal</option>
+                  <option value="none">none</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="admin-subgroup">
+              <p class="admin-subtitle">Sidebar 导航（仅既有项）</p>
+              <div class="admin-nav-grid">
+                <div class="admin-nav-header" aria-hidden="true">
+                  <span>页面 ID</span>
+                  <span>页面名称</span>
+                  <span>位置排序</span>
+                  <span>是否展示</span>
+                </div>
+                {
+                  navIdOrder.map((id, index) => (
+                    <div class="admin-nav-row" data-nav-id={id}>
+                      <p class="admin-nav-id">
+                        <code>{id}</code>
+                      </p>
+                      <label class="admin-field admin-nav-field admin-nav-field--name">
+                        <span class="sr-only">{id} 页面名称</span>
+                        <input data-nav-field="label" type="text" autocomplete="off" />
+                      </label>
+                      <label class="admin-field admin-nav-field admin-nav-field--order">
+                        <span class="sr-only">{id} 位置排序</span>
+                        <input data-nav-field="order" type="number" min="1" step="1" value={index + 1} />
+                      </label>
+                      <label class="admin-toggle">
+                        <input data-nav-field="visible" type="checkbox" aria-label={`${id} 是否显示`} />
+                        <span>展示</span>
+                      </label>
+                    </div>
+                  ))
+                }
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset class="admin-group">
+            <legend>Reading / Code</legend>
+            <div class="admin-stack">
+              <label class="admin-toggle-row">
+                <input id="ui-code-line-numbers" type="checkbox" />
+                <span>显示代码行号（仅映射全局 data-line-numbers）</span>
+              </label>
+              <label class="admin-toggle-row">
+                <input id="ui-reading-entry" type="checkbox" />
+                <span>显示阅读模式入口（不改变“状态不持久化”策略）</span>
+              </label>
+            </div>
+          </fieldset>
+        </form>
+
+        <div class="admin-actions">
+          <button id="admin-validate" class="admin-btn" type="button">检查配置</button>
+          <button id="admin-reset" class="admin-btn admin-btn--ghost" type="button">重置更改</button>
+          <button id="admin-save" class="admin-btn admin-btn--muted" type="button">保存</button>
+        </div>
+
+        <script id="admin-bootstrap" type="application/json" is:inline set:html={bootstrapJson}></script>
+      </section>
+    ) : (
+      <section class="admin-console admin-console--readonly">
+        <header class="page-header page-header--admin">
+          <div class="admin-heading">
+            <h1 class="page-title">Theme Console</h1>
+            <span class="page-subtitle">主题设置</span>
+          </div>
+        </header>
+        <p class="admin-hint">
+          当前页面仅用于本地开发配置。根据 Phase 1 边界，生产环境不提供可写后台。
+        </p>
+      </section>
+    )
+  }
+
+  {
+    isDev ? (
+      <script is:inline>
+        (() => {
+  const root = document.querySelector('[data-admin-root]');
+  if (!root) return;
+
+  const endpoint = root.getAttribute('data-settings-endpoint') || '/api/admin/settings/';
+  const NAV_IDS = ['essay', 'bits', 'memo', 'archive', 'about'];
+  const HERO_PRESETS = new Set(['default', 'minimal', 'none']);
+  const LOCALE_RE = /^[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*$/;
+
+  const form = document.getElementById('admin-form');
+  const statusEl = document.getElementById('admin-status');
+  const dirtyBanner = document.getElementById('admin-dirty-banner');
+  const errorBanner = document.getElementById('admin-error-banner');
+  const validateBtn = document.getElementById('admin-validate');
+  const resetBtn = document.getElementById('admin-reset');
+  const saveBtn = document.getElementById('admin-save');
+  const bootstrapEl = document.getElementById('admin-bootstrap');
+
+  if (!form || !statusEl || !dirtyBanner || !errorBanner || !validateBtn || !resetBtn || !saveBtn || !bootstrapEl) {
+    return;
+  }
+
+  const inputSiteTitle = document.getElementById('site-title');
+  const inputSiteBrandTitle = document.getElementById('site-brand-title');
+  const inputSiteDescription = document.getElementById('site-description');
+  const inputSiteAuthor = document.getElementById('site-author');
+  const inputSiteAuthorAvatar = document.getElementById('site-author-avatar');
+  const inputSiteDefaultLocale = document.getElementById('site-default-locale');
+  const inputHomeQuote = document.getElementById('home-quote');
+  const inputHeroPreset = document.getElementById('home-hero-preset');
+  const inputCodeLineNumbers = document.getElementById('ui-code-line-numbers');
+  const inputReadingEntry = document.getElementById('ui-reading-entry');
+
+  if (
+    !inputSiteTitle ||
+    !inputSiteBrandTitle ||
+    !inputSiteDescription ||
+    !inputSiteAuthor ||
+    !inputSiteAuthorAvatar ||
+    !inputSiteDefaultLocale ||
+    !inputHomeQuote ||
+    !inputHeroPreset ||
+    !inputCodeLineNumbers ||
+    !inputReadingEntry
+  ) {
+    return;
+  }
+
+  const getNavRows = () => Array.from(root.querySelectorAll('[data-nav-id]'));
+  const deepClone = (value) => JSON.parse(JSON.stringify(value));
+
+  const normalizeMultiline = (value) => value.replace(/\r\n/g, '\n');
+  const parseOrder = (value, fallback) => {
+    const next = Number.parseInt(value, 10);
+    return Number.isFinite(next) ? next : fallback;
+  };
+
+  let baseline = null;
+  let isDirty = false;
+  let isSaving = false;
+
+  const setStatus = (state, message) => {
+    statusEl.dataset.state = state;
+    statusEl.textContent = message;
+  };
+
+  const setErrors = (errors) => {
+    if (!errors.length) {
+      errorBanner.hidden = true;
+      errorBanner.textContent = '';
+      return;
+    }
+    errorBanner.hidden = false;
+    errorBanner.textContent = errors.join('；');
+  };
+
+  const setDirty = (next) => {
+    isDirty = next;
+    dirtyBanner.hidden = !next;
+  };
+
+  const setSaving = (next) => {
+    isSaving = next;
+    saveBtn.disabled = next;
+    saveBtn.textContent = next ? '保存中...' : '保存';
+  };
+
+  const canonicalize = (settings) => {
+    const next = deepClone(settings);
+    next.home.sidebarNav = next.home.sidebarNav
+      .filter((item) => NAV_IDS.includes(item.id))
+      .sort((a, b) => {
+        if (a.order !== b.order) return a.order - b.order;
+        return NAV_IDS.indexOf(a.id) - NAV_IDS.indexOf(b.id);
+      });
+    return next;
+  };
+
+  const collectSettings = () => {
+    const sidebarNav = getNavRows().map((row, index) => {
+      const id = row.getAttribute('data-nav-id');
+      const labelInput = row.querySelector('[data-nav-field="label"]');
+      const orderInput = row.querySelector('[data-nav-field="order"]');
+      const visibleInput = row.querySelector('[data-nav-field="visible"]');
+      const fallbackOrder = index + 1;
+      return {
+        id: id || '',
+        label: (labelInput?.value || '').trim(),
+        order: parseOrder(orderInput?.value || '', fallbackOrder),
+        visible: Boolean(visibleInput?.checked)
+      };
+    });
+
+    return {
+      site: {
+        title: inputSiteTitle.value.trim(),
+        brandTitle: inputSiteBrandTitle.value.trim(),
+        description: normalizeMultiline(inputSiteDescription.value).trim(),
+        author: inputSiteAuthor.value.trim(),
+        authorAvatar: inputSiteAuthorAvatar.value.trim(),
+        defaultLocale: inputSiteDefaultLocale.value.trim()
+      },
+      home: {
+        quote: normalizeMultiline(inputHomeQuote.value).trim(),
+        heroPresetId: inputHeroPreset.value,
+        sidebarNav
+      },
+      ui: {
+        codeBlock: {
+          showLineNumbers: Boolean(inputCodeLineNumbers.checked)
+        },
+        readingMode: {
+          showEntry: Boolean(inputReadingEntry.checked)
+        }
+      }
+    };
+  };
+
+  const applySettings = (settings) => {
+    inputSiteTitle.value = settings.site.title || '';
+    inputSiteBrandTitle.value = settings.site.brandTitle || '';
+    inputSiteDescription.value = settings.site.description || '';
+    inputSiteAuthor.value = settings.site.author || '';
+    inputSiteAuthorAvatar.value = settings.site.authorAvatar || '';
+    inputSiteDefaultLocale.value = settings.site.defaultLocale || '';
+    inputHomeQuote.value = settings.home.quote || '';
+    inputHeroPreset.value = settings.home.heroPresetId || 'default';
+    inputCodeLineNumbers.checked = Boolean(settings.ui?.codeBlock?.showLineNumbers);
+    inputReadingEntry.checked = Boolean(settings.ui?.readingMode?.showEntry);
+
+    const navMap = new Map((settings.home.sidebarNav || []).map((item) => [item.id, item]));
+    getNavRows().forEach((row, index) => {
+      const id = row.getAttribute('data-nav-id');
+      const current = navMap.get(id) || {};
+      const labelInput = row.querySelector('[data-nav-field="label"]');
+      const orderInput = row.querySelector('[data-nav-field="order"]');
+      const visibleInput = row.querySelector('[data-nav-field="visible"]');
+      if (labelInput) labelInput.value = (current.label || '').trim();
+      if (orderInput) orderInput.value = String(current.order ?? (index + 1));
+      if (visibleInput) visibleInput.checked = Boolean(current.visible);
+    });
+  };
+
+  const validateSettings = (settings) => {
+    const errors = [];
+
+    if (!settings.site.title) errors.push('站点标题不能为空');
+    if (!settings.site.brandTitle) errors.push('品牌标题不能为空');
+    if (!settings.site.description) errors.push('站点描述不能为空');
+    if (!settings.site.author) errors.push('作者名称不能为空');
+    if (!settings.site.defaultLocale) {
+      errors.push('默认语言不能为空');
+    } else if (!LOCALE_RE.test(settings.site.defaultLocale)) {
+      errors.push('默认语言格式无效（示例：zh-CN）');
+    }
+
+    if (settings.site.authorAvatar) {
+      if (settings.site.authorAvatar.startsWith('/')) {
+        errors.push('作者头像必须是相对路径，不要以 / 开头');
+      }
+      if (/^[A-Za-z]+:\/\//.test(settings.site.authorAvatar)) {
+        errors.push('作者头像 Phase 1 仅允许相对路径，不允许 URL');
+      }
+    }
+
+    if (!settings.home.quote) errors.push('侧栏引用文案不能为空');
+    if (!HERO_PRESETS.has(settings.home.heroPresetId)) {
+      errors.push('Hero 预置只允许 default/minimal/none');
+    }
+
+    const nav = Array.isArray(settings.home.sidebarNav) ? settings.home.sidebarNav : [];
+    if (nav.length !== NAV_IDS.length) {
+      errors.push('Sidebar 导航项数量必须与既有导航一致');
+    }
+
+    const seenIds = new Set();
+    const seenOrders = new Set();
+    nav.forEach((item) => {
+      if (!NAV_IDS.includes(item.id)) errors.push('存在非法导航项 ID：' + item.id);
+      if (seenIds.has(item.id)) errors.push('导航项 ID 重复：' + item.id);
+      seenIds.add(item.id);
+
+      if (!item.label) errors.push('导航项 ' + item.id + ' 的显示名称不能为空');
+      if (!Number.isInteger(item.order) || item.order < 1 || item.order > 999) {
+        errors.push('导航项 ' + item.id + ' 的位置排序必须为 1-999 的整数');
+      }
+      if (seenOrders.has(item.order)) {
+        errors.push('位置排序不能重复：' + item.order);
+      }
+      seenOrders.add(item.order);
+      if (typeof item.visible !== 'boolean') {
+        errors.push('导航项 ' + item.id + ' 的 visible 必须是布尔值');
+      }
+    });
+
+    return errors;
+  };
+
+  const refreshDirty = () => {
+    if (!baseline) return;
+    const current = canonicalize(collectSettings());
+    setDirty(JSON.stringify(current) !== JSON.stringify(baseline));
+  };
+
+  const loadPayload = (payload, source) => {
+    if (!payload || typeof payload !== 'object' || !payload.settings) {
+      setStatus('error', '返回数据格式无效');
+      return;
+    }
+    const normalized = canonicalize(payload.settings);
+    baseline = normalized;
+    applySettings(normalized);
+    setErrors([]);
+    setDirty(false);
+    setStatus('ready', source === 'remote' ? '已同步最新配置' : '已载入初始配置');
+  };
+
+  const loadBootstrap = () => {
+    try {
+      const payload = JSON.parse(bootstrapEl.textContent || '{}');
+      loadPayload(payload, 'bootstrap');
+    } catch (error) {
+      setStatus('error', '初始化数据解析失败');
+      console.error(error);
+    }
+  };
+
+  const loadFromApi = async () => {
+    setStatus('loading', '正在读取 /api/admin/settings');
+    try {
+      const response = await fetch(endpoint, {
+        method: 'GET',
+        headers: { Accept: 'application/json' },
+        cache: 'no-store'
+      });
+      if (!response.ok) {
+        throw new Error('HTTP ' + response.status);
+      }
+      const payload = await response.json();
+      loadPayload(payload, 'remote');
+    } catch (error) {
+      setStatus('warn', '接口读取失败，继续使用初始配置');
+      console.warn(error);
+    }
+  };
+
+  form.addEventListener('input', refreshDirty);
+  form.addEventListener('change', refreshDirty);
+
+  validateBtn.addEventListener('click', () => {
+    const current = canonicalize(collectSettings());
+    const errors = validateSettings(current);
+    setErrors(errors);
+    if (errors.length) {
+      setStatus('error', '校验未通过');
+      return;
+    }
+    setStatus('ok', '校验通过，可直接保存');
+  });
+
+  resetBtn.addEventListener('click', () => {
+    if (!baseline) return;
+    applySettings(deepClone(baseline));
+    setErrors([]);
+    setDirty(false);
+    setStatus('ready', '已重置为最近一次加载值');
+  });
+
+  saveBtn.addEventListener('click', async () => {
+    if (isSaving) return;
+    const current = canonicalize(collectSettings());
+    const errors = validateSettings(current);
+    setErrors(errors);
+    if (errors.length) {
+      setStatus('error', '保存前校验失败');
+      return;
+    }
+
+    setSaving(true);
+    setStatus('loading', '正在保存到 src/data/settings/*.json');
+
+    try {
+      const requestBody = JSON.stringify(current);
+      if (!requestBody) {
+        setErrors(['保存请求体为空，请刷新页面后重试']);
+        setStatus('error', '保存失败');
+        return;
+      }
+
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json; charset=utf-8'
+        },
+        cache: 'no-store',
+        body: requestBody
+      });
+
+      const payload = await response.json().catch(() => null);
+      if (!response.ok || !payload?.ok) {
+        const serverErrors = Array.isArray(payload?.errors) ? payload.errors : ['保存失败，请稍后重试'];
+        setErrors(serverErrors);
+        if (response.status === 404) {
+          setStatus('error', '当前环境不允许写入（仅 DEV 可写）');
+        } else {
+          setStatus('error', '保存失败');
+        }
+        return;
+      }
+
+      if (payload?.payload?.settings) {
+        loadPayload(payload.payload, 'remote');
+        setStatus('ok', '保存成功，已刷新最新配置');
+      } else {
+        baseline = current;
+        setDirty(false);
+        setStatus('ok', '保存成功');
+      }
+      setErrors([]);
+    } catch (error) {
+      console.error(error);
+      setErrors(['保存请求失败，请检查本地服务日志']);
+      setStatus('error', '保存失败');
+    } finally {
+      setSaving(false);
+    }
+  });
+
+  window.addEventListener('beforeunload', (event) => {
+    if (!isDirty) return;
+    event.preventDefault();
+  });
+
+  loadBootstrap();
+  void loadFromApi();
+})();
+      </script>
+    ) : null
+  }
+</BaseLayout>

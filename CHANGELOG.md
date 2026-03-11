@@ -6,6 +6,27 @@ The format is based on Keep a Changelog, and this project aims to follow Semanti
 
 
 ## [Unreleased]
+### Added
+- 新增 `src/lib/theme-settings.ts`：Theme Console 统一读取层，支持 `settings > legacy > default` 回退与来源标记（`new/legacy/default`）
+- 新增只读接口 `GET /api/admin/settings`（`src/pages/api/admin/settings.ts`），返回合并后的 `site/home/ui` 配置与来源标记
+- 新增 Theme Console 页面 `/admin/`（`src/pages/admin/index.astro`），提供 `General/Home/Reading` 三组受约束配置表单、未保存提示与基础校验
+- 新增保存接口 `POST /api/admin/settings`（`src/pages/api/admin/settings.ts`）：`DEV` 可写、`PROD` `404`、白名单字段校验、白名单文件原子写入
+- 新增 `src/styles/components/admin.css` 并接入 `src/styles/global.css` 聚合入口
+
+### Changed
+- BaseLayout/Sidebar/BitCard/BitsDraftDialog/RSS 改为读取统一配置层，收敛分散的旧配置读取入口
+- `<html lang>` 改为读取 `defaultLocale`（无配置时回退 `zh-CN`）
+- 阅读模式入口显示改为受 `ui.readingMode.showEntry` 控制
+- 代码行号全局开关改为由 `ui.codeBlock.showLineNumbers` 驱动（关闭时注入 `data-line-numbers="off"`）
+- sitemap 生成时固定排除 `/admin`（`astro.config.mjs`），并将生产态 `/admin` 约束同步到 README/SSOT/ARCHITECTURE/TODO
+- Theme Console 的 Sidebar 导航排序交互改为“位置排序”语义，默认顺序使用 `1-5`，并移除数字输入的上下微调按钮
+- Theme Console（`/admin`）文案与信息结构优化：字段命名更直观、页头表达更统一，降低用户首次配置理解成本
+- Theme Console（`/admin`）交互与可用性优化：Sidebar 导航编辑区与底部操作区布局更清晰，主操作按钮和输入聚焦样式更一致
+
+### Fixed
+- 修复 Theme Console 初始读取接口路径为 `/api/admin/settings/`（与 `trailingSlash: 'always'` 保持一致），避免 `/admin` 页面误报“接口读取失败”
+- 修复 `POST /api/admin/settings/` 在静态端点模式下不可用：为 `src/pages/api/admin/settings.ts` 显式设置 `export const prerender = false`
+- 优化 Theme Console 保存链路的请求体校验与错误提示（区分空请求体与非法 JSON）
 
 ## [0.1.1] - 2026-02-07
 ### Added

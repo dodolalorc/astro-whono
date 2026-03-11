@@ -2,8 +2,9 @@
 import Sidebar from '../components/Sidebar.astro';
 import Icon from '../components/Icon.astro';
 import '../styles/global.css';
-import { site, hasSiteUrl } from '../../site.config.mjs';
+import { hasSiteUrl } from '../../site.config.mjs';
 import { createWithBase } from '../utils/format';
+import { getThemeSettings } from '../lib/theme-settings';
 
 const {
   title,
@@ -13,10 +14,13 @@ const {
   bodyClass,
 } = Astro.props;
 
-const siteTitle = site.title;
-const brandTitle = site.brandTitle ?? siteTitle;
-const metaDescription = description ?? site.description;
+const { settings } = getThemeSettings();
+const siteTitle = settings.site.title;
+const brandTitle = settings.site.brandTitle ?? siteTitle;
+const metaDescription = description ?? settings.site.description;
 const fullTitle = title ? `${title} | ${siteTitle}` : siteTitle;
+const htmlLang = settings.site.defaultLocale || 'zh-CN';
+const showCodeLineNumbers = settings.ui.codeBlock.showLineNumbers;
 const canonical = (hasSiteUrl && Astro.site)
   ? new URL(Astro.url.pathname, Astro.site).toString()
   : null;
@@ -31,7 +35,7 @@ const withBase = createWithBase(base);
 ---
 
 <!doctype html>
-<html lang="zh-CN">
+<html lang={htmlLang}>
   <head>
     <script is:inline>
       (() => {
@@ -144,6 +148,23 @@ const withBase = createWithBase(base);
         });
       })();
     </script>
+    {!showCodeLineNumbers ? (
+      <script is:inline>
+        (() => {
+          const apply = () => {
+            const blocks = document.querySelectorAll('.prose pre:is(.astro-code, .shiki)');
+            blocks.forEach((block) => {
+              block.setAttribute('data-line-numbers', 'off');
+            });
+          };
+          if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', apply, { once: true });
+            return;
+          }
+          apply();
+        })();
+      </script>
+    ) : null}
     <script>
       import '../scripts/sidebar-theme.ts';
     </script>

@@ -1,7 +1,8 @@
 /* global.css 为唯一样式入口，只负责 tokens/base 与 @import 聚合。
-   @import 顺序固定：layout → lists → bits → prose → figure → callout → lightbox → code-block。
+   @import 顺序固定：layout → admin → lists → bits → prose → figure → callout → lightbox → code-block。
    断点变量覆盖保留在此处，不要迁移。 */
 @import "./components/layout.css";
+@import "./components/admin.css";
 @import "./components/lists.css";
 @import "./components/bits.css";
 @import "./components/prose.css";
@@ -129,6 +130,12 @@
   --card-pad: 12px 14px;
   --quote-pad: 1rem;
   --header-gap: 12px;
+  --admin-status-loading-bg: #78716c;
+  --admin-status-ready-bg: #2f9f62;
+  --admin-status-ok-bg: #4f7354;
+  --admin-status-warn-bg: #1f1f1f;
+  --admin-status-error-bg: #7f1d1d;
+  --admin-status-icon-fg: #f8f4eb;
 }
 
 :root[data-theme="dark"] {
@@ -148,6 +155,12 @@
   --lightbox-text: #ffffff;
   --lightbox-border: rgba(255, 255, 255, 0.2);
   --lightbox-dot-muted: rgba(255, 255, 255, 0.35);
+  --admin-status-loading-bg: #908a84;
+  --admin-status-ready-bg: #52b77e;
+  --admin-status-ok-bg: #5d7f61;
+  --admin-status-warn-bg: #0f0f10;
+  --admin-status-error-bg: #9f3a3a;
+  --admin-status-icon-fg: #f3eee3;
 }
 
 /* ===============================

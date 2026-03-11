@@ -15,6 +15,15 @@ const getSchemaAttrs = (tagName) => {
 
 const mergeAttrs = (...lists) => Array.from(new Set(lists.flat()));
 
+const isAdminSitemapEntry = (page) => {
+  try {
+    const pathname = new URL(page).pathname;
+    return pathname === '/admin/' || pathname === '/admin';
+  } catch {
+    return page.endsWith('/admin/') || page.endsWith('/admin');
+  }
+};
+
 const sanitizeSchema = {
   ...defaultSchema,
   tagNames: [
@@ -102,7 +111,7 @@ const sanitizeSchema = {
 export default defineConfig({
   // Required for RSS generation. Prefer SITE_URL; fallback keeps build passing.
   site: site.url,
-  integrations: hasSiteUrl ? [sitemap()] : [],
+  integrations: hasSiteUrl ? [sitemap({ filter: (page) => !isAdminSitemapEntry(page) })] : [],
   trailingSlash: 'always',
   build: {
     inlineStylesheets: 'always'

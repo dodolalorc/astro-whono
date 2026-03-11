@@ -117,6 +117,26 @@ npm run build && npm run preview
 - 内容集合：`src/content.config.ts`
 - 样式入口：`src/styles/global.css`
 
+### Theme Console（/admin）
+
+`/admin` 是 Phase 1 的 Theme Console（配置控制台），用于本地开发场景下编辑主题配置，不是 CMS。
+
+- 开发环境：`/admin/` 可操作，读取/保存 `site/home/ui` 三组配置
+- 生产环境：`/admin/` 仅显示只读提示页，不提供可写操作
+- 保存接口：`POST /api/admin/settings/`（仅 `DEV` 可写，`PROD` 固定 `404`）
+- 落盘文件：`src/data/settings/site.json`、`src/data/settings/home.json`、`src/data/settings/ui.json`
+- 白名单约束：仅允许受控字段（含 `heroPresetId`、Sidebar 固定导航项）
+
+兼容迁移（面向已有 fork）：
+
+- 未创建 `src/data/settings/*.json` 时，前台仍按 `settings > legacy > default` 正常读取
+- 首次在 `/admin` 点击保存后，才会生成上述 JSON 文件（无需手动迁移脚本）
+
+搜索与收录边界：
+
+- `/admin` 默认 `noindex,nofollow`
+- `/admin` 不进入 sitemap（避免误导为线上可写后台）
+
 
 ## 内容与写作
 
