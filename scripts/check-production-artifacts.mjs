@@ -32,8 +32,10 @@ export const runProductionArtifactCheck = async (options = {}) => {
     'dist/index.html',
     'dist/about/index.html',
     'dist/bits/index.html',
+    'dist/admin/data/index.html',
     'dist/admin/theme/index.html',
-    'dist/api/admin/settings'
+    'dist/api/admin/settings',
+    'dist/api/admin/data/settings'
   ];
 
   for (const artifactPath of requiredArtifacts) {
@@ -53,6 +55,7 @@ export const runProductionArtifactCheck = async (options = {}) => {
   );
   expect(!sitemapXml.includes('/admin/'), 'Admin route leaked into sitemap');
   expect(!sitemapXml.includes('/admin/theme/'), 'Admin theme route leaked into sitemap');
+  expect(!sitemapXml.includes('/admin/data/'), 'Admin data route leaked into sitemap');
   expect(
     !sitemapXml.includes(`${siteUrl}/bits/draft-dialog/`),
     'Bits draft partial route leaked into sitemap'
@@ -79,9 +82,11 @@ export const runProductionArtifactCheck = async (options = {}) => {
 
   const adminHtml = readText('dist/admin/index.html');
   const adminThemeHtml = readText('dist/admin/theme/index.html');
+  const adminDataHtml = readText('dist/admin/data/index.html');
   const readonlyAdminHtmlChecks = [
     ['dist/admin/index.html', adminHtml, 'Admin Console', '/admin/theme/'],
-    ['dist/admin/theme/index.html', adminThemeHtml, 'Theme Console', '/admin/']
+    ['dist/admin/theme/index.html', adminThemeHtml, 'Theme Console', '/admin/'],
+    ['dist/admin/data/index.html', adminDataHtml, 'Data Console', '/admin/']
   ];
 
   for (const [filePath, html, heading, linkHref] of readonlyAdminHtmlChecks) {
@@ -260,6 +265,8 @@ export const runProductionArtifactCheck = async (options = {}) => {
 
   const adminSettingsArtifact = readText('dist/api/admin/settings');
   assertAdminSettingsStaticShell('dist/api/admin/settings', adminSettingsArtifact);
+  const adminDataSettingsArtifact = readText('dist/api/admin/data/settings');
+  assertAdminSettingsStaticShell('dist/api/admin/data/settings', adminDataSettingsArtifact, '/api/admin/data/settings/');
 
   console.log('Production artifact verification passed.');
 };

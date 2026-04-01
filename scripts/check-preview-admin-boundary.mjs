@@ -90,7 +90,8 @@ const createJsonRequestInit = (baseUrl, payload) => ({
   body: JSON.stringify(payload)
 });
 
-const assertAdminOverviewShell = (label, response) => {
+const assertAdminOverviewShell = (label, response, options = {}) => {
+  const { expectDevChecksSummary = false } = options;
   expect(response.status === 200, `${label} returned ${response.status}`);
   expect(
     response.contentType.toLowerCase().includes('text/html'),
@@ -100,6 +101,10 @@ const assertAdminOverviewShell = (label, response) => {
   expect(response.body.includes('/admin/theme/'), `${label} is missing the theme route link`);
   expect(!response.body.includes('data-admin-root'), `${label} should not mount the theme form root`);
   expect(!response.body.includes('id="admin-bootstrap"'), `${label} should not emit theme bootstrap payload`);
+  if (expectDevChecksSummary) {
+    expect(response.body.includes('Settings 读写'), `${label} is missing the live settings check summary`);
+    expect(response.body.includes('check:preview-admin'), `${label} is missing the admin boundary command hint`);
+  }
 };
 
 const assertReadonlyAdminThemeShell = (label, response) => {
@@ -112,6 +117,18 @@ const assertReadonlyAdminThemeShell = (label, response) => {
   expect(response.body.includes('/admin/'), `${label} is missing the overview route link`);
   expect(!response.body.includes('data-admin-root'), `${label} should stay readonly outside dev`);
   expect(!response.body.includes('id="admin-bootstrap"'), `${label} should not emit theme bootstrap payload outside dev`);
+};
+
+const assertReadonlyAdminDataShell = (label, response) => {
+  expect(response.status === 200, `${label} returned ${response.status}`);
+  expect(
+    response.contentType.toLowerCase().includes('text/html'),
+    `${label} did not return HTML`
+  );
+  expect(response.body.includes('Data Console'), `${label} is missing the data heading`);
+  expect(response.body.includes('/admin/'), `${label} is missing the overview route link`);
+  expect(!response.body.includes('data-admin-data-root'), `${label} should stay readonly outside dev`);
+  expect(!response.body.includes('id="admin-data-bootstrap"'), `${label} should not emit data bootstrap payload outside dev`);
 };
 
 const assertAdminThemeDevBootstrapSafe = (label, response) => {
@@ -135,6 +152,18 @@ const assertAdminThemeDevBootstrapSafe = (label, response) => {
     !response.body.includes(`<script>window.${ADMIN_BOOTSTRAP_XSS_SENTINEL}=1</script>`),
     `${label} bootstrap still emits an executable sentinel script tag`
   );
+};
+
+const assertAdminDataDevShell = (label, response) => {
+  expect(response.status === 200, `${label} returned ${response.status}`);
+  expect(
+    response.contentType.toLowerCase().includes('text/html'),
+    `${label} did not return HTML`
+  );
+  expect(response.body.includes('Data Console'), `${label} is missing the data heading`);
+  expect(response.body.includes('data-admin-data-root'), `${label} is missing the data console root`);
+  expect(response.body.includes('id="admin-data-bootstrap"'), `${label} is missing the data bootstrap payload`);
+  expect(response.body.includes('导出 settings 快照'), `${label} is missing the export action`);
 };
 
 const stopProcess = async (child) => {
@@ -173,7 +202,9 @@ export const runPreviewAdminBoundaryCheck = async () => {
 
     const adminOverviewResponse = await request(baseUrl, '/admin/');
     const adminThemeResponse = await request(baseUrl, '/admin/theme/');
+    const adminDataResponse = await request(baseUrl, '/admin/data/');
     const getResponse = await request(baseUrl, '/api/admin/settings/');
+    const exportResponse = await request(baseUrl, '/api/admin/data/settings/');
     const postResponse = await request(baseUrl, '/api/admin/settings/', {
       method: 'POST',
       headers: {
@@ -185,7 +216,9 @@ export const runPreviewAdminBoundaryCheck = async () => {
 
     assertAdminOverviewShell('Preview GET /admin/', adminOverviewResponse);
     assertReadonlyAdminThemeShell('Preview GET /admin/theme/', adminThemeResponse);
+    assertReadonlyAdminDataShell('Preview GET /admin/data/', adminDataResponse);
     assertAdminSettingsStaticResponse('GET /api/admin/settings/', getResponse);
+    assertAdminSettingsStaticResponse('GET /api/admin/data/settings/', exportResponse, '/api/admin/data/settings/');
     assertAdminSettingsStaticResponse('POST /api/admin/settings/', postResponse);
     console.log('Preview admin settings boundary check passed.');
   } finally {
@@ -233,6 +266,27 @@ export const runDevAdminSettingsSmokeCheck = async () => {
     expect(payload && typeof payload === 'object', 'Dev GET /api/admin/settings/ payload is missing');
     expect(typeof payload.revision === 'string' && payload.revision.length > 0, 'Dev payload revision is missing');
     expect(payload.settings && typeof payload.settings === 'object', 'Dev payload settings snapshot is missing');
+
+    const exportResponse = await request(baseUrl, '/api/admin/data/settings/');
+    expect(exportResponse.status === 200, `Dev GET /api/admin/data/settings/ returned ${exportResponse.status}`);
+    expect(
+      exportResponse.contentType.toLowerCase().includes('application/json'),
+      'Dev GET /api/admin/data/settings/ did not return JSON'
+    );
+    expect(exportResponse.json?.manifest?.schemaVersion === 1, 'Dev export manifest is missing schemaVersion=1');
+    expect(
+      Array.isArray(exportResponse.json?.manifest?.includedScopes)
+      && exportResponse.json.manifest.includedScopes.includes('settings'),
+      'Dev export manifest is missing includedScopes=settings'
+    );
+    expect(
+      typeof exportResponse.json?.manifest?.locale === 'string' && exportResponse.json.manifest.locale.length > 0,
+      'Dev export manifest is missing locale'
+    );
+    expect(
+      exportResponse.json?.settings && typeof exportResponse.json.settings === 'object',
+      'Dev export bundle is missing settings snapshot'
+    );
 
     const uiSettingsPath = path.join(fixture.settingsDir, 'ui.json');
     const beforeDryRun = await readFile(uiSettingsPath, 'utf8');
@@ -288,8 +342,12 @@ export const runDevAdminSettingsSmokeCheck = async () => {
 
     const adminOverviewResponse = await request(baseUrl, '/admin/');
     const adminThemeResponse = await request(baseUrl, '/admin/theme/');
-    assertAdminOverviewShell('Dev GET /admin/', adminOverviewResponse);
+    const adminDataResponse = await request(baseUrl, '/admin/data/');
+    assertAdminOverviewShell('Dev GET /admin/', adminOverviewResponse, {
+      expectDevChecksSummary: true
+    });
     assertAdminThemeDevBootstrapSafe('Dev GET /admin/theme/', adminThemeResponse);
+    assertAdminDataDevShell('Dev GET /admin/data/', adminDataResponse);
 
     console.log('Dev admin settings smoke check passed.');
   } catch (error) {

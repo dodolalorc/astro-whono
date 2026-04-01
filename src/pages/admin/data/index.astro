@@ -1,0 +1,155 @@
+---
+import AdminLayout from '../../../components/admin/AdminLayout.astro';
+import AdminShell from '../../../components/admin/AdminShell.astro';
+import { getEditableThemeSettingsState } from '../../../lib/theme-settings';
+import { ADMIN_SETTINGS_EXPORT_SCHEMA_VERSION } from '../../../lib/admin-console/settings-data';
+import { createWithBase } from '../../../utils/format';
+
+const isDev = import.meta.env.DEV;
+const base = import.meta.env.BASE_URL ?? '/';
+const withBase = createWithBase(base);
+
+const loadDataDevState = async () => {
+  const [{ default: adminDataScriptHref }, { default: adminStylesHref }] = await Promise.all([
+    import('../../../scripts/admin-data/index.ts?url'),
+    import('../../../styles/components/admin.css?url')
+  ]);
+
+  return {
+    adminDataScriptHref,
+    adminStylesHref,
+    editableState: getEditableThemeSettingsState()
+  };
+};
+
+const dataDevState = isDev ? await loadDataDevState() : null;
+const editableState = dataDevState?.editableState;
+const bootstrapText =
+  editableState && editableState.ok
+    ? JSON.stringify({
+        revision: editableState.payload.revision,
+        exportEndpoint: withBase('/api/admin/data/settings/'),
+        importEndpoint: withBase('/api/admin/settings/')
+      })
+    : null;
+---
+
+<AdminLayout title="Data Console" stylesHref={dataDevState?.adminStylesHref ?? null}>
+  <AdminShell
+    currentRoute="data"
+    title="Data Console"
+    subtitle="设置导入导出"
+    description="Phase 1 先只覆盖 settings 快照导出与导入；内容快照、恢复和批量迁移仍留在后续阶段。"
+    modeLabel={isDev ? 'DEV 可写' : '只读模式'}
+    modeHint={isDev ? '当前页面复用现有 Theme Console 校验、dry-run、revision 与事务写盘链路。' : 'Data Console 仅在本地开发环境可用；preview 与 production 仅保留只读边界。'}
+  >
+    {isDev ? (
+      <div slot="status" class="admin-status-slot">
+        <p id="admin-data-status-live" class="admin-sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
+        <p id="admin-data-status" class="admin-status" data-state="idle">等待操作</p>
+      </div>
+    ) : null}
+
+    {
+      isDev && dataDevState && editableState?.ok && bootstrapText ? (
+        <section class="admin-overview admin-data-console" data-admin-data-root>
+          <section
+            id="admin-data-error-banner"
+            class="admin-banner admin-banner--error"
+            hidden
+            role="alert"
+            aria-atomic="true"
+            tabindex="-1"
+          >
+            <div class="admin-banner__header">
+              <div class="admin-banner__lead">
+                <span class="admin-banner__icon" aria-hidden="true">×</span>
+                <div class="admin-banner__copy">
+                  <p id="admin-data-error-title" class="admin-banner__title">导入导出未完成</p>
+                  <p id="admin-data-error-message" class="admin-banner__message" hidden></p>
+                </div>
+              </div>
+            </div>
+            <ul id="admin-data-error-list" class="admin-banner__list" hidden></ul>
+          </section>
+
+          <div class="admin-overview__grid">
+            <article class="admin-overview-card">
+              <p class="admin-overview-card__eyebrow">Export</p>
+              <h2 class="admin-overview-card__title">导出当前 settings 快照</h2>
+              <p class="admin-overview-card__body">
+                导出内容只包含 `src/data/settings/*.json` 的 canonical snapshot，并附带稳定 manifest 元数据，便于后续迁移或 dry-run 导入。
+              </p>
+              <ul class="admin-overview-card__list">
+                <li>`schemaVersion`: {ADMIN_SETTINGS_EXPORT_SCHEMA_VERSION}</li>
+                <li>`includedScopes`: `settings`</li>
+                <li>`locale`: {editableState.payload.settings.site.defaultLocale}</li>
+              </ul>
+              <div class="admin-overview-card__actions">
+                <button id="admin-data-export" class="admin-btn admin-btn--muted" type="button">导出 settings 快照</button>
+              </div>
+            </article>
+
+            <article class="admin-overview-card">
+              <p class="admin-overview-card__eyebrow">Import</p>
+              <h2 class="admin-overview-card__title">从 JSON 快照导入 settings</h2>
+              <p class="admin-overview-card__body">
+                导入页面只解析导出包外层 manifest，真正的字段校验、dry-run、冲突保护与提交仍统一走现有 `/api/admin/settings/`。
+              </p>
+              <label class="admin-field admin-field--full">
+                <span class="admin-field__label">选择导出 JSON</span>
+                <input id="admin-data-file" type="file" accept=".json,application/json" />
+              </label>
+              <dl id="admin-data-file-meta" class="admin-data-meta" hidden></dl>
+              <div class="admin-overview-card__actions">
+                <button id="admin-data-dry-run" class="admin-btn" type="button" disabled>dry-run 校验</button>
+                <button id="admin-data-apply" class="admin-btn admin-btn--muted" type="button" disabled>确认写入</button>
+              </div>
+            </article>
+          </div>
+
+          <article id="admin-data-preview" class="admin-overview-card" hidden>
+            <p class="admin-overview-card__eyebrow">Preview</p>
+            <h2 id="admin-data-preview-title" class="admin-overview-card__title">变更预览</h2>
+            <p id="admin-data-preview-body" class="admin-overview-card__body">
+              dry-run 完成后，会在这里展示将变更的 settings 分组。
+            </p>
+            <ul id="admin-data-result-list" class="admin-data-result-list"></ul>
+          </article>
+
+          <div id="admin-data-bootstrap" hidden>{bootstrapText}</div>
+        </section>
+      ) : isDev && editableState && !editableState.ok ? (
+        <section class="admin-overview">
+          <article class="admin-overview-card">
+            <p class="admin-overview-card__eyebrow">Invalid Settings</p>
+            <h2 class="admin-overview-card__title">settings JSON 当前不可写</h2>
+            <p class="admin-overview-card__body">
+              Data Console 复用 Theme Console 现有 invalid-settings guard。当前 `src/data/settings/*.json` 存在结构问题，导出与导入已暂停，需先修复对应文件。
+            </p>
+            <ul class="admin-overview-card__list">
+              {editableState.errors.map((error) => <li>{error}</li>)}
+            </ul>
+          </article>
+        </section>
+      ) : (
+        <section class="admin-overview">
+          <article class="admin-overview-card">
+            <p class="admin-overview-card__eyebrow">Readonly Boundary</p>
+            <h2 class="admin-overview-card__title">Data Console 仅在本地开发环境可用</h2>
+            <p class="admin-overview-card__body">
+              当前环境继续保留 `/admin/data/` 稳定子入口，但不提供 settings 导出、dry-run 导入或写盘能力。
+            </p>
+            <p class="admin-overview-card__meta">若需导入导出，请在本地运行 `npm run dev` 后再进入此页面。</p>
+          </article>
+        </section>
+      )
+    }
+  </AdminShell>
+
+  {
+    isDev && dataDevState?.adminDataScriptHref && bootstrapText ? (
+      <script is:inline type="module" src={dataDevState.adminDataScriptHref}></script>
+    ) : null
+  }
+</AdminLayout>

@@ -28,7 +28,7 @@
 - 双栏布局（侧栏导航 + 内容区）
 - 移动端适配
 - 内容集合：随笔 / 絮语 / 小记（归档为目录视图）
-- 内置本地 Theme Console（/admin）：开发环境下**可视化管理站点配置**，fork / clone 后可快速完成站点接管
+- 内置本地 Admin Console（/admin）：开发环境下可使用 Theme / Data Console 管理站点配置，fork / clone 后可快速完成站点接管
 - 絮语草稿生成器：/bits 页面一键生成 Markdown（复制/下载），支持多图与自动读取尺寸
 - RSS：默认归档订阅 + 分栏订阅
 - 浅色 / 深色模式 + 阅读模式
@@ -145,9 +145,9 @@ npm run check:preview-admin
 - 页面 / 场景样式入口：`src/styles/home.css`、`src/styles/about.css`、`src/styles/memo.css`、`src/styles/article.css`、`src/styles/bits-page.css`
 - 后台样式入口：`src/styles/components/admin.css`（仅 `/admin` 使用）
 
-### Theme Console（/admin）
+### Admin Console（/admin）
 
-astro-whono 内置本地 Theme Console，用于开发环境中可视化配置主题，在fork 或 clone 项目后，无需熟悉整个项目结构即可快速完成站点接管。
+astro-whono 内置本地 Admin Console，用于开发环境中可视化接管站点配置。在 fork 或 clone 项目后，无需先熟悉整个项目结构，也能快速完成主题调整与 settings 数据导入导出。
 
 <details>
 <summary><strong>🖼️ Theme Console 预览</strong></summary>
@@ -178,7 +178,7 @@ Theme Console 主要面向**站点级**和**页面级**配置，目前支持：
 
 #### 如何启用
 
-Theme Console 默认用于**本地开发环境**。
+Admin Console 默认用于**本地开发环境**。
 
 启动开发环境：
 
@@ -191,12 +191,14 @@ npm run dev
 
 - `/admin/`：后台稳定入口与概览页
 - `/admin/theme/`：Theme Console 实际编辑页
+- `/admin/data/`：settings 快照导出 / dry-run 导入 / 确认写入
 
 #### 生产环境说明
 
-- Theme Console 仅在本地开发环境可用，支持读取、校验和保存配置
-- 生产构建保持静态站点输出；`/admin/` 与 `/admin/theme/` 仅显示只读提示
+- Theme Console / Data Console 仅在本地开发环境可用，支持读取、校验、导出和保存配置
+- 生产构建保持静态站点输出；`/admin/`、`/admin/theme/` 与 `/admin/data/` 仅显示只读提示
 - `/api/admin/settings/` 仅供本地开发使用，生产环境不要依赖该接口
+- `/api/admin/data/settings/` 仅供本地开发导出 settings 快照，生产环境不要依赖该接口
 
 
 #### 兼容迁移（已 fork用户）：

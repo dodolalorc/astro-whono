@@ -4,8 +4,6 @@ import path from 'node:path';
 
 const distDir = path.resolve('dist');
 const smokeFixturePath = path.join(distDir, 'checks', 'markdown-smoke', 'index.html');
-const ADMIN_SETTINGS_REDIRECT_TEXT = 'Redirecting to: /api/admin/settings/';
-
 export const expect = (condition, message) => {
   if (!condition) {
     console.error(message);
@@ -39,11 +37,16 @@ export const reportSmokeCheckResult = (label, failedIds) => {
   process.exit(1);
 };
 
-export const assertAdminSettingsStaticShell = (label, body) => {
+export const assertStaticRedirectShell = (label, body, expectedPath) => {
+  const expectedRedirectText = `Redirecting to: ${expectedPath}`;
   expect(
-    body.includes(ADMIN_SETTINGS_REDIRECT_TEXT),
+    body.includes(expectedRedirectText),
     `${label} no longer matches the current static redirect shell`
   );
+};
+
+export const assertAdminSettingsStaticShell = (label, body, expectedPath = '/api/admin/settings/') => {
+  assertStaticRedirectShell(label, body, expectedPath);
   expect(
     !body.includes('"revision"') && !body.includes('"settings"'),
     `${label} leaked editable Theme Console payload in production preview`
@@ -54,12 +57,12 @@ export const assertAdminSettingsStaticShell = (label, body) => {
   );
 };
 
-export const assertAdminSettingsStaticResponse = (label, response) => {
+export const assertAdminSettingsStaticResponse = (label, response, expectedPath = '/api/admin/settings/') => {
   expect(
     !response.contentType.toLowerCase().includes('application/json'),
     `${label} unexpectedly returned JSON in production preview`
   );
-  assertAdminSettingsStaticShell(label, response.body);
+  assertAdminSettingsStaticShell(label, response.body, expectedPath);
 };
 
 export const waitForHttpReady = async (url, options = {}) => {

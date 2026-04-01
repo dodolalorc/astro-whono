@@ -1,12 +1,24 @@
 ---
 import AdminLayout from '../../components/admin/AdminLayout.astro';
 import AdminShell from '../../components/admin/AdminShell.astro';
+import { getAdminOverviewData } from '../../lib/admin-console/overview';
 import { createWithBase } from '../../utils/format';
 
 const isDev = import.meta.env.DEV;
 const base = import.meta.env.BASE_URL ?? '/';
 const withBase = createWithBase(base);
-const adminStylesHref = isDev ? (await import('../../styles/components/admin.css?url')).default : null;
+
+const loadOverviewDevState = async () => {
+  const { default: adminStylesHref } = await import('../../styles/components/admin.css?url');
+
+  return {
+    adminStylesHref,
+    overview: await getAdminOverviewData()
+  };
+};
+
+const overviewDevState = isDev ? await loadOverviewDevState() : null;
+const adminStylesHref = overviewDevState?.adminStylesHref ?? null;
 ---
 
 <AdminLayout title="Admin Console" stylesHref={adminStylesHref}>
@@ -14,54 +26,126 @@ const adminStylesHref = isDev ? (await import('../../styles/components/admin.css
     currentRoute="overview"
     title="Admin Console"
     subtitle="后台概览"
-    description="Phase 0 先把后台从单页 Theme Console 收口为真实路由壳层：`/admin/` 负责稳定入口，`/admin/theme/` 承担现有主题配置工作流。"
+    description={isDev
+      ? 'Phase 1 开始接入真实概览数据与 settings 导入导出；统计仅基于 metadata 和受控摘要，不把全量正文注入后台首屏。'
+      : '当前环境仅保留后台入口与只读说明；Theme、Data 等后台工作流仍以本地开发环境为准。'}
     modeLabel={isDev ? 'DEV 可写' : '只读模式'}
-    modeHint={isDev ? '当前后台仍以本地文件与 Git 为真相来源；生产环境继续保持只读。' : '当前环境仅保留后台入口与只读说明，不提供写入能力。'}
+    modeHint={isDev
+      ? '当前后台仍以本地文件与 Git 为真相来源；生产环境继续保持只读。'
+      : '当前环境仅保留后台入口与只读说明，不提供写入能力。'}
   >
-    <section class="admin-overview">
-      <div class="admin-overview__grid">
-        <article class="admin-overview-card">
-          <p class="admin-overview-card__eyebrow">Ready Now</p>
-          <h2 class="admin-overview-card__title">Theme Console</h2>
-          <p class="admin-overview-card__body">
-            现有 `site / shell / home / page / ui` 设置继续沿用既有 bootstrap、校验、`dryRun`、`revision` 冲突保护与事务写盘链路。
-          </p>
-          <p class="admin-overview-card__meta">稳定子入口：`/admin/theme/`</p>
-          <div class="admin-overview-card__actions">
-            <a class="admin-btn admin-btn--muted" href={withBase('/admin/theme/')}>{isDev ? '进入 Theme Console' : '查看只读子入口'}</a>
+    {
+      isDev && overviewDevState ? (
+        <section class="admin-overview">
+          <div class="admin-overview__grid">
+            <article class="admin-overview-card">
+              <p class="admin-overview-card__eyebrow">Collections</p>
+              <h2 class="admin-overview-card__title">内容总览</h2>
+              <p class="admin-overview-card__body">
+                当前后台按 collection 聚合 metadata，只展示总量、草稿量和最近内容，不把正文直接塞进概览首屏。
+              </p>
+              <div class="admin-metric-grid">
+                {
+                  overviewDevState.overview.collectionSummaries.map((summary) => (
+                    <section class="admin-metric-card">
+                      <p class="admin-metric-card__label">{summary.label}</p>
+                      <p class="admin-metric-card__value">{summary.totalCount}</p>
+                      <p class="admin-metric-card__meta">draft {summary.draftCount}</p>
+                    </section>
+                  ))
+                }
+              </div>
+            </article>
+
+            <article class="admin-overview-card">
+              <p class="admin-overview-card__eyebrow">Drafts</p>
+              <h2 class="admin-overview-card__title">草稿与维护密度</h2>
+              <p class="admin-overview-card__body">
+                当前内容库共 {overviewDevState.overview.totalCount} 条内容，其中草稿 {overviewDevState.overview.totalDraftCount} 条。
+              </p>
+              <ul class="admin-overview-card__list">
+                {
+                  overviewDevState.overview.collectionSummaries.map((summary) => (
+                    <li>{summary.label}: {summary.draftCount} / {summary.totalCount}</li>
+                  ))
+                }
+              </ul>
+              <div class="admin-overview-card__actions">
+                <a class="admin-btn admin-btn--muted" href={withBase('/admin/theme/')}>进入 Theme Console</a>
+                <a class="admin-btn admin-btn--ghost" href={withBase('/admin/data/')}>打开 Data Console</a>
+              </div>
+            </article>
+
+            <article class="admin-overview-card">
+              <p class="admin-overview-card__eyebrow">Recent</p>
+              <h2 class="admin-overview-card__title">最近内容</h2>
+              <p class="admin-overview-card__body">
+                当前按内容日期聚合最近条目；若条目未设置日期，会在列表尾部单独标明。
+              </p>
+              <ul class="admin-recent-list">
+                {
+                  overviewDevState.overview.recentEntries.map((entry) => (
+                    <li class="admin-recent-list__item">
+                      <a class="admin-recent-list__link" href={withBase(entry.href)}>{entry.title}</a>
+                      <p class="admin-recent-list__meta">
+                        <span>{entry.collectionLabel}</span>
+                        <span>{entry.dateLabel}</span>
+                        {entry.isDraft ? <span class="admin-badge">draft</span> : null}
+                      </p>
+                    </li>
+                  ))
+                }
+              </ul>
+            </article>
+
+            <article class="admin-overview-card">
+              <p class="admin-overview-card__eyebrow">Checks</p>
+              <h2 class="admin-overview-card__title">检查摘要</h2>
+              <p class="admin-overview-card__body">
+                {overviewDevState.overview.checksSummary.statusLine}
+              </p>
+              <ul class="admin-overview-card__list">
+                {
+                  overviewDevState.overview.checksSummary.items.map((item) => (
+                    <li>
+                      <strong>{item.label}</strong>
+                      {' '}[{item.statusLabel}]：{item.summary}
+                      {' '}{item.detail}
+                      {item.command ? <> 命令：<code>{item.command}</code></> : null}
+                    </li>
+                  ))
+                }
+              </ul>
+              <p class="admin-overview-card__meta">{overviewDevState.overview.checksSummary.footer}</p>
+            </article>
           </div>
-        </article>
+        </section>
+      ) : (
+        <section class="admin-overview">
+          <div class="admin-overview__grid">
+            <article class="admin-overview-card">
+              <p class="admin-overview-card__eyebrow">Readonly Boundary</p>
+              <h2 class="admin-overview-card__title">后台入口继续保留，但不开放写入</h2>
+              <p class="admin-overview-card__body">
+                当前环境仅保留后台稳定入口与子路由结构，不输出可写的 settings、导入导出或内容统计载荷。
+              </p>
+              <div class="admin-overview-card__actions">
+                <a class="admin-btn admin-btn--ghost" href={withBase('/admin/theme/')}>查看 Theme 子入口</a>
+                <a class="admin-btn admin-btn--ghost" href={withBase('/admin/data/')}>查看 Data 子入口</a>
+              </div>
+            </article>
 
-        <article class="admin-overview-card">
-          <p class="admin-overview-card__eyebrow">Phase 0</p>
-          <h2 class="admin-overview-card__title">路由壳层已独立</h2>
-          <p class="admin-overview-card__body">
-            后台导航、稳定入口与 Theme 子路由已经拆开，后续 `Content / Media / Checks / Data` 会在真实能力落地后再追加页面，而不是先铺空壳。
-          </p>
-          <ul class="admin-overview-card__list">
-            <li>保留 `/admin/` 作为后台稳定入口</li>
-            <li>保留 `/api/admin/settings/` 现有契约</li>
-            <li>继续限制为 DEV-only 可写后台</li>
-          </ul>
-        </article>
-
-        <article class="admin-overview-card">
-          <p class="admin-overview-card__eyebrow">Dirty Guard</p>
-          <h2 class="admin-overview-card__title">页面切换会显式提醒</h2>
-          <p class="admin-overview-card__body">
-            `/admin/theme/` 的未保存状态不再只依赖浏览器离页提示；点击后台内部导航切换时，也会先确认是否放弃当前改动。
-          </p>
-        </article>
-
-        <article class="admin-overview-card">
-          <p class="admin-overview-card__eyebrow">Readonly Boundary</p>
-          <h2 class="admin-overview-card__title">生产环境只保留结构，不开放写入</h2>
-          <p class="admin-overview-card__body">
-            preview / production 下仍然不提供后台写接口；本次只新增真实页面结构、路由排除规则和对应的边界检查。
-          </p>
-        </article>
-      </div>
-    </section>
+            <article class="admin-overview-card">
+              <p class="admin-overview-card__eyebrow">Phase 1</p>
+              <h2 class="admin-overview-card__title">Data Console 已纳入路由壳层</h2>
+              <p class="admin-overview-card__body">
+                `/admin/data/` 负责 settings 快照导出与导入；实际写盘仍复用本地开发态的 Theme Console 服务端校验与事务链路。
+              </p>
+              <p class="admin-overview-card__meta">preview / production 下只保留只读提示，不导出后台数据。</p>
+            </article>
+          </div>
+        </section>
+      )
+    }
   </AdminShell>
 </AdminLayout>
-

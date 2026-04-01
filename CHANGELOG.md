@@ -10,11 +10,18 @@ The format is based on Keep a Changelog, and this project aims to follow Semanti
 ### Added
 - 新增后台真实路由壳层：`/admin/` 现为后台稳定入口与概览页，`/admin/theme/` 承担 Theme Console 实际编辑工作流。
 - 新增 `AdminLayout / AdminShell / AdminNav` 共享后台壳层，以及 `theme-shared.ts` 作为 Theme Console 新共享入口。
+- 新增 `/admin/data/` Data Console，以及 settings 导出包协议与对应导出接口。
+- 新增后台概览聚合数据读取层，`/admin/` 在开发态会展示内容统计与最近内容。
 
 ### Changed
 - Theme Console 的未保存离开提醒从单纯 `beforeunload` 扩展为路由级 dirty guard；切换后台真实路由时会先显式确认。
-- `/admin` 边界检查与静态产物校验现同步覆盖 `/admin/` 与 `/admin/theme/`，并确保两者继续排除在 sitemap 之外。
+- `/admin` 边界检查与静态产物校验现同步覆盖 `/admin/`、`/admin/theme/`、`/admin/data/` 与 `/api/admin/data/settings/`，并确保后台路由继续排除在 sitemap 之外。
 - Theme Console 共享规则实现已迁入 `theme-shared.ts`；`shared.ts` 现退为兼容导出层，降低后续后台能力继续堆进旧文件的风险。
+- Data Console 的导入 dry-run / revision 冲突检测 / 实际写盘继续复用 `/api/admin/settings/` 现有链路，不新增独立写盘规则。
+- `/admin/` Overview 的 Checks 卡现改为基于 settings 可写性、Data Console 可用性与发布前 CLI / admin 边界命令生成的当前维护检查摘要；完整结构化结果仍留待 Phase 3。
+
+### Fixed
+- 修正文档中的 Data Console manifest 协议说明，明确当前固定字段为 `schemaVersion / createdAt / includedScopes / excludes / locale`。
 
 ## [0.3.1] - 2026-03-24
 

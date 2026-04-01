@@ -61,6 +61,15 @@
     grid-template-columns: 1fr;
   }
 
+  .admin-metric-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-data-meta {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+
   .admin-field--memo > input,
   .admin-field--memo > .admin-title-pair {
     max-width: none;
