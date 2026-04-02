@@ -170,6 +170,43 @@ describe('admin content write api', () => {
     );
   });
 
+  it('rejects non-https bits image URLs instead of treating them as local files', async () => {
+    const { readAdminContentEntryEditorPayload } = await import('../src/lib/admin-console/content-shared');
+    const { POST } = await import('../src/pages/api/admin/content/entry');
+    const current = await readAdminContentEntryEditorPayload('bits', 'demo');
+
+    const response = await POST({
+      request: createJsonRequest('http://127.0.0.1:4321/api/admin/content/entry?dryRun=1', {
+        collection: 'bits',
+        entryId: 'demo',
+        revision: current.revision,
+        frontmatter: {
+          ...current.values,
+          imagesText: JSON.stringify([
+            {
+              src: 'http://example.com/demo.png',
+              width: 800,
+              height: 600
+            }
+          ])
+        }
+      }),
+      url: new URL('http://127.0.0.1:4321/api/admin/content/entry?dryRun=1')
+    } as never);
+
+    expect(response.status).toBe(400);
+    const payload = JSON.parse(await response.text());
+    expect(payload.ok).toBe(false);
+    expect(payload.issues).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          path: 'images[0].src',
+          message: expect.stringContaining('https://')
+        })
+      ])
+    );
+  });
+
   it('rejects reserved essay slugs before writing invalid content', async () => {
     const { readAdminContentEntryEditorPayload } = await import('../src/lib/admin-console/content-shared');
     const { POST } = await import('../src/pages/api/admin/content/entry');

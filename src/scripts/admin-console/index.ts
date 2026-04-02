@@ -10,6 +10,8 @@ import {
   getAdminFooterStartYearMax
 } from '@/lib/admin-console/theme-shared';
 import { createFormCodec, type EditableSettings } from './form-codec';
+import { createAdminMediaPicker } from '../admin-shared/media-picker';
+import { createAdminThemeMediaFields } from './media-fields';
 import { shouldGuardAdminNavigation } from './navigation-guard';
 import { createSocialLinks } from './social-links';
 import { createValidation, type ValidationIssue } from './validation';
@@ -316,6 +318,7 @@ if (!root) {
       inputSidebarDividerSubtle,
       inputSidebarDividerNone
     });
+    let themeMediaFields: ReturnType<typeof createAdminThemeMediaFields> | null = null;
 
     const finalizeAppliedSettings = (): void => {
       getPresetRows().forEach((row) => {
@@ -323,6 +326,7 @@ if (!root) {
         delete row.dataset.stashedOrder;
         syncPresetRow(row);
       });
+      themeMediaFields?.refreshAll();
     };
 
     const getNavFieldTarget = (
@@ -449,6 +453,13 @@ if (!root) {
       statusLiveEl.dataset.state = state;
       statusLiveEl.textContent = message;
     };
+
+    const mediaPicker = createAdminMediaPicker();
+    themeMediaFields = createAdminThemeMediaFields({
+      root,
+      picker: mediaPicker,
+      setStatus
+    });
 
     const syncDirtyStatus = (next: boolean): void => {
       const primaryStatusTarget = statusTargets[0] ?? null;

@@ -70,6 +70,17 @@
     gap: 2px;
   }
 
+  .admin-checks-toolbar__bar,
+  .admin-checks-category__head,
+  .admin-checks-issue__head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-checks-category__badges {
+    justify-content: flex-start;
+  }
+
   .admin-field--memo > input,
   .admin-field--memo > .admin-title-pair {
     max-width: none;
@@ -388,5 +399,50 @@
   .admin-content-editor__toggles {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .admin-content-image-row__grid,
+  .admin-media-field-input,
+  .admin-media-picker__item-button {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-media-console__pager {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-media-console__filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-media-console__filters .admin-content-field--query,
+  .admin-media-console__filter-actions {
+    grid-column: 1 / -1;
+  }
+
+  .admin-media-console__filter-actions,
+  .admin-media-console__results-meta {
+    justify-content: flex-start;
+  }
+
+  .admin-media-list__item {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-media-list__preview {
+    aspect-ratio: 16 / 9;
+  }
+
+  .admin-content-image-row__footer,
+  .admin-hero-grid__media-tools,
+  .admin-media-picker__header,
+  .admin-media-picker__footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-media-picker {
+    width: calc(100vw - 24px);
   }
 }

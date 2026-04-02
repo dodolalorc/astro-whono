@@ -1,8 +1,14 @@
-export type AdminRouteId = 'overview' | 'theme' | 'content' | 'data';
+export type AdminRouteId = 'overview' | 'theme' | 'content' | 'media' | 'checks' | 'data';
 
 export type AdminRouteDefinition = {
   id: AdminRouteId;
-  href: '/admin/' | '/admin/theme/' | '/admin/content/' | '/admin/data/';
+  href:
+    | '/admin/'
+    | '/admin/theme/'
+    | '/admin/content/'
+    | '/admin/media/'
+    | '/admin/checks/'
+    | '/admin/data/';
   label: string;
   description: string;
 };
@@ -25,6 +31,18 @@ export const ADMIN_ROUTES = [
     href: '/admin/content/',
     label: 'Content',
     description: '内容索引与只读控制台'
+  },
+  {
+    id: 'media',
+    href: '/admin/media/',
+    label: 'Media',
+    description: '媒体浏览与路径辅助'
+  },
+  {
+    id: 'checks',
+    href: '/admin/checks/',
+    label: 'Checks',
+    description: '结构化诊断与发布前自检'
   },
   {
     id: 'data',

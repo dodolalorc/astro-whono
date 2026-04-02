@@ -40,6 +40,12 @@ const { homeIntroMaxLength } = Astro.props;
           placeholder="当前使用：src/assets/hero.png"
           aria-label="Hero 图片地址"
         />
+        <div class="admin-hero-grid__media-tools">
+          <button class="admin-btn admin-btn--ghost" type="button" data-admin-media-open="home.heroImageSrc">
+            选择本地图片
+          </button>
+          <p class="admin-help admin-help--inline" data-admin-media-meta="home.heroImageSrc">留空时回退内置默认图</p>
+        </div>
         <input
           id="home-hero-image-alt"
           class="admin-hero-grid__input admin-hero-grid__input--secondary"
@@ -48,6 +54,9 @@ const { homeIntroMaxLength } = Astro.props;
           placeholder={ADMIN_HERO_IMAGE_ALT_DEFAULT}
           aria-label="Hero 图片说明"
         />
+      </div>
+      <div class="admin-media-field-preview admin-media-field-preview--hero" data-admin-media-preview="home.heroImageSrc" hidden>
+        <img alt="" loading="lazy" decoding="async" data-admin-media-preview-img="home.heroImageSrc" />
       </div>
       <p class="admin-help">注：支持 src/assets/**、public/** 或 https:// 图床链接</p>
     </div>

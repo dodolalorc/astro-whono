@@ -1,3 +1,6 @@
+import { createAdminMediaPicker } from '../admin-shared/media-picker';
+import { initAdminContentBitsImagesEditor } from './images-editor';
+
 type AdminContentBootstrap = {
   endpoint: string;
   collection: 'essay' | 'bits';
@@ -244,6 +247,15 @@ if (!adminContentRoot) {
     } else {
       let currentRevision = bootstrap.revision;
       let busy = false;
+      const mediaPicker = createAdminMediaPicker();
+
+      if (bootstrap.collection === 'bits') {
+        initAdminContentBitsImagesEditor({
+          root: adminContentRoot,
+          picker: mediaPicker,
+          setStatus
+        });
+      }
 
       const syncButtons = () => {
         dryRunBtn.disabled = busy;

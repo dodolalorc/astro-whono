@@ -1,5 +1,6 @@
 ---
 import AdminLayout from '../../../components/admin/AdminLayout.astro';
+import AdminMediaPicker from '../../../components/admin/AdminMediaPicker.astro';
 import AdminShell from '../../../components/admin/AdminShell.astro';
 import {
   ADMIN_CONTENT_COLLECTIONS,
@@ -59,6 +60,39 @@ const adminContentBootstrap = selectedEntryEditorPayload?.writable
       revision: selectedEntryEditorPayload.revision
     })
   : null;
+const adminMediaListEndpoint = withBase('/api/admin/media/list');
+const adminMediaMetaEndpoint = withBase('/api/admin/media/meta');
+
+type AdminBitsImageRow = {
+  src: string;
+  width: string;
+  height: string;
+  alt: string;
+};
+
+const parseInitialBitsImages = (value: string): AdminBitsImageRow[] => {
+  try {
+    const parsed = JSON.parse(value) as unknown;
+    if (!Array.isArray(parsed)) return [];
+    return parsed
+      .filter((item): item is Record<string, unknown> => typeof item === 'object' && item !== null && !Array.isArray(item))
+      .map((item) => ({
+        src: typeof item.src === 'string' ? item.src : '',
+        width: item.width == null ? '' : String(item.width),
+        height: item.height == null ? '' : String(item.height),
+        alt: typeof item.alt === 'string' ? item.alt : ''
+      }));
+  } catch {
+    return [];
+  }
+};
+
+const selectedBitsImageRows = selectedEntryEditorPayload?.collection === 'bits'
+  ? parseInitialBitsImages(selectedEntryEditorPayload.values.imagesText)
+  : [];
+const bitsImageRows = selectedBitsImageRows.length > 0
+  ? selectedBitsImageRows
+  : [{ src: '', width: '', height: '', alt: '' }];
 
 const buildCollectionQuery = (
   overrides: {
@@ -476,11 +510,143 @@ const activeFilterCount = pageData
                               <p class="admin-content-editor__error" data-field-error="authorAvatar" hidden></p>
                             </label>
 
-                            <label class="admin-field admin-content-editor__field admin-field--full" data-field-path="imagesText">
-                              <span class="admin-field__label">images（JSON 数组）</span>
-                              <textarea id="admin-content-images" name="imagesText" spellcheck="false">{selectedEntryEditorPayload.values.imagesText}</textarea>
+                            <div class="admin-field admin-content-editor__field admin-field--full" data-field-path="imagesText">
+                              <div class="admin-content-image-editor__header">
+                                <span class="admin-field__label">images</span>
+                                <button
+                                  class="admin-btn admin-btn--ghost admin-content-image-editor__add"
+                                  id="admin-content-image-add"
+                                  type="button"
+                                >
+                                  + 添加图片
+                                </button>
+                              </div>
+                              <input
+                                id="admin-content-images-json"
+                                name="imagesText"
+                                type="hidden"
+                                value={selectedEntryEditorPayload.values.imagesText}
+                              />
+                              <p class="admin-content-image-editor__hint">
+                                保持现有 `bits.images` 协议：本地相对路径或 `https://` 远程 URL；本地图片可通过选择器自动回填宽高。
+                              </p>
                               <p class="admin-content-editor__error" data-field-error="imagesText" hidden></p>
-                            </label>
+                              <div class="admin-content-image-editor" id="admin-content-image-editor">
+                                {
+                                  bitsImageRows.map((image, index) => (
+                                    <div class="admin-content-image-row" data-admin-content-image-row>
+                                      <div class="admin-content-image-row__head">
+                                        <strong class="admin-content-image-row__title">图片 #{index + 1}</strong>
+                                        <button
+                                          class="admin-btn admin-btn--ghost admin-content-image-row__remove"
+                                          type="button"
+                                          data-admin-content-image-remove
+                                        >
+                                          移除
+                                        </button>
+                                      </div>
+                                      <div class="admin-content-image-row__grid">
+                                        <div class="admin-content-image-row__field admin-content-image-row__field--src" data-field-path={`images[${index}].src`}>
+                                          <span class="admin-field__label">src</span>
+                                          <div class="admin-content-image-row__src-inputs">
+                                            <input
+                                              type="text"
+                                              value={image.src}
+                                              spellcheck="false"
+                                              placeholder="bits/demo.webp 或 https://..."
+                                              data-admin-content-image-src
+                                            />
+                                            <button
+                                              class="admin-btn admin-btn--ghost"
+                                              type="button"
+                                              data-admin-content-image-pick
+                                            >
+                                              选择本地图片
+                                            </button>
+                                          </div>
+                                          <p class="admin-content-editor__error" data-field-error={`images[${index}].src`} hidden></p>
+                                        </div>
+                                        <label class="admin-content-image-row__field" data-field-path={`images[${index}].width`}>
+                                          <span class="admin-field__label">width</span>
+                                          <input type="number" min="1" step="1" value={image.width} data-admin-content-image-width />
+                                          <p class="admin-content-editor__error" data-field-error={`images[${index}].width`} hidden></p>
+                                        </label>
+                                        <label class="admin-content-image-row__field" data-field-path={`images[${index}].height`}>
+                                          <span class="admin-field__label">height</span>
+                                          <input type="number" min="1" step="1" value={image.height} data-admin-content-image-height />
+                                          <p class="admin-content-editor__error" data-field-error={`images[${index}].height`} hidden></p>
+                                        </label>
+                                        <label class="admin-content-image-row__field admin-content-image-row__field--alt">
+                                          <span class="admin-field__label">alt（可选）</span>
+                                          <input type="text" value={image.alt} data-admin-content-image-alt />
+                                        </label>
+                                      </div>
+                                      <div class="admin-content-image-row__footer">
+                                        <p class="admin-content-image-row__meta" data-admin-content-image-meta>等待选择图片或输入路径</p>
+                                        <div class="admin-content-image-row__preview" data-admin-content-image-preview hidden>
+                                          <img alt="" loading="lazy" decoding="async" data-admin-content-image-preview-img />
+                                        </div>
+                                      </div>
+                                    </div>
+                                  ))
+                                }
+                              </div>
+                              <template id="admin-content-image-row-template">
+                                <div class="admin-content-image-row" data-admin-content-image-row>
+                                  <div class="admin-content-image-row__head">
+                                    <strong class="admin-content-image-row__title">图片</strong>
+                                    <button
+                                      class="admin-btn admin-btn--ghost admin-content-image-row__remove"
+                                      type="button"
+                                      data-admin-content-image-remove
+                                    >
+                                      移除
+                                    </button>
+                                  </div>
+                                  <div class="admin-content-image-row__grid">
+                                    <div class="admin-content-image-row__field admin-content-image-row__field--src" data-field-path="images[0].src">
+                                      <span class="admin-field__label">src</span>
+                                      <div class="admin-content-image-row__src-inputs">
+                                        <input
+                                          type="text"
+                                          spellcheck="false"
+                                          placeholder="bits/demo.webp 或 https://..."
+                                          data-admin-content-image-src
+                                        />
+                                        <button
+                                          class="admin-btn admin-btn--ghost"
+                                          type="button"
+                                          data-admin-content-image-pick
+                                        >
+                                          选择本地图片
+                                        </button>
+                                      </div>
+                                      <p class="admin-content-editor__error" data-field-error="images[0].src" hidden></p>
+                                    </div>
+                                    <label class="admin-content-image-row__field" data-field-path="images[0].width">
+                                      <span class="admin-field__label">width</span>
+                                      <input type="number" min="1" step="1" data-admin-content-image-width />
+                                      <p class="admin-content-editor__error" data-field-error="images[0].width" hidden></p>
+                                    </label>
+                                    <label class="admin-content-image-row__field" data-field-path="images[0].height">
+                                      <span class="admin-field__label">height</span>
+                                      <input type="number" min="1" step="1" data-admin-content-image-height />
+                                      <p class="admin-content-editor__error" data-field-error="images[0].height" hidden></p>
+                                    </label>
+                                    <label class="admin-content-image-row__field admin-content-image-row__field--alt">
+                                      <span class="admin-field__label">alt（可选）</span>
+                                      <input type="text" data-admin-content-image-alt />
+                                    </label>
+                                  </div>
+                                  <div class="admin-content-image-row__footer">
+                                    <p class="admin-content-image-row__meta" data-admin-content-image-meta>等待选择图片或输入路径</p>
+                                    <div class="admin-content-image-row__preview" data-admin-content-image-preview hidden>
+                                      <img alt="" loading="lazy" decoding="async" data-admin-content-image-preview-img />
+                                    </div>
+                                  </div>
+                                </div>
+                              </template>
+                            </div>
 
                             <div class="admin-content-editor__toggles">
                               <label class="admin-toggle-row">
@@ -697,6 +863,7 @@ const activeFilterCount = pageData
       )
     }
   </AdminShell>
+  {isDev ? <AdminMediaPicker listEndpoint={adminMediaListEndpoint} metaEndpoint={adminMediaMetaEndpoint} /> : null}
 
   {
     isDev && contentDevState?.adminContentScriptHref ? (

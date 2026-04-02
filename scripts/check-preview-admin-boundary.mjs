@@ -6,6 +6,7 @@ import { pathToFileURL } from 'node:url';
 import { preview } from 'astro';
 import {
   assertAdminContentStaticResponse,
+  assertAdminMediaStaticResponse,
   assertAdminSettingsStaticResponse,
   expect,
   findAvailablePort,
@@ -100,10 +101,11 @@ const assertAdminOverviewShell = (label, response, options = {}) => {
   );
   expect(response.body.includes('Admin Console'), `${label} is missing the admin overview heading`);
   expect(response.body.includes('/admin/theme/'), `${label} is missing the theme route link`);
+  expect(response.body.includes('/admin/media/'), `${label} is missing the media route link`);
   expect(!response.body.includes('data-admin-root'), `${label} should not mount the theme form root`);
   expect(!response.body.includes('id="admin-bootstrap"'), `${label} should not emit theme bootstrap payload`);
   if (expectDevChecksSummary) {
-    expect(response.body.includes('Settings 读写'), `${label} is missing the live settings check summary`);
+    expect(response.body.includes('打开 Checks Console'), `${label} is missing the checks console action`);
     expect(response.body.includes('check:preview-admin'), `${label} is missing the admin boundary command hint`);
   }
 };
@@ -130,6 +132,28 @@ const assertReadonlyAdminDataShell = (label, response) => {
   expect(response.body.includes('/admin/'), `${label} is missing the overview route link`);
   expect(!response.body.includes('data-admin-data-root'), `${label} should stay readonly outside dev`);
   expect(!response.body.includes('id="admin-data-bootstrap"'), `${label} should not emit data bootstrap payload outside dev`);
+};
+
+const assertReadonlyAdminChecksShell = (label, response) => {
+  expect(response.status === 200, `${label} returned ${response.status}`);
+  expect(
+    response.contentType.toLowerCase().includes('text/html'),
+    `${label} did not return HTML`
+  );
+  expect(response.body.includes('Checks Console'), `${label} is missing the checks heading`);
+  expect(response.body.includes('/admin/'), `${label} is missing the overview route link`);
+};
+
+const assertReadonlyAdminMediaShell = (label, response) => {
+  expect(response.status === 200, `${label} returned ${response.status}`);
+  expect(
+    response.contentType.toLowerCase().includes('text/html'),
+    `${label} did not return HTML`
+  );
+  expect(response.body.includes('Media Console'), `${label} is missing the media heading`);
+  expect(response.body.includes('/admin/'), `${label} is missing the overview route link`);
+  expect(!response.body.includes('data-admin-media-root'), `${label} should stay readonly outside dev`);
+  expect(!response.body.includes('id="admin-media-bootstrap"'), `${label} should not emit media bootstrap payload outside dev`);
 };
 
 const assertReadonlyAdminContentShell = (label, response, linkHref) => {
@@ -178,6 +202,29 @@ const assertAdminDataDevShell = (label, response) => {
   expect(response.body.includes('导出 settings 快照'), `${label} is missing the export action`);
 };
 
+const assertAdminChecksDevShell = (label, response) => {
+  expect(response.status === 200, `${label} returned ${response.status}`);
+  expect(
+    response.contentType.toLowerCase().includes('text/html'),
+    `${label} did not return HTML`
+  );
+  expect(response.body.includes('Checks Console'), `${label} is missing the checks heading`);
+  expect(response.body.includes('当前源文件诊断概览'), `${label} is missing the checks summary copy`);
+  expect(response.body.includes('/admin/content/'), `${label} is missing the content route link`);
+};
+
+const assertAdminMediaDevShell = (label, response) => {
+  expect(response.status === 200, `${label} returned ${response.status}`);
+  expect(
+    response.contentType.toLowerCase().includes('text/html'),
+    `${label} did not return HTML`
+  );
+  expect(response.body.includes('Media Console'), `${label} is missing the media heading`);
+  expect(response.body.includes('data-admin-media-root'), `${label} is missing the media console root`);
+  expect(response.body.includes('id="admin-media-bootstrap"'), `${label} is missing the media bootstrap payload`);
+  expect(response.body.includes('最小媒体浏览器'), `${label} is missing the phase 4B copy`);
+};
+
 const stopProcess = async (child) => {
   if (!child || child.exitCode !== null) return;
 
@@ -216,10 +263,14 @@ export const runPreviewAdminBoundaryCheck = async () => {
     const adminThemeResponse = await request(baseUrl, '/admin/theme/');
     const adminContentResponse = await request(baseUrl, '/admin/content/');
     const adminEssayContentResponse = await request(baseUrl, '/admin/content/essay/');
+    const adminMediaResponse = await request(baseUrl, '/admin/media/');
+    const adminChecksResponse = await request(baseUrl, '/admin/checks/');
     const adminDataResponse = await request(baseUrl, '/admin/data/');
     const getResponse = await request(baseUrl, '/api/admin/settings/');
     const exportResponse = await request(baseUrl, '/api/admin/data/settings/');
     const contentGetResponse = await request(baseUrl, '/api/admin/content/entry/');
+    const mediaListResponse = await request(baseUrl, '/api/admin/media/list/');
+    const mediaMetaResponse = await request(baseUrl, '/api/admin/media/meta/');
     const contentPostResponse = await request(baseUrl, '/api/admin/content/entry/', {
       method: 'POST',
       headers: {
@@ -246,10 +297,14 @@ export const runPreviewAdminBoundaryCheck = async () => {
     assertReadonlyAdminThemeShell('Preview GET /admin/theme/', adminThemeResponse);
     assertReadonlyAdminContentShell('Preview GET /admin/content/', adminContentResponse, '/admin/');
     assertReadonlyAdminContentShell('Preview GET /admin/content/essay/', adminEssayContentResponse, '/admin/content/');
+    assertReadonlyAdminMediaShell('Preview GET /admin/media/', adminMediaResponse);
+    assertReadonlyAdminChecksShell('Preview GET /admin/checks/', adminChecksResponse);
     assertReadonlyAdminDataShell('Preview GET /admin/data/', adminDataResponse);
     assertAdminSettingsStaticResponse('GET /api/admin/settings/', getResponse);
     assertAdminSettingsStaticResponse('GET /api/admin/data/settings/', exportResponse, '/api/admin/data/settings/');
     assertAdminContentStaticResponse('GET /api/admin/content/entry/', contentGetResponse);
+    assertAdminMediaStaticResponse('GET /api/admin/media/list/', mediaListResponse, '/api/admin/media/list/');
+    assertAdminMediaStaticResponse('GET /api/admin/media/meta/', mediaMetaResponse, '/api/admin/media/meta/');
     assertAdminContentStaticResponse('POST /api/admin/content/entry/', contentPostResponse);
     assertAdminSettingsStaticResponse('POST /api/admin/settings/', postResponse);
     console.log('Preview admin boundary check passed.');
@@ -300,8 +355,18 @@ export const runDevAdminSettingsSmokeCheck = async () => {
     expect(payload.settings && typeof payload.settings === 'object', 'Dev payload settings snapshot is missing');
 
     const exportResponse = await request(baseUrl, '/api/admin/data/settings/');
+    const mediaListResponse = await waitForJsonApiReady(
+      baseUrl,
+      '/api/admin/media/list/?field=bits.images&page=1&limit=10'
+    );
+    const mediaMetaResponse = await waitForJsonApiReady(
+      baseUrl,
+      '/api/admin/media/meta/?field=home.heroImageSrc&value=src/assets/hero.png'
+    );
     const contentOverviewResponse = await request(baseUrl, '/admin/content/');
     const contentEssayResponse = await request(baseUrl, '/admin/content/essay/');
+    const mediaResponse = await request(baseUrl, '/admin/media/');
+    const checksResponse = await request(baseUrl, '/admin/checks/');
     expect(exportResponse.status === 200, `Dev GET /api/admin/data/settings/ returned ${exportResponse.status}`);
     expect(
       exportResponse.contentType.toLowerCase().includes('application/json'),
@@ -313,11 +378,38 @@ export const runDevAdminSettingsSmokeCheck = async () => {
       && exportResponse.json.manifest.includedScopes.includes('settings'),
       'Dev export manifest is missing includedScopes=settings'
     );
+    expect(mediaListResponse.status === 200, `Dev GET /api/admin/media/list/ returned ${mediaListResponse.status}`);
+    expect(
+      mediaListResponse.contentType.toLowerCase().includes('application/json'),
+      'Dev GET /api/admin/media/list/ did not return JSON'
+    );
+    expect(mediaListResponse.json?.ok === true, 'Dev GET /api/admin/media/list/ did not return ok=true');
+    expect(
+      Array.isArray(mediaListResponse.json?.result?.items) && mediaListResponse.json.result.items.length > 0,
+      'Dev GET /api/admin/media/list/ did not return any media items'
+    );
+    expect(mediaMetaResponse.status === 200, `Dev GET /api/admin/media/meta/ returned ${mediaMetaResponse.status}`);
+    expect(
+      mediaMetaResponse.contentType.toLowerCase().includes('application/json'),
+      'Dev GET /api/admin/media/meta/ did not return JSON'
+    );
+    expect(mediaMetaResponse.json?.ok === true, 'Dev GET /api/admin/media/meta/ did not return ok=true');
+    expect(mediaMetaResponse.json?.result?.kind === 'local', 'Dev GET /api/admin/media/meta/ did not resolve a local image');
+    expect(
+      typeof mediaMetaResponse.json?.result?.width === 'number' && mediaMetaResponse.json.result.width > 0,
+      'Dev GET /api/admin/media/meta/ did not return a valid width'
+    );
+    expect(
+      typeof mediaMetaResponse.json?.result?.height === 'number' && mediaMetaResponse.json.result.height > 0,
+      'Dev GET /api/admin/media/meta/ did not return a valid height'
+    );
     expect(contentOverviewResponse.status === 200, `Dev GET /admin/content/ returned ${contentOverviewResponse.status}`);
     expect(contentOverviewResponse.body.includes('Content Console'), 'Dev GET /admin/content/ is missing the content heading');
     expect(contentOverviewResponse.body.includes('/admin/content/essay/'), 'Dev GET /admin/content/ is missing the essay route link');
     expect(contentEssayResponse.status === 200, `Dev GET /admin/content/essay/ returned ${contentEssayResponse.status}`);
     expect(contentEssayResponse.body.includes('data-admin-content-root'), 'Dev GET /admin/content/essay/ did not mount the content console root');
+    assertAdminMediaDevShell('Dev GET /admin/media/', mediaResponse);
+    assertAdminChecksDevShell('Dev GET /admin/checks/', checksResponse);
     expect(contentEssayResponse.body.includes('entry.id'), 'Dev GET /admin/content/essay/ is missing readonly detail metadata');
     expect(contentEssayResponse.body.includes('复制路径'), 'Dev GET /admin/content/essay/ is missing the copy-path action');
     expect(
@@ -383,11 +475,13 @@ export const runDevAdminSettingsSmokeCheck = async () => {
 
     const adminOverviewResponse = await request(baseUrl, '/admin/');
     const adminThemeResponse = await request(baseUrl, '/admin/theme/');
+    const adminMediaResponse = await request(baseUrl, '/admin/media/');
     const adminDataResponse = await request(baseUrl, '/admin/data/');
     assertAdminOverviewShell('Dev GET /admin/', adminOverviewResponse, {
       expectDevChecksSummary: true
     });
     assertAdminThemeDevBootstrapSafe('Dev GET /admin/theme/', adminThemeResponse);
+    assertAdminMediaDevShell('Dev GET /admin/media/', adminMediaResponse);
     assertAdminDataDevShell('Dev GET /admin/data/', adminDataResponse);
 
     console.log('Dev admin settings smoke check passed.');

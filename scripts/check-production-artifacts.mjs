@@ -3,6 +3,7 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import {
   assertAdminContentStaticShell,
+  assertAdminMediaStaticShell,
   assertAdminSettingsStaticShell,
   expect
 } from './smoke-utils.mjs';
@@ -39,12 +40,16 @@ export const runProductionArtifactCheck = async (options = {}) => {
     'dist/admin/content/essay/index.html',
     'dist/admin/content/bits/index.html',
     'dist/admin/content/memo/index.html',
+    'dist/admin/media/index.html',
+    'dist/admin/checks/index.html',
     'dist/bits/index.html',
     'dist/admin/data/index.html',
     'dist/admin/theme/index.html',
     'dist/api/admin/settings',
     'dist/api/admin/data/settings',
-    'dist/api/admin/content/entry'
+    'dist/api/admin/content/entry',
+    'dist/api/admin/media/list',
+    'dist/api/admin/media/meta'
   ];
 
   for (const artifactPath of requiredArtifacts) {
@@ -65,6 +70,8 @@ export const runProductionArtifactCheck = async (options = {}) => {
   expect(!sitemapXml.includes('/admin/'), 'Admin route leaked into sitemap');
   expect(!sitemapXml.includes('/admin/theme/'), 'Admin theme route leaked into sitemap');
   expect(!sitemapXml.includes('/admin/content/'), 'Admin content route leaked into sitemap');
+  expect(!sitemapXml.includes('/admin/media/'), 'Admin media route leaked into sitemap');
+  expect(!sitemapXml.includes('/admin/checks/'), 'Admin checks route leaked into sitemap');
   expect(!sitemapXml.includes('/admin/data/'), 'Admin data route leaked into sitemap');
   expect(
     !sitemapXml.includes(`${siteUrl}/bits/draft-dialog/`),
@@ -95,6 +102,8 @@ export const runProductionArtifactCheck = async (options = {}) => {
   const adminContentEssayHtml = readText('dist/admin/content/essay/index.html');
   const adminContentBitsHtml = readText('dist/admin/content/bits/index.html');
   const adminContentMemoHtml = readText('dist/admin/content/memo/index.html');
+  const adminMediaHtml = readText('dist/admin/media/index.html');
+  const adminChecksHtml = readText('dist/admin/checks/index.html');
   const adminThemeHtml = readText('dist/admin/theme/index.html');
   const adminDataHtml = readText('dist/admin/data/index.html');
   const readonlyAdminHtmlChecks = [
@@ -103,6 +112,8 @@ export const runProductionArtifactCheck = async (options = {}) => {
     ['dist/admin/content/essay/index.html', adminContentEssayHtml, 'Content Console', '/admin/content/'],
     ['dist/admin/content/bits/index.html', adminContentBitsHtml, 'Content Console', '/admin/content/'],
     ['dist/admin/content/memo/index.html', adminContentMemoHtml, 'Content Console', '/admin/content/'],
+    ['dist/admin/media/index.html', adminMediaHtml, 'Media Console', '/admin/'],
+    ['dist/admin/checks/index.html', adminChecksHtml, 'Checks Console', '/admin/'],
     ['dist/admin/theme/index.html', adminThemeHtml, 'Theme Console', '/admin/'],
     ['dist/admin/data/index.html', adminDataHtml, 'Data Console', '/admin/']
   ];
@@ -113,6 +124,8 @@ export const runProductionArtifactCheck = async (options = {}) => {
     expect(!html.includes('data-admin-root'), `${filePath} should stay readonly outside dev`);
     expect(!html.includes('id="admin-bootstrap"'), `${filePath} should not emit theme bootstrap payload`);
     expect(!html.includes('data-admin-content-root'), `${filePath} should not emit content console payload`);
+    expect(!html.includes('data-admin-media-root'), `${filePath} should not emit media console payload`);
+    expect(!html.includes('id="admin-media-bootstrap"'), `${filePath} should not emit media bootstrap payload`);
     expect(!/index@_@astro\.[^"]+\.css/.test(html), `${filePath} still links admin-only CSS`);
     expect(
       !/<script type="module" src="\/_astro\/[^"]+"><\/script>/.test(html),
@@ -291,6 +304,18 @@ export const runProductionArtifactCheck = async (options = {}) => {
     'dist/api/admin/content/entry',
     adminContentEntryArtifact,
     '/api/admin/content/entry/'
+  );
+  const adminMediaListArtifact = readText('dist/api/admin/media/list');
+  assertAdminMediaStaticShell(
+    'dist/api/admin/media/list',
+    adminMediaListArtifact,
+    '/api/admin/media/list/'
+  );
+  const adminMediaMetaArtifact = readText('dist/api/admin/media/meta');
+  assertAdminMediaStaticShell(
+    'dist/api/admin/media/meta',
+    adminMediaMetaArtifact,
+    '/api/admin/media/meta/'
   );
 
   console.log('Production artifact verification passed.');

@@ -1,0 +1,50 @@
+---
+interface Props {
+  listEndpoint: string;
+  metaEndpoint: string;
+}
+
+const { listEndpoint, metaEndpoint } = Astro.props;
+---
+
+<dialog
+  class="admin-media-picker"
+  data-admin-media-picker
+  data-list-endpoint={listEndpoint}
+  data-meta-endpoint={metaEndpoint}
+>
+  <div class="admin-media-picker__surface">
+    <div class="admin-media-picker__header">
+      <div class="admin-media-picker__copy">
+        <p class="admin-media-picker__eyebrow">Media Picker</p>
+        <h2 class="admin-media-picker__title" data-admin-media-picker-title>选择本地图片</h2>
+        <p class="admin-media-picker__description" data-admin-media-picker-description hidden></p>
+      </div>
+      <button class="admin-btn admin-btn--ghost" type="button" data-admin-media-picker-close>关闭</button>
+    </div>
+
+    <div class="admin-media-picker__toolbar">
+      <label class="admin-field admin-media-picker__search">
+        <span class="admin-field__label">搜索路径或文件名</span>
+        <input
+          type="search"
+          inputmode="search"
+          autocomplete="off"
+          placeholder="例如：hero / avatar / bits-demo"
+          data-admin-media-picker-query
+        />
+      </label>
+      <p class="admin-media-picker__status" data-admin-media-picker-status>等待加载</p>
+    </div>
+
+    <ul class="admin-media-picker__results" data-admin-media-picker-results></ul>
+
+    <div class="admin-media-picker__footer">
+      <p class="admin-media-picker__page" data-admin-media-picker-page>第 1 / 1 页</p>
+      <div class="admin-media-picker__actions">
+        <button class="admin-btn admin-btn--ghost" type="button" data-admin-media-picker-prev>上一页</button>
+        <button class="admin-btn admin-btn--ghost" type="button" data-admin-media-picker-next>下一页</button>
+      </div>
+    </div>
+  </div>
+</dialog>

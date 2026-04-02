@@ -5,9 +5,9 @@ import path from 'node:path';
 import {
   formatISODateUtc,
   getBitsAvatarLocalFilePath,
-  normalizeBitsAvatarPath,
-  toSafeHttpUrl
+  normalizeBitsAvatarPath
 } from '../../utils/format';
+import { normalizeAdminBitsImageSource } from './media-shared';
 import {
   ESSAY_PUBLIC_SLUG_RE,
   RESERVED_ESSAY_SLUGS,
@@ -149,8 +149,6 @@ type AdminWritePlan = {
 };
 
 const DATE_ONLY_RE = /^\d{4}-\d{2}-\d{2}$/;
-const IMAGE_LOCAL_EXT_RE = /\.(?:avif|gif|jpe?g|png|svg|webp)$/i;
-
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
 
@@ -296,30 +294,7 @@ const parseAdminBitsEditorInput = (
   return issues.length > 0 ? { issues } : { values, issues };
 };
 
-const normalizeLocalImageSource = (value: string): string | null => {
-  const normalized = value.trim().replace(/\\/g, '/').replace(/^\.\/+/, '');
-  if (
-    !normalized
-    || normalized.startsWith('/')
-    || normalized.startsWith('//')
-    || normalized.startsWith('public/')
-    || /(^|\/)\.\.(?:\/|$)/.test(normalized)
-    || normalized.includes('?')
-    || normalized.includes('#')
-  ) {
-    return null;
-  }
-
-  return IMAGE_LOCAL_EXT_RE.test(normalized) ? normalized : null;
-};
-
-const normalizeBitsImageSource = (value: string): string | null => {
-  const safeRemoteUrl = toSafeHttpUrl(value);
-  if (safeRemoteUrl && safeRemoteUrl.startsWith('https://')) return safeRemoteUrl;
-  return normalizeLocalImageSource(value);
-};
-
-const resolveCollectionEntryIdFromSourcePath = (
+export const resolveAdminContentEntryIdFromSourcePath = (
   collection: AdminContentCollectionKey,
   filePath: string
 ): string => {
@@ -333,7 +308,9 @@ const resolveCollectionEntryIdFromSourcePath = (
   return relative.replace(/\.(md|mdx)$/i, '');
 };
 
-const listCollectionSourceFiles = async (collection: AdminContentCollectionKey): Promise<string[]> => {
+export const listAdminCollectionSourceFiles = async (
+  collection: AdminContentCollectionKey
+): Promise<string[]> => {
   const root = getCollectionRoot(collection);
   if (!existsSync(root)) return [];
 
@@ -354,7 +331,9 @@ const listCollectionSourceFiles = async (collection: AdminContentCollectionKey):
   return walk(root);
 };
 
-const readSourceFrontmatterRecord = async (filePath: string): Promise<Record<string, unknown>> => {
+export const readAdminSourceFrontmatterRecord = async (
+  filePath: string
+): Promise<Record<string, unknown>> => {
   const sourceText = await readFile(filePath, 'utf8');
   const section = splitMarkdownFrontmatter(sourceText);
   const document = parseMarkdownFrontmatterDocument(section.frontmatterText);
@@ -399,12 +378,12 @@ const validateEssayPublicSlug = async (
   }
 
   try {
-    const essayFiles = await listCollectionSourceFiles('essay');
+    const essayFiles = await listAdminCollectionSourceFiles('essay');
     for (const filePath of essayFiles) {
-      const candidateEntryId = resolveCollectionEntryIdFromSourcePath('essay', filePath);
+      const candidateEntryId = resolveAdminContentEntryIdFromSourcePath('essay', filePath);
       if (candidateEntryId === state.entryId) continue;
 
-      const frontmatterRecord = await readSourceFrontmatterRecord(filePath);
+      const frontmatterRecord = await readAdminSourceFrontmatterRecord(filePath);
       const candidateSlug = resolveEssayPublicSlug(candidateEntryId, normalizeOptionalText(frontmatterRecord.slug));
       if (candidateSlug === publicSlug) {
         issues.push(
@@ -602,23 +581,23 @@ const parseBitsImages = (value: string): { images?: AdminBitsImage[]; issues: Ad
 
   parsed.forEach((item, index) => {
     if (!isRecord(item)) {
-      issues.push(createIssue('imagesText', `images[${index}] 必须是对象`));
+      issues.push(createIssue(`images[${index}]`, `images[${index}] 必须是对象`));
       return;
     }
 
     const src = normalizeOptionalText(item.src);
-    const normalizedSrc = normalizeBitsImageSource(src);
+    const normalizedSrc = normalizeAdminBitsImageSource(src);
     if (!normalizedSrc) {
-      issues.push(createIssue('imagesText', `images[${index}].src 只允许 https:// 远程路径或仓库内相对图片路径`));
+      issues.push(createIssue(`images[${index}].src`, `images[${index}].src 只允许 https:// 远程路径或仓库内相对图片路径`));
     }
 
     const width = typeof item.width === 'number' ? item.width : Number.parseInt(String(item.width ?? ''), 10);
     const height = typeof item.height === 'number' ? item.height : Number.parseInt(String(item.height ?? ''), 10);
     if (!Number.isInteger(width) || width <= 0) {
-      issues.push(createIssue('imagesText', `images[${index}].width 必须是正整数`));
+      issues.push(createIssue(`images[${index}].width`, `images[${index}].width 必须是正整数`));
     }
     if (!Number.isInteger(height) || height <= 0) {
-      issues.push(createIssue('imagesText', `images[${index}].height 必须是正整数`));
+      issues.push(createIssue(`images[${index}].height`, `images[${index}].height 必须是正整数`));
     }
 
     if (!normalizedSrc || !Number.isInteger(width) || width <= 0 || !Number.isInteger(height) || height <= 0) {

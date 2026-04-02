@@ -1,11 +1,14 @@
 ---
 import AdminLayout from '../../../components/admin/AdminLayout.astro';
+import AdminMediaPicker from '../../../components/admin/AdminMediaPicker.astro';
 import AdminShell from '../../../components/admin/AdminShell.astro';
 import { createWithBase } from '../../../utils/format';
 
 const isDev = import.meta.env.DEV;
 const base = import.meta.env.BASE_URL ?? '/';
 const withBase = createWithBase(base);
+const adminMediaListEndpoint = withBase('/api/admin/media/list');
+const adminMediaMetaEndpoint = withBase('/api/admin/media/meta');
 
 const loadThemeDevState = async () => {
   const [
@@ -225,6 +228,7 @@ const AdminUiSection = adminDevState?.AdminUiSection;
       )
     }
   </AdminShell>
+  {isDev ? <AdminMediaPicker listEndpoint={adminMediaListEndpoint} metaEndpoint={adminMediaMetaEndpoint} /> : null}
 
   {
     isDev && adminDevState?.adminConsoleScriptHref ? (

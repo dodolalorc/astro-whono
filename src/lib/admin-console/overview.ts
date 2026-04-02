@@ -7,11 +7,8 @@ import {
   getSortedBits,
   type BitsEntry
 } from '../bits';
+import { getAdminChecksData } from './checks';
 import { getEssaySlug, getSortedEssays, type EssayEntry } from '../content';
-import {
-  getEditableThemeSettingsState,
-  type ThemeSettingsEditableState
-} from '../theme-settings';
 import { formatDateTime, formatISODate, formatISODateUtc } from '../../utils/format';
 
 export type AdminOverviewCollectionKey = 'essay' | 'bits' | 'memo';
@@ -38,7 +35,7 @@ export type AdminOverviewRecentEntry = {
 export type AdminOverviewCheckStatus = 'ready' | 'manual' | 'blocked';
 
 export type AdminOverviewCheckItem = {
-  id: 'settings' | 'data' | 'boundary' | 'workflow';
+  id: string;
   label: string;
   status: AdminOverviewCheckStatus;
   statusLabel: string;
@@ -124,85 +121,44 @@ const getRecentMemoEntry = (entry: MemoEntry): AdminOverviewRecentEntry => ({
 });
 
 export const createAdminOverviewChecksSummary = (
-  editableState: ThemeSettingsEditableState
+  checksData: Awaited<ReturnType<typeof getAdminChecksData>>
 ): AdminOverviewChecksSummary => {
-  const items: AdminOverviewCheckItem[] = editableState.ok
-    ? [
-        {
-          id: 'settings',
-          label: 'Settings 读写',
-          status: 'ready',
-          statusLabel: CHECK_STATUS_LABELS.ready,
-          summary: '当前 settings JSON 可读可写，Theme Console 仍沿用 revision 与事务写盘链路。',
-          detail: '若外部改动了本地 settings，服务端会返回最新 revision，阻止静默覆盖。',
-          command: null
-        },
-        {
-          id: 'data',
-          label: 'Data Console',
-          status: 'ready',
-          statusLabel: CHECK_STATUS_LABELS.ready,
-          summary: 'settings 快照可导出，导入会先走 schema 校验、dry-run 与变更预览。',
-          detail: '导入与确认写入继续复用 `/api/admin/settings/`，不额外发明新的写盘协议。',
-          command: 'GET /api/admin/data/settings/'
-        },
-        {
-          id: 'boundary',
-          label: '后台边界',
-          status: 'manual',
-          statusLabel: CHECK_STATUS_LABELS.manual,
-          summary: 'preview / production 继续保持只读，发布前仍需复跑后台边界检查。',
-          detail: '这条检查会覆盖 `/admin/`、`/admin/theme/`、`/admin/data/` 与 admin API 的只读边界。',
-          command: 'npm run check:preview-admin && npm run check:prod-artifacts'
-        },
-        {
-          id: 'workflow',
-          label: '构建前基线',
-          status: 'manual',
-          statusLabel: CHECK_STATUS_LABELS.manual,
-          summary: '代码与导入导出改动仍以 CLI 校验链为准，不在 Overview 内重复实现一套诊断器。',
-          detail: '提交前至少执行类型检查、单测与构建，确保后台改动不破坏公开站点产物。',
-          command: 'npm run check && npm test && npm run build'
-        }
-      ]
-    : [
-        {
-          id: 'settings',
-          label: 'Settings 读写',
-          status: 'blocked',
-          statusLabel: CHECK_STATUS_LABELS.blocked,
-          summary: '当前处于 invalid-settings 保护态，Theme Console 已暂停写入。',
-          detail: editableState.errors[0] ?? '需先修复 `src/data/settings/*.json` 结构错误后再继续。',
-          command: null
-        },
-        {
-          id: 'data',
-          label: 'Data Console',
-          status: 'blocked',
-          statusLabel: CHECK_STATUS_LABELS.blocked,
-          summary: '导入导出链路跟随 settings 保护态一起暂停，避免绕过现有事务与校验边界。',
-          detail: '先修复本地 settings JSON，再重新执行导出、dry-run 与确认写入。',
-          command: null
-        },
-        {
-          id: 'boundary',
-          label: '后台边界',
-          status: 'manual',
-          statusLabel: CHECK_STATUS_LABELS.manual,
-          summary: 'preview / production 仍需保持只读，发布前继续复跑后台边界检查。',
-          detail: '修复 settings 后，也要确认 `/admin` 与 admin API 没有在静态产物中泄露可写能力。',
-          command: 'npm run check:preview-admin && npm run check:prod-artifacts'
-        },
-        {
-          id: 'workflow',
-          label: '构建前基线',
-          status: 'manual',
-          statusLabel: CHECK_STATUS_LABELS.manual,
-          summary: '当前 CLI 校验链仍是最终准入门槛，Overview 只负责展示维护摘要，不取代 CI。',
-          detail: '修复 settings 结构问题后，再继续执行类型检查、单测与构建。',
-          command: 'npm run check && npm test && npm run build'
-        }
-      ];
+  const items: AdminOverviewCheckItem[] = [
+    ...checksData.categories.map((category) => {
+      const status: AdminOverviewCheckStatus = category.issueCount > 0 ? 'blocked' : 'ready';
+      return {
+        id: category.id,
+        label: category.label,
+        status,
+        statusLabel: CHECK_STATUS_LABELS[status],
+        summary: category.issueCount > 0
+          ? `发现 ${category.issueCount} 个问题，建议进入 Checks Console 逐项处理。`
+          : '当前分类未发现结构化问题。',
+        detail: category.issueCount > 0
+          ? category.issues[0]?.message ?? category.description
+          : category.description,
+        command: null
+      };
+    }),
+    {
+      id: 'boundary',
+      label: '后台边界',
+      status: 'manual' as const,
+      statusLabel: CHECK_STATUS_LABELS.manual,
+      summary: 'preview / production 继续保持只读，新增后台子路由后仍需复跑边界检查。',
+      detail: '发布前请确认 `/admin/`、`/admin/media/`、`/admin/checks/` 与 admin API 没有在静态产物中泄露可写能力。',
+      command: 'npm run check:preview-admin && npm run check:prod-artifacts'
+    },
+    {
+      id: 'workflow',
+      label: '构建前基线',
+      status: 'manual' as const,
+      statusLabel: CHECK_STATUS_LABELS.manual,
+      summary: 'Checks Console 只覆盖源文件层高价值问题，最终准入仍以 CLI 校验链为准。',
+      detail: '提交前至少执行类型检查、单测与构建，确保后台改动不破坏公开站点产物。',
+      command: 'npm run check && npm test && npm run build'
+    }
+  ];
 
   const readyCount = items.filter((item) => item.status === 'ready').length;
   const manualCount = items.filter((item) => item.status === 'manual').length;
@@ -212,23 +168,23 @@ export const createAdminOverviewChecksSummary = (
     readyCount,
     manualCount,
     blockedCount,
-    statusLine: blockedCount > 0
-      ? `当前有 ${blockedCount} 项阻塞，${readyCount} 项就绪，${manualCount} 项需手动复核。`
-      : `当前 ${readyCount} 项已就绪，${manualCount} 项需在提交前手动复核。`,
-    footer: blockedCount > 0
-      ? '修复 settings 结构问题前，不要继续导入导出或宣告 Phase 1 已完全可用。'
-      : 'Phase 1 先展示当前维护检查摘要；完整结构化问题聚合与最近检查结果留待 Phase 3。',
+    statusLine: checksData.totalIssueCount > 0
+      ? `当前源文件层发现 ${checksData.totalIssueCount} 个问题，涉及 ${checksData.affectedPathCount} 个文件；另有 ${manualCount} 项 CLI 基线需手动复核。`
+      : `当前 ${checksData.readyCategoryCount} 个源文件分类已通过，另有 ${manualCount} 项 CLI 基线需在提交前手动复核。`,
+    footer: checksData.totalIssueCount > 0
+      ? '先处理 Checks Console 中的结构化问题，再执行 preview/build 基线，避免把本地已知问题带入发布链路。'
+      : 'Checks Console 当前未发现源文件层问题；提交前仍需执行 preview/build CLI 基线。',
     items
   };
 };
 
 export const getAdminOverviewData = async (): Promise<AdminOverviewData> => {
-  const [essays, bits, memos] = await Promise.all([
+  const [essays, bits, memos, checksData] = await Promise.all([
     getSortedEssays({ includeDraft: true }),
     getSortedBits(),
-    getCollection('memo').then((entries) => entries.slice().sort(orderByMemoDate))
+    getCollection('memo').then((entries) => entries.slice().sort(orderByMemoDate)),
+    getAdminChecksData()
   ]);
-  const editableSettingsState = getEditableThemeSettingsState();
 
   const collectionSummaries: AdminOverviewCollectionSummary[] = [
     {
@@ -264,6 +220,6 @@ export const getAdminOverviewData = async (): Promise<AdminOverviewData> => {
     totalCount: collectionSummaries.reduce((total, summary) => total + summary.totalCount, 0),
     totalDraftCount: collectionSummaries.reduce((total, summary) => total + summary.draftCount, 0),
     recentEntries,
-    checksSummary: createAdminOverviewChecksSummary(editableSettingsState)
+    checksSummary: createAdminOverviewChecksSummary(checksData)
   };
 };

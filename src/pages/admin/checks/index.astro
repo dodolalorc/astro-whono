@@ -1,0 +1,237 @@
+---
+import AdminLayout from '../../../components/admin/AdminLayout.astro';
+import AdminShell from '../../../components/admin/AdminShell.astro';
+import {
+  getAdminChecksData,
+  isAdminChecksCategoryId,
+  type AdminChecksCategoryId,
+  type AdminChecksFilterValue
+} from '../../../lib/admin-console/checks';
+import { createWithBase } from '../../../utils/format';
+
+const isDev = import.meta.env.DEV;
+const base = import.meta.env.BASE_URL ?? '/';
+const withBase = createWithBase(base);
+
+const selectedCategoryParam = Astro.url.searchParams.get('category')?.trim() ?? '';
+const selectedCategory: AdminChecksFilterValue = isAdminChecksCategoryId(selectedCategoryParam)
+  ? selectedCategoryParam
+  : 'all';
+
+const loadChecksDevState = async () => {
+  const { default: adminStylesHref } = await import('../../../styles/components/admin.css?url');
+
+  return {
+    adminStylesHref,
+    checks: await getAdminChecksData()
+  };
+};
+
+const checksDevState = isDev ? await loadChecksDevState() : null;
+const adminStylesHref = checksDevState?.adminStylesHref ?? null;
+const visibleCategories = checksDevState
+  ? (
+      selectedCategory === 'all'
+        ? checksDevState.checks.categories
+        : checksDevState.checks.categories.filter((category) => category.id === selectedCategory)
+    )
+  : [];
+
+const buildChecksHref = (category: AdminChecksFilterValue): string => {
+  const params = new URLSearchParams();
+  if (category !== 'all') params.set('category', category);
+  const query = params.toString();
+  return withBase(`/admin/checks/${query ? `?${query}` : ''}`);
+};
+---
+
+<AdminLayout title="Checks Console" stylesHref={adminStylesHref}>
+  <AdminShell
+    currentRoute="checks"
+    title="Checks Console"
+    subtitle="结构化诊断与发布前自检"
+    description={isDev
+      ? 'Phase 3 首批只聚合源文件层高价值诊断：settings 保护态、essay slug、bits 媒体路径与 tag 路由键；构建产物 smoke check 仍以 CLI 为主。'
+      : '当前环境仅保留 Checks Console 路由结构与只读说明；实际诊断扫描仍以本地开发环境为准。'}
+    modeLabel={isDev ? 'DEV 快速扫描' : '只读模式'}
+    modeHint={isDev
+      ? '当前页面直接复用现有校验链路与源文件扫描，不新增第二套 schema / CLI 规则系统。'
+      : 'preview / production 下不输出结构化诊断结果，也不替代发布前 CLI 校验。'}
+  >
+    {
+      isDev && checksDevState ? (
+        <section class="admin-overview admin-checks-console">
+          <article class="admin-overview-card admin-checks-toolbar">
+            <div class="admin-checks-toolbar__bar">
+              <div class="admin-checks-toolbar__copy">
+                <p class="admin-overview-card__eyebrow">Checks</p>
+                <h2 class="admin-overview-card__title">当前源文件诊断概览</h2>
+                <p class="admin-overview-card__body">
+                  当前共发现 {checksDevState.checks.totalIssueCount} 个问题，分布在 {checksDevState.checks.blockedCategoryCount} 个分类，
+                  涉及 {checksDevState.checks.affectedPathCount} 个文件。筛选仅影响展示，不会触发额外构建。
+                </p>
+              </div>
+              <div class="admin-overview-card__actions">
+                <a class="admin-btn admin-btn--ghost" href={withBase('/admin/')}>返回 Admin 首页</a>
+                <a class="admin-btn admin-btn--ghost" href={withBase('/admin/content/')}>打开 Content Console</a>
+              </div>
+            </div>
+
+            <div class="admin-content-switcher" role="tablist" aria-label="检查分类筛选">
+              <a
+                href={buildChecksHref('all')}
+                class:list={['admin-content-switcher__link', selectedCategory === 'all' && 'is-active']}
+                aria-current={selectedCategory === 'all' ? 'page' : undefined}
+              >
+                全部
+              </a>
+              {
+                checksDevState.checks.categories.map((category) => (
+                  <a
+                    href={buildChecksHref(category.id as AdminChecksCategoryId)}
+                    class:list={['admin-content-switcher__link', selectedCategory === category.id && 'is-active']}
+                    aria-current={selectedCategory === category.id ? 'page' : undefined}
+                  >
+                    {category.label}
+                    {category.issueCount > 0 ? ` (${category.issueCount})` : ''}
+                  </a>
+                ))
+              }
+            </div>
+
+            <div class="admin-metric-grid admin-checks-toolbar__metrics">
+              <section class="admin-metric-card">
+                <p class="admin-metric-card__label">Issues</p>
+                <p class="admin-metric-card__value">{checksDevState.checks.totalIssueCount}</p>
+                <p class="admin-metric-card__meta">当前发现的问题总数</p>
+              </section>
+              <section class="admin-metric-card">
+                <p class="admin-metric-card__label">Blocked</p>
+                <p class="admin-metric-card__value">{checksDevState.checks.blockedCategoryCount}</p>
+                <p class="admin-metric-card__meta">存在问题的分类数</p>
+              </section>
+              <section class="admin-metric-card">
+                <p class="admin-metric-card__label">Files</p>
+                <p class="admin-metric-card__value">{checksDevState.checks.affectedPathCount}</p>
+                <p class="admin-metric-card__meta">被命中的源文件数</p>
+              </section>
+            </div>
+          </article>
+
+          {
+            visibleCategories.map((category) => (
+              <article class="admin-overview-card admin-checks-category">
+                <div class="admin-checks-category__head">
+                  <div class="admin-checks-category__copy">
+                    <p class="admin-overview-card__eyebrow">{category.label}</p>
+                    <h2 class="admin-overview-card__title">{category.issueCount > 0 ? `${category.issueCount} 个待处理问题` : '当前分类已通过'}</h2>
+                    <p class="admin-overview-card__body">{category.description}</p>
+                  </div>
+                  <div class="admin-checks-category__badges">
+                    <span class="admin-badge">{category.statusLabel}</span>
+                    <span class="admin-badge">issue {category.issueCount}</span>
+                  </div>
+                </div>
+
+                {
+                  category.issueCount > 0 ? (
+                    <ul class="admin-checks-issue-list">
+                      {
+                        category.issues.map((issue) => (
+                          <li class="admin-checks-issue">
+                            <div class="admin-checks-issue__head">
+                              <div class="admin-checks-issue__copy">
+                                <h3 class="admin-checks-issue__title">{issue.title}</h3>
+                                <p class="admin-overview-card__body">{issue.message}</p>
+                              </div>
+                              {
+                                issue.href ? (
+                                  <a class="admin-btn admin-btn--ghost" href={withBase(issue.href)}>定位条目</a>
+                                ) : null
+                              }
+                            </div>
+
+                            <dl class="admin-data-meta admin-checks-issue__meta">
+                              {
+                                issue.collection ? (
+                                  <>
+                                    <dt class="admin-data-meta__label">collection</dt>
+                                    <dd class="admin-data-meta__value">{issue.collection}</dd>
+                                  </>
+                                ) : null
+                              }
+                              {
+                                issue.entryId ? (
+                                  <>
+                                    <dt class="admin-data-meta__label">entry.id</dt>
+                                    <dd class="admin-data-meta__value"><code>{issue.entryId}</code></dd>
+                                  </>
+                                ) : null
+                              }
+                              {
+                                issue.relativePath ? (
+                                  <>
+                                    <dt class="admin-data-meta__label">path</dt>
+                                    <dd class="admin-data-meta__value"><code>{issue.relativePath}</code></dd>
+                                  </>
+                                ) : null
+                              }
+                              {
+                                issue.fieldPath ? (
+                                  <>
+                                    <dt class="admin-data-meta__label">field</dt>
+                                    <dd class="admin-data-meta__value"><code>{issue.fieldPath}</code></dd>
+                                  </>
+                                ) : null
+                              }
+                              {
+                                issue.detail ? (
+                                  <>
+                                    <dt class="admin-data-meta__label">detail</dt>
+                                    <dd class="admin-data-meta__value">{issue.detail}</dd>
+                                  </>
+                                ) : null
+                              }
+                            </dl>
+                          </li>
+                        ))
+                      }
+                    </ul>
+                  ) : (
+                    <p class="admin-checks-empty">
+                      当前分类未发现结构化问题；提交前仍建议执行 `npm run check`、`npm test` 与 `npm run build`。
+                    </p>
+                  )
+                }
+              </article>
+            ))
+          }
+        </section>
+      ) : (
+        <section class="admin-overview">
+          <div class="admin-overview__grid">
+            <article class="admin-overview-card">
+              <p class="admin-overview-card__eyebrow">Readonly Boundary</p>
+              <h2 class="admin-overview-card__title">Checks Console 仅在本地开发环境可用</h2>
+              <p class="admin-overview-card__body">
+                当前环境继续保留 `/admin/checks/` 稳定子入口，但不输出结构化诊断结果，也不代替发布前 CLI 校验。
+              </p>
+              <div class="admin-overview-card__actions">
+                <a class="admin-btn admin-btn--ghost" href={withBase('/admin/')}>返回 Admin 首页</a>
+                <a class="admin-btn admin-btn--ghost" href={withBase('/admin/theme/')}>查看 Theme 子入口</a>
+              </div>
+            </article>
+
+            <article class="admin-overview-card">
+              <p class="admin-overview-card__eyebrow">CLI Baseline</p>
+              <h2 class="admin-overview-card__title">结构化摘要不替代终端检查</h2>
+              <p class="admin-overview-card__body">
+                当前页面只展示源文件层高价值问题；`check:preview-admin`、构建产物断言与完整 build smoke check 仍在终端执行。
+              </p>
+            </article>
+          </div>
+        </section>
+      )
+    }
+  </AdminShell>
+</AdminLayout>

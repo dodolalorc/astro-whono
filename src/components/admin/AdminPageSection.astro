@@ -225,7 +225,22 @@ const {
           <span class="admin-label__main">默认头像</span>
           <span class="admin-label__hint">（相对路径）</span>
         </span>
-        <input id="page-bits-author-avatar" type="text" autocomplete="off" />
+        <div class="admin-media-field-input">
+          <input id="page-bits-author-avatar" type="text" autocomplete="off" />
+          <button class="admin-btn admin-btn--ghost" type="button" data-admin-media-open="page.bits.defaultAuthor.avatar">
+            选择本地图片
+          </button>
+        </div>
+        <p class="admin-help admin-help--inline" data-admin-media-meta="page.bits.defaultAuthor.avatar">
+          仅支持 public/** 下的相对图片路径
+        </p>
+        <div
+          class="admin-media-field-preview admin-media-field-preview--avatar"
+          data-admin-media-preview="page.bits.defaultAuthor.avatar"
+          hidden
+        >
+          <img alt="" loading="lazy" decoding="async" data-admin-media-preview-img="page.bits.defaultAuthor.avatar" />
+        </div>
       </label>
     </div>
   </div>

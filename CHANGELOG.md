@@ -13,14 +13,23 @@ The format is based on Keep a Changelog, and this project aims to follow Semanti
 - 新增 `/admin/data/` Data Console，以及 settings 导出包协议与对应导出接口。
 - 新增后台概览聚合数据读取层，`/admin/` 在开发态会展示内容统计与最近内容。
 - 新增 `/admin/content/` 与 `/admin/content/:collection/` 只读内容控制台，以及对应的服务端内容索引聚合层与复制路径脚本。
+- 新增 `/admin/media/` Media Console，首批提供目录浏览、搜索、分页、路径复制、字段上下文 value 辅助，以及大文件提示。
+- 新增 `/admin/checks/` 与 `src/lib/admin-console/checks.ts`，首批聚合 settings 保护态、essay slug、bits 媒体路径与 tag 路由键诊断。
+- 新增 Phase 4A 媒体共享层 `src/lib/admin-console/media-shared.ts`，以及 `GET /api/admin/media/list/`、`GET /api/admin/media/meta/` 两个 dev-only 媒体只读接口。
+- 新增后台共用 `AdminMediaPicker` dialog 与 Theme / Content 共享的 media picker 客户端控制器。
 
 ### Changed
 - Theme Console 的未保存离开提醒从单纯 `beforeunload` 扩展为路由级 dirty guard；切换后台真实路由时会先显式确认。
 - `/admin` 边界检查与静态产物校验现同步覆盖 `/admin/`、`/admin/theme/`、`/admin/data/` 与 `/api/admin/data/settings/`，并确保后台路由继续排除在 sitemap 之外。
 - `/admin` 边界检查与静态产物校验现继续扩展到 `/admin/content/` 与 `/admin/content/:collection/`，确保内容控制台在 preview / production 下保持只读。
+- `/admin` 边界检查与静态产物校验现继续扩展到 `/admin/media/`，并保证该路由仍固定排除在 sitemap 之外。
 - Theme Console 共享规则实现已迁入 `theme-shared.ts`；`shared.ts` 现退为兼容导出层，降低后续后台能力继续堆进旧文件的风险。
 - Data Console 的导入 dry-run / revision 冲突检测 / 实际写盘继续复用 `/api/admin/settings/` 现有链路，不新增独立写盘规则。
-- `/admin/` Overview 的 Checks 卡现改为基于 settings 可写性、Data Console 可用性与发布前 CLI / admin 边界命令生成的当前维护检查摘要；完整结构化结果仍留待 Phase 3。
+- `/admin/` Overview 的 Checks 卡现改为消费 `/admin/checks/` 的结构化诊断摘要，并继续保留 preview/build CLI 基线提示。
+- `bits.images[*].src` 的后台校验现与文档契约对齐，只接受仓库内相对图片路径或 `https://` 远程 URL，不再把 `http://` 误判成本地路径。
+- `bits` collection 编辑页现用图片行编辑器替代原始 JSON 文本输入；图片选择、宽高回填与最终保存继续复用既有内容写盘链路。
+- Theme Console 的 `home.heroImageSrc` 与 `page.bits.defaultAuthor.avatar` 现共享字段级媒体辅助，并在 preview / production 边界检查中纳入 `/api/admin/media/list/`、`/api/admin/media/meta/` 的静态壳断言。
+- `/api/admin/media/list/` 现支持 `dir` 目录参数，可按 `public/**`、`src/assets/**`、`src/content/**` 受控范围收窄扫描；Theme / Content 既有 picker 契约保持兼容。
 
 ### Fixed
 - 修正文档中的 Data Console manifest 协议说明，明确当前固定字段为 `schemaVersion / createdAt / includedScopes / excludes / locale`。

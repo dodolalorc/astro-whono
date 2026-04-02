@@ -1,0 +1,205 @@
+---
+import AdminLayout from '../../../components/admin/AdminLayout.astro';
+import AdminShell from '../../../components/admin/AdminShell.astro';
+import {
+  ADMIN_MEDIA_DIRECTORY_OPTIONS,
+  normalizeAdminMediaDirectory
+} from '../../../lib/admin-console/media-shared';
+import { createWithBase } from '../../../utils/format';
+
+const isDev = import.meta.env.DEV;
+const base = import.meta.env.BASE_URL ?? '/';
+const withBase = createWithBase(base);
+const DEFAULT_MEDIA_DIRECTORY = 'public' as const;
+
+const rawDirectory = Astro.url.searchParams.has('dir')
+  ? Astro.url.searchParams.get('dir')
+  : DEFAULT_MEDIA_DIRECTORY;
+const rawQuery = Astro.url.searchParams.get('q')?.trim() ?? '';
+const rawOwner = Astro.url.searchParams.get('owner')?.trim() ?? '';
+const rawPage = Number.parseInt(Astro.url.searchParams.get('page')?.trim() ?? '1', 10);
+const selectedDirectory = normalizeAdminMediaDirectory(rawDirectory);
+const selectedPage = Number.isInteger(rawPage) && rawPage > 0 ? rawPage : 1;
+
+const MEDIA_DIRECTORY_COPY: Record<
+  (typeof ADMIN_MEDIA_DIRECTORY_OPTIONS)[number]['value'],
+  { shortLabel: string; pathLabel: string; summary: string }
+> = {
+  '': {
+    shortLabel: '全部资源',
+    pathLabel: '全部目录',
+    summary: '一次查看站点里可用的本地图片。'
+  },
+  'public/author': {
+    shortLabel: '头像资源',
+    pathLabel: 'public/author/**',
+    summary: '适合作者头像和默认头像。'
+  },
+  'public/bits': {
+    shortLabel: '絮语配图',
+    pathLabel: 'public/bits/**',
+    summary: '适合 Bits 配图和公开插图。'
+  },
+  'public/images': {
+    shortLabel: '页面插图',
+    pathLabel: 'public/images/**',
+    summary: '适合首页和普通页面插图。'
+  },
+  public: {
+    shortLabel: '公开图片',
+    pathLabel: 'public/**',
+    summary: '浏览 public 下的全部公开图片。'
+  },
+  'src/assets': {
+    shortLabel: '站点素材',
+    pathLabel: 'src/assets/**',
+    summary: '适合主题资源和首页主图。'
+  },
+  'src/content': {
+    shortLabel: '文章附件',
+    pathLabel: 'src/content/**',
+    summary: '浏览文章或笔记同目录里的图片。'
+  }
+};
+
+const loadMediaDevState = async () => {
+  const [{ default: adminMediaScriptHref }, { default: adminStylesHref }] = await Promise.all([
+    import('../../../scripts/admin-media/index.ts?url'),
+    import('../../../styles/components/admin.css?url')
+  ]);
+
+  return {
+    adminMediaScriptHref,
+    adminStylesHref
+  };
+};
+
+const mediaDevState = isDev ? await loadMediaDevState() : null;
+const bootstrapText = mediaDevState
+  ? JSON.stringify({
+      listEndpoint: withBase('/api/admin/media/list/'),
+      initialState: {
+        directory: selectedDirectory || DEFAULT_MEDIA_DIRECTORY,
+        query: rawQuery,
+        owner: rawOwner,
+        page: selectedPage
+      }
+    })
+  : null;
+---
+
+<AdminLayout title="Media" stylesHref={mediaDevState?.adminStylesHref ?? null}>
+  <AdminShell
+    currentRoute="media"
+    title="Media"
+    subtitle="图库"
+    description={isDev ? null : '当前环境仅保留媒体库入口说明。'}
+    modeLabel={isDev ? '本地浏览' : '只读说明'}
+    modeHint={null}
+  >
+    {isDev ? (
+      <div slot="status" class="admin-status-slot">
+        <p id="admin-media-status-live" class="admin-sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
+        <p id="admin-media-status" class="admin-status" data-state="idle">准备中</p>
+      </div>
+    ) : null}
+
+    {
+      isDev && bootstrapText ? (
+        <section class="admin-overview admin-media-console" data-admin-media-root>
+          <form id="admin-media-form" class="admin-media-console__toolbar admin-media-console__filters">
+            <label class="admin-field admin-content-field">
+              <span class="admin-field__label">图片分类</span>
+              <select id="admin-media-directory" name="dir">
+                {
+                  ADMIN_MEDIA_DIRECTORY_OPTIONS.map((option) => (
+                    <option
+                      value={option.value}
+                      selected={option.value === (selectedDirectory || DEFAULT_MEDIA_DIRECTORY)}
+                    >
+                      {MEDIA_DIRECTORY_COPY[option.value].shortLabel}
+                    </option>
+                  ))
+                }
+              </select>
+            </label>
+
+            <label id="admin-media-owner-field" class="admin-field admin-content-field" hidden>
+              <span class="admin-field__label">所属内容</span>
+              <select id="admin-media-owner" name="owner" disabled>
+                <option value="">全部内容</option>
+              </select>
+            </label>
+
+            <label class="admin-field admin-content-field admin-content-field--query">
+              <span class="admin-field__label">搜索图片</span>
+              <input
+                id="admin-media-query"
+                name="q"
+                type="search"
+                inputmode="search"
+                value={rawQuery}
+                placeholder="例如：avatar、hero、2026"
+                autocomplete="off"
+              />
+            </label>
+
+            <div class="admin-overview-card__actions admin-media-console__filter-actions">
+              <button id="admin-media-apply" class="admin-btn" type="submit">查看结果</button>
+              <button id="admin-media-reset" class="admin-btn admin-btn--ghost" type="button">清空筛选</button>
+            </div>
+          </form>
+
+          <article class="admin-overview-card admin-media-console__results">
+            <div class="admin-content-panel__head admin-content-panel__head--results admin-media-console__results-head">
+              <div>
+                <h2 class="admin-overview-card__title">图片列表</h2>
+                <p id="admin-media-results-summary" class="admin-overview-card__body">
+                  这里会显示当前范围内的图片。
+                </p>
+              </div>
+
+              <div class="admin-media-console__results-meta">
+                <span id="admin-media-results-count" class="admin-badge admin-media-console__results-badge">0 张</span>
+                <span id="admin-media-results-page" class="admin-badge admin-media-console__results-badge">第 1 / 1 页</span>
+              </div>
+            </div>
+
+            <ul id="admin-media-result-list" class="admin-media-list"></ul>
+            <p id="admin-media-empty" class="admin-content-empty" hidden>没有找到符合条件的图片。</p>
+
+            <div class="admin-media-console__pager">
+              <p id="admin-media-page-meta" class="admin-overview-card__meta">第 1 / 1 页</p>
+              <div class="admin-overview-card__actions">
+                <button id="admin-media-prev" class="admin-btn admin-btn--ghost" type="button" disabled>上一页</button>
+                <button id="admin-media-next" class="admin-btn admin-btn--ghost" type="button" disabled>下一页</button>
+              </div>
+            </div>
+          </article>
+
+          <div id="admin-media-bootstrap" hidden>{bootstrapText}</div>
+        </section>
+      ) : (
+        <section class="admin-overview">
+          <article class="admin-overview-card">
+            <p class="admin-overview-card__eyebrow">Readonly</p>
+            <h2 class="admin-overview-card__title">Media 仅在本地环境可用</h2>
+            <p class="admin-overview-card__body">
+              当前环境保留入口说明，但不会显示图片列表或路径复制功能。
+            </p>
+            <div class="admin-overview-card__actions">
+              <a class="admin-btn admin-btn--ghost" href={withBase('/admin/')}>返回 Admin 首页</a>
+              <a class="admin-btn admin-btn--ghost" href={withBase('/admin/content/')}>打开内容页</a>
+            </div>
+          </article>
+        </section>
+      )
+    }
+  </AdminShell>
+
+  {
+    isDev && mediaDevState?.adminMediaScriptHref ? (
+      <script is:inline type="module" src={mediaDevState.adminMediaScriptHref}></script>
+    ) : null
+  }
+</AdminLayout>
