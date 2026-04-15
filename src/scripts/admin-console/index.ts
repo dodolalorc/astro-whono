@@ -245,6 +245,7 @@ if (!root) {
       applySettings,
       refreshArticleMetaPreview,
       refreshHomeIntroPreview,
+      syncAdminOverviewControls,
       syncHomeIntroLinkControls,
       syncHeroControls,
       refreshFooterPreview,
@@ -442,8 +443,24 @@ if (!root) {
     themeMediaFields = createAdminThemeMediaFields({
       root,
       picker: mediaPicker,
-      setStatus: uiState.setStatus
+      setStatus: uiState.setStatus,
+      getFieldState: (field) => {
+        if (field !== 'home.heroImageSrc') return { enabled: true };
+        return {
+          enabled: inputHomeShowHero.checked,
+          inactivePreviewText: '首页 Hero 图未启用'
+        };
+      }
     });
+
+    const syncEditableDerivedControls = (): void => {
+      if (uiState.isConsoleLocked() || uiState.isSaving() || uiState.isValidating()) return;
+      syncAdminOverviewControls();
+      syncHomeIntroLinkControls();
+      syncHeroControls();
+      syncFooterYearControls();
+      themeMediaFields?.refresh('home.heroImageSrc');
+    };
 
     const setValidationIssues = (issues: readonly ValidationIssue[]): void => {
       markInvalidFields(issues);
@@ -754,6 +771,7 @@ if (!root) {
       refreshFooterPreview();
     });
     inputSiteFooterCopyright.addEventListener('input', refreshFooterPreview);
+    inputSiteAdminOverviewPublicVisible.addEventListener('change', syncAdminOverviewControls);
     inputArticleMetaDateLabel.addEventListener('input', refreshArticleMetaPreview);
     inputArticleMetaShowDate.addEventListener('change', refreshArticleMetaPreview);
     inputArticleMetaShowTags.addEventListener('change', refreshArticleMetaPreview);
@@ -775,6 +793,7 @@ if (!root) {
     });
     inputHomeShowHero.addEventListener('change', () => {
       syncHeroControls();
+      themeMediaFields?.refresh('home.heroImageSrc');
       refreshDirty();
     });
 
@@ -1004,6 +1023,7 @@ if (!root) {
         revealErrorState();
       } finally {
         uiState.setValidating(false);
+        syncEditableDerivedControls();
       }
     });
 
@@ -1086,6 +1106,7 @@ if (!root) {
         revealErrorState();
       } finally {
         uiState.setSaving(false);
+        syncEditableDerivedControls();
       }
     });
 

@@ -1,18 +1,12 @@
 ---
 import AdminLayout from '../../../components/admin/AdminLayout.astro';
-import AdminMediaPicker from '../../../components/admin/AdminMediaPicker.astro';
 import AdminShell from '../../../components/admin/AdminShell.astro';
-import {
-  ADMIN_MEDIA_LIST_API_PATH,
-  ADMIN_MEDIA_META_API_PATH
-} from '../../../lib/admin-console/media-shared';
 import { createWithBase } from '../../../utils/format';
 
 const isDev = import.meta.env.DEV;
 const base = import.meta.env.BASE_URL ?? '/';
 const withBase = createWithBase(base);
-const adminMediaListEndpoint = withBase(ADMIN_MEDIA_LIST_API_PATH);
-const adminMediaMetaEndpoint = withBase(ADMIN_MEDIA_META_API_PATH);
+const { default: adminShellStylesHref } = await import('../../../styles/components/admin-shell.css?url');
 
 const loadThemeDevState = async () => {
   const [
@@ -28,24 +22,25 @@ const loadThemeDevState = async () => {
       ADMIN_SOCIAL_CUSTOM_LIMIT,
       getAdminFooterStartYearMax
     },
-    { default: AdminHomeSection },
-    { default: AdminPageSection },
-    { default: AdminSidebarSection },
-    { default: AdminSiteSection },
-    { default: AdminUiSection },
+    {
+      ADMIN_MEDIA_LIST_API_PATH,
+      ADMIN_MEDIA_META_API_PATH
+    },
+    { default: AdminThemeDevConsole },
+    { default: AdminMediaPicker },
     { default: adminConsoleScriptHref },
-    { default: adminStylesHref }
+    { default: adminThemeStylesHref },
+    { default: adminMediaSharedStylesHref }
   ] = await Promise.all([
     import('astro:content'),
     import('../../../lib/theme-settings'),
     import('../../../lib/admin-console/theme-shared'),
-    import('../../../components/admin/AdminHomeSection.astro'),
-    import('../../../components/admin/AdminPageSection.astro'),
-    import('../../../components/admin/AdminSidebarSection.astro'),
-    import('../../../components/admin/AdminSiteSection.astro'),
-    import('../../../components/admin/AdminUiSection.astro'),
+    import('../../../lib/admin-console/media-shared'),
+    import('../../../components/admin/AdminThemeDevConsole.astro'),
+    import('../../../components/admin/AdminMediaPicker.astro'),
     import('../../../scripts/admin-console/index.ts?url'),
-    import('../../../styles/components/admin.css?url')
+    import('../../../styles/components/admin-theme.css?url'),
+    import('../../../styles/components/admin-media-shared.css?url')
   ]);
 
   const settingsEndpoint = withBase('/api/admin/settings/');
@@ -103,13 +98,12 @@ const loadThemeDevState = async () => {
     : initialState;
 
   return {
-    AdminHomeSection,
-    AdminPageSection,
-    AdminSidebarSection,
-    AdminSiteSection,
-    AdminUiSection,
+    AdminMediaPicker,
+    AdminThemeDevConsole,
     adminConsoleScriptHref,
-    adminStylesHref,
+    adminMediaListEndpoint: withBase(ADMIN_MEDIA_LIST_API_PATH),
+    adminMediaMetaEndpoint: withBase(ADMIN_MEDIA_META_API_PATH),
+    stylesHref: [adminShellStylesHref, adminThemeStylesHref, adminMediaSharedStylesHref],
     bootstrapText: JSON.stringify(bootstrapState),
     footerStartYearMin,
     footerStartYearMax,
@@ -125,14 +119,11 @@ const loadThemeDevState = async () => {
 };
 
 const adminDevState = isDev ? await loadThemeDevState() : null;
-const AdminHomeSection = adminDevState?.AdminHomeSection;
-const AdminPageSection = adminDevState?.AdminPageSection;
-const AdminSidebarSection = adminDevState?.AdminSidebarSection;
-const AdminSiteSection = adminDevState?.AdminSiteSection;
-const AdminUiSection = adminDevState?.AdminUiSection;
+const AdminThemeDevConsole = adminDevState?.AdminThemeDevConsole;
+const AdminMediaPicker = adminDevState?.AdminMediaPicker;
 ---
 
-<AdminLayout title="Theme Console" stylesHref={adminDevState?.adminStylesHref ?? null}>
+<AdminLayout title="Theme Console" stylesHref={adminDevState?.stylesHref ?? adminShellStylesHref}>
   <AdminShell
     currentRoute="theme"
     title="Theme Console"
@@ -146,78 +137,20 @@ const AdminUiSection = adminDevState?.AdminUiSection;
       </div>
     ) : null}
     {
-      isDev && adminDevState && AdminHomeSection && AdminPageSection && AdminSidebarSection && AdminSiteSection && AdminUiSection ? (
-        <>
-          <section class="admin-theme-console" data-admin-root data-settings-endpoint={adminDevState.settingsEndpoint}>
-            <section
-              id="admin-error-banner"
-              class="admin-banner admin-banner--error"
-              hidden
-              role="alert"
-              aria-atomic="true"
-              tabindex="-1"
-            >
-              <div class="admin-banner__header">
-                <div class="admin-banner__lead">
-                  <span class="admin-banner__icon" aria-hidden="true">×</span>
-                  <div class="admin-banner__copy">
-                    <p id="admin-error-title" class="admin-banner__title">操作未完成</p>
-                    <p id="admin-error-message" class="admin-banner__message" hidden></p>
-                  </div>
-                </div>
-                <button
-                  id="admin-error-retry"
-                  class="admin-btn admin-btn--ghost admin-btn--danger admin-banner__retry"
-                  type="button"
-                  hidden
-                >
-                  重新检查
-                </button>
-              </div>
-              <ul id="admin-error-list" class="admin-banner__list" hidden></ul>
-            </section>
-
-            <form id="admin-form" class="admin-form" novalidate>
-              <AdminSiteSection
-                footerStartYearMin={adminDevState.footerStartYearMin}
-                footerStartYearMax={adminDevState.footerStartYearMax}
-                socialCustomLimit={adminDevState.socialCustomLimit}
-              />
-
-              <AdminSidebarSection navIdOrder={adminDevState.navIdOrder} />
-
-              <AdminHomeSection homeIntroMaxLength={adminDevState.homeIntroMaxLength} />
-
-              <AdminPageSection
-                pageTitleMaxLength={adminDevState.pageTitleMaxLength}
-                pageSubtitleMaxLength={adminDevState.pageSubtitleMaxLength}
-                memoTitlePlaceholder={adminDevState.memoTitlePlaceholder}
-                memoSubtitlePlaceholder={adminDevState.memoSubtitlePlaceholder}
-              />
-
-              <AdminUiSection />
-            </form>
-
-            <div id="admin-actions-sentinel" class="admin-actions__sentinel" aria-hidden="true"></div>
-            <div id="admin-actions" class="admin-actions" data-dirty="false" data-sticky="false">
-              <div class="admin-actions__meta">
-                <p id="admin-dirty-banner" class="admin-banner admin-banner--dirty" hidden>
-                  * 你有未保存更改，离开页面会触发提醒。
-                </p>
-                <p id="admin-status-inline" class="admin-status admin-status--inline" data-state="idle" aria-hidden="true">
-                  等待加载
-                </p>
-              </div>
-              <div class="admin-actions__buttons">
-                <button id="admin-validate" class="admin-btn" type="button">检查配置</button>
-                <button id="admin-reset" class="admin-btn admin-btn--ghost" type="button">重置更改</button>
-                <button id="admin-save" class="admin-btn admin-btn--muted" type="button">保存</button>
-              </div>
-            </div>
-
-            <div id="admin-bootstrap" hidden>{adminDevState.bootstrapText}</div>
-          </section>
-        </>
+      isDev && adminDevState && AdminThemeDevConsole ? (
+        <AdminThemeDevConsole
+          bootstrapText={adminDevState.bootstrapText}
+          footerStartYearMin={adminDevState.footerStartYearMin}
+          footerStartYearMax={adminDevState.footerStartYearMax}
+          homeIntroMaxLength={adminDevState.homeIntroMaxLength}
+          memoSubtitlePlaceholder={adminDevState.memoSubtitlePlaceholder}
+          memoTitlePlaceholder={adminDevState.memoTitlePlaceholder}
+          navIdOrder={adminDevState.navIdOrder}
+          pageSubtitleMaxLength={adminDevState.pageSubtitleMaxLength}
+          pageTitleMaxLength={adminDevState.pageTitleMaxLength}
+          settingsEndpoint={adminDevState.settingsEndpoint}
+          socialCustomLimit={adminDevState.socialCustomLimit}
+        />
       ) : (
         <section class="admin-overview-card">
           <p class="admin-overview-card__eyebrow">Readonly Boundary</p>
@@ -230,7 +163,14 @@ const AdminUiSection = adminDevState?.AdminUiSection;
       )
     }
   </AdminShell>
-  {isDev ? <AdminMediaPicker listEndpoint={adminMediaListEndpoint} metaEndpoint={adminMediaMetaEndpoint} /> : null}
+  {
+    isDev && adminDevState && AdminMediaPicker ? (
+      <AdminMediaPicker
+        listEndpoint={adminDevState.adminMediaListEndpoint}
+        metaEndpoint={adminDevState.adminMediaMetaEndpoint}
+      />
+    ) : null
+  }
 
   {
     isDev && adminDevState?.adminConsoleScriptHref ? (

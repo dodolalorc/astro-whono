@@ -1,13 +1,12 @@
 /* Admin Console aggregator
-   /admin 页面按需引入；内部按 Theme form / shared panels / route blocks / responsive 拆分。
+   兼容聚合入口；页面应优先按路由加载 admin-shell.css 与私有样式。
  */
 
-@import "./admin-form.css";
-@import "./admin-panels.css";
+@import "./admin-shell.css";
+@import "./admin-theme.css";
 @import "./admin-overview.css";
 @import "./admin-content.css";
 @import "./admin-checks.css";
+@import "./admin-media-shared.css";
 @import "./admin-media.css";
-@import "./admin-social.css";
-@import "./admin-nav.css";
-@import "./admin-responsive.css";
+@import "./admin-data.css";

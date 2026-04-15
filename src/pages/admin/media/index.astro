@@ -16,6 +16,7 @@ import { createWithBase } from '../../../utils/format';
 const isDev = import.meta.env.DEV;
 const base = import.meta.env.BASE_URL ?? '/';
 const withBase = createWithBase(base);
+const { default: adminShellStylesHref } = await import('../../../styles/components/admin-shell.css?url');
 const DEFAULT_MEDIA_GROUP = 'all' as const;
 const DEFAULT_MEDIA_SCOPE = '' as const;
 
@@ -33,7 +34,7 @@ const selectedPage = Number.isInteger(rawPage) && rawPage > 0 ? rawPage : 1;
 
 const loadMediaDevState = async (): Promise<{
   adminMediaScriptHref: string;
-  adminStylesHref: string;
+  stylesHref: readonly string[];
   browseIndex: AdminMediaBrowseIndexItem[] | null;
   scopeIndex: AdminMediaScopeIndex;
   didRefresh: boolean;
@@ -42,9 +43,9 @@ const loadMediaDevState = async (): Promise<{
     invalidateAdminMediaCaches();
   }
 
-  const [{ default: adminMediaScriptHref }, { default: adminStylesHref }] = await Promise.all([
+  const [{ default: adminMediaScriptHref }, { default: adminMediaStylesHref }] = await Promise.all([
     import('../../../scripts/admin-media/index.ts?url'),
-    import('../../../styles/components/admin.css?url')
+    import('../../../styles/components/admin-media.css?url')
   ]);
   const [browseIndex, scopeIndex] = await Promise.all([
     listAdminMediaBrowseIndex().catch(() => null),
@@ -53,7 +54,7 @@ const loadMediaDevState = async (): Promise<{
 
   return {
     adminMediaScriptHref,
-    adminStylesHref,
+    stylesHref: [adminShellStylesHref, adminMediaStylesHref],
     browseIndex,
     scopeIndex,
     didRefresh: shouldRefresh
@@ -79,7 +80,7 @@ const bootstrapText = mediaDevState
   : null;
 ---
 
-<AdminLayout title="Media Console" stylesHref={mediaDevState?.adminStylesHref ?? null}>
+<AdminLayout title="Media Console" stylesHref={mediaDevState?.stylesHref ?? adminShellStylesHref}>
   <AdminShell
     currentRoute="media"
     title="Media Console"

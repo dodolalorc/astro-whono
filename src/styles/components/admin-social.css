@@ -395,3 +395,73 @@
   justify-content: flex-end;
   gap: 8px;
 }
+
+@media (max-width: 900px) {
+  .admin-social-panel__head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .admin-social-header {
+    display: none;
+  }
+
+  .admin-social-list {
+    gap: 8px;
+    border: 0;
+    border-radius: 0;
+    overflow: visible;
+    background: transparent;
+  }
+
+  .admin-social-row {
+    grid-template-columns: 1fr;
+    align-items: start;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .admin-social-field--order,
+  .admin-social-field--platform,
+  .admin-social-field--id,
+  .admin-social-field--icon,
+  .admin-social-field--href,
+  .admin-social-field--actions {
+    grid-column: auto;
+  }
+
+  .admin-social-field--order input {
+    width: 100%;
+    max-width: 3ch;
+  }
+
+  .admin-social-field--platform,
+  .admin-social-field--icon {
+    justify-items: start;
+  }
+
+  .admin-social-link-inline,
+  .admin-social-row[data-custom-label-visible='true'] .admin-social-link-inline {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-social-field--platform select,
+  .admin-social-field--platform .admin-social-static-input {
+    margin-inline: 0;
+  }
+
+  .admin-social-static-action {
+    min-width: 0;
+  }
+
+  .admin-social-row-actions,
+  .admin-social-actions {
+    justify-content: flex-start;
+  }
+
+  .admin-social-cell-label {
+    display: block;
+  }
+}

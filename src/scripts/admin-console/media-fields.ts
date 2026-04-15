@@ -15,17 +15,26 @@ type ThemeMediaFieldConfig = {
   field: AdminMediaPickerField;
   inputId: string;
   buttonSelector: string;
-  emptyMeta: string;
   pickerTitle: string;
   pickerDescription: string;
 };
+
+type ThemeMediaFieldState = {
+  enabled?: boolean;
+  inactivePreviewText?: string;
+  inactiveMetaText?: string;
+};
+
+type ThemeMediaPreviewState =
+  | { kind: 'hidden' }
+  | { kind: 'image'; src: string }
+  | { kind: 'placeholder'; text: string };
 
 const FIELD_CONFIGS: readonly ThemeMediaFieldConfig[] = [
   {
     field: 'home.heroImageSrc',
     inputId: 'home-hero-image-src',
     buttonSelector: '[data-admin-media-open="home.heroImageSrc"]',
-    emptyMeta: '留空时回退内置默认图',
     pickerTitle: '为 Hero 选择本地图片',
     pickerDescription: '支持 src/assets/** 与 public/**，保存仍复用 Theme Console 现有写盘链路。'
   },
@@ -33,7 +42,6 @@ const FIELD_CONFIGS: readonly ThemeMediaFieldConfig[] = [
     field: 'page.bits.defaultAuthor.avatar',
     inputId: 'page-bits-author-avatar',
     buttonSelector: '[data-admin-media-open="page.bits.defaultAuthor.avatar"]',
-    emptyMeta: '仅支持 public/** 下的相对图片路径',
     pickerTitle: '为 Bits 默认头像选择本地图片',
     pickerDescription: '仅列出可直接写入 page.bits.defaultAuthor.avatar 的本地 public/** 资源。'
   }
@@ -47,14 +55,72 @@ const getPreviewSrc = (value: string): string | null => {
   return withBase(normalized.startsWith('/') ? normalized : `/${normalized}`);
 };
 
+const getDefaultPreviewSrc = (previewWrap: HTMLElement | null): string | null =>
+  previewWrap?.dataset.adminMediaDefaultPreviewSrc?.trim() || null;
+
+const setPreview = (
+  previewWrap: HTMLElement | null,
+  previewImg: HTMLImageElement | null,
+  previewPlaceholder: HTMLElement | null,
+  state: ThemeMediaPreviewState
+): void => {
+  if (!(previewWrap instanceof HTMLElement)) return;
+
+  previewWrap.dataset.adminMediaPreviewState = state.kind;
+
+  if (state.kind === 'hidden') {
+    previewWrap.hidden = true;
+    previewImg?.removeAttribute('src');
+    if (previewImg instanceof HTMLImageElement) previewImg.hidden = true;
+    if (previewPlaceholder instanceof HTMLElement) {
+      previewPlaceholder.textContent = '';
+      previewPlaceholder.hidden = true;
+    }
+    return;
+  }
+
+  previewWrap.hidden = false;
+
+  if (state.kind === 'image') {
+    if (!(previewImg instanceof HTMLImageElement)) {
+      previewWrap.hidden = true;
+      return;
+    }
+    previewImg.src = state.src;
+    previewImg.hidden = false;
+    if (previewPlaceholder instanceof HTMLElement) {
+      previewPlaceholder.textContent = '';
+      previewPlaceholder.hidden = true;
+    }
+    return;
+  }
+
+  previewImg?.removeAttribute('src');
+  if (previewImg instanceof HTMLImageElement) previewImg.hidden = true;
+  if (!(previewPlaceholder instanceof HTMLElement)) {
+    previewWrap.hidden = true;
+    return;
+  }
+  previewPlaceholder.textContent = state.text;
+  previewPlaceholder.hidden = false;
+};
+
+const setMetaText = (metaEl: HTMLElement | null, text: string): void => {
+  if (!(metaEl instanceof HTMLElement)) return;
+  metaEl.textContent = text;
+  metaEl.hidden = text.trim().length === 0;
+};
+
 export const createAdminThemeMediaFields = ({
   root,
   picker,
-  setStatus
+  setStatus,
+  getFieldState = () => ({ enabled: true })
 }: {
   root: ParentNode;
   picker: AdminMediaPickerController | null;
   setStatus: StatusSetter;
+  getFieldState?: (field: AdminMediaPickerField) => ThemeMediaFieldState;
 }) => {
   const bindings = FIELD_CONFIGS.map((config) => {
     const input = root.querySelector<HTMLInputElement>(`#${config.inputId}`);
@@ -62,13 +128,17 @@ export const createAdminThemeMediaFields = ({
     const metaEl = root.querySelector<HTMLElement>(`[data-admin-media-meta="${config.field}"]`);
     const previewWrap = root.querySelector<HTMLElement>(`[data-admin-media-preview="${config.field}"]`);
     const previewImg = root.querySelector<HTMLImageElement>(`[data-admin-media-preview-img="${config.field}"]`);
+    const previewPlaceholder = root.querySelector<HTMLElement>(
+      `[data-admin-media-preview-placeholder="${config.field}"]`
+    );
     return {
       config,
       input,
       button,
       metaEl,
       previewWrap,
-      previewImg
+      previewImg,
+      previewPlaceholder
     };
   }).filter((binding) => binding.input instanceof HTMLInputElement);
 
@@ -78,29 +148,48 @@ export const createAdminThemeMediaFields = ({
     const binding = bindings.find((item) => item.config.field === field);
     if (!binding || !(binding.input instanceof HTMLInputElement)) return;
 
+    const state = getFieldState(field);
+    const isEnabled = state.enabled !== false;
+    if (binding.button instanceof HTMLButtonElement) {
+      binding.button.disabled = !isEnabled || binding.input.disabled;
+    }
+
+    if (!isEnabled) {
+      setMetaText(binding.metaEl, state.inactiveMetaText ?? '');
+      setPreview(
+        binding.previewWrap,
+        binding.previewImg,
+        binding.previewPlaceholder,
+        state.inactivePreviewText
+          ? { kind: 'placeholder', text: state.inactivePreviewText }
+          : { kind: 'hidden' }
+      );
+      return;
+    }
+
     const value = binding.input.value.trim();
     if (!value) {
-      binding.metaEl && (binding.metaEl.textContent = binding.config.emptyMeta);
-      if (binding.previewWrap instanceof HTMLElement && binding.previewImg instanceof HTMLImageElement) {
-        binding.previewWrap.hidden = true;
-        binding.previewImg.removeAttribute('src');
-      }
+      setMetaText(binding.metaEl, '');
+      const defaultPreviewSrc = getDefaultPreviewSrc(binding.previewWrap);
+      setPreview(
+        binding.previewWrap,
+        binding.previewImg,
+        binding.previewPlaceholder,
+        defaultPreviewSrc ? { kind: 'image', src: defaultPreviewSrc } : { kind: 'hidden' }
+      );
       return;
     }
 
     const previewSrc = getPreviewSrc(value);
-    if (binding.previewWrap instanceof HTMLElement && binding.previewImg instanceof HTMLImageElement) {
-      if (previewSrc) {
-        binding.previewImg.src = previewSrc;
-        binding.previewWrap.hidden = false;
-      } else {
-        binding.previewWrap.hidden = true;
-        binding.previewImg.removeAttribute('src');
-      }
-    }
+    setPreview(
+      binding.previewWrap,
+      binding.previewImg,
+      binding.previewPlaceholder,
+      previewSrc ? { kind: 'image', src: previewSrc } : { kind: 'hidden' }
+    );
 
     if (!picker) {
-      binding.metaEl && (binding.metaEl.textContent = '当前页面未挂载 media picker');
+      setMetaText(binding.metaEl, '当前页面未挂载 media picker');
       return;
     }
 
@@ -109,9 +198,19 @@ export const createAdminThemeMediaFields = ({
         field,
         value
       });
-      binding.metaEl && (binding.metaEl.textContent = formatAdminMediaMetaSummary(meta));
+      if (getFieldState(field).enabled === false) return;
+      if (meta.previewSrc) {
+        setPreview(
+          binding.previewWrap,
+          binding.previewImg,
+          binding.previewPlaceholder,
+          { kind: 'image', src: meta.previewSrc }
+        );
+      }
+      setMetaText(binding.metaEl, formatAdminMediaMetaSummary(meta));
     } catch (error) {
-      binding.metaEl && (binding.metaEl.textContent = error instanceof Error ? error.message : '路径暂时无法读取');
+      if (getFieldState(field).enabled === false) return;
+      setMetaText(binding.metaEl, error instanceof Error ? error.message : '路径暂时无法读取');
     }
   };
 
@@ -119,13 +218,14 @@ export const createAdminThemeMediaFields = ({
     if (!(binding.input instanceof HTMLInputElement)) return;
 
     binding.input.addEventListener('input', () => {
-      binding.metaEl && (binding.metaEl.textContent = '等待确认路径并读取元数据');
+      setMetaText(binding.metaEl, '等待确认路径并读取元数据');
     });
     binding.input.addEventListener('change', () => {
       void updateField(binding.config.field);
     });
 
     binding.button?.addEventListener('click', () => {
+      if (getFieldState(binding.config.field).enabled === false) return;
       if (!picker) {
         setStatus('warn', '当前页面未挂载 media picker');
         return;
@@ -138,6 +238,7 @@ export const createAdminThemeMediaFields = ({
         query: binding.input?.value ?? '',
         onSelect: (item) => {
           if (!(binding.input instanceof HTMLInputElement)) return;
+          if (getFieldState(binding.config.field).enabled === false) return;
           binding.input.value = item.value;
           binding.input.dispatchEvent(new Event('input', { bubbles: true }));
           binding.input.dispatchEvent(new Event('change', { bubbles: true }));
@@ -150,6 +251,9 @@ export const createAdminThemeMediaFields = ({
   });
 
   return {
+    refresh: (field: AdminMediaPickerField) => {
+      void updateField(field);
+    },
     refreshAll: () => {
       bindings.forEach((binding) => {
         void updateField(binding.config.field);

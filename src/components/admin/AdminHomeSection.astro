@@ -5,6 +5,7 @@ import {
   ADMIN_HOME_INTRO_LINK_DEFAULT,
   ADMIN_HOME_INTRO_LINK_OPTIONS
 } from '../../lib/admin-console/theme-shared';
+import defaultHero from '../../assets/hero.png';
 
 interface Props {
   homeIntroMaxLength: number;
@@ -21,44 +22,69 @@ const { homeIntroMaxLength } = Astro.props;
   </legend>
   <div class="admin-grid">
     <div class="admin-field admin-field--full">
-      <div class="admin-hero-grid">
-        <span class="admin-label__copy admin-hero-grid__copy">
-          <label class="admin-label__main" for="home-hero-image-src">Hero 图片地址</label>
-          <span class="admin-label__hint">（地址留空时回退内置默认图）</span>
-        </span>
-        <label class="admin-label__main admin-hero-grid__heading" for="home-hero-image-alt">Hero 图片说明</label>
-        <label class="admin-label__toggle admin-hero-grid__toggle" for="home-show-hero">
-          <input id="home-show-hero" type="checkbox" checked />
-          <span>展示</span>
-        </label>
-        <input
-          id="home-hero-image-src"
-          class="admin-hero-grid__input admin-hero-grid__input--primary"
-          type="text"
-          inputmode="url"
-          spellcheck="false"
-          placeholder="当前使用：src/assets/hero.png"
-          aria-label="Hero 图片地址"
-        />
-        <div class="admin-hero-grid__media-tools">
-          <button class="admin-btn admin-btn--ghost" type="button" data-admin-media-open="home.heroImageSrc">
-            选择本地图片
-          </button>
-          <p class="admin-help admin-help--inline" data-admin-media-meta="home.heroImageSrc">留空时回退内置默认图</p>
+      <div class="admin-hero-media">
+        <div class="admin-hero-fields">
+          <div class="admin-field">
+            <div class="admin-label admin-label--split">
+              <span class="admin-label__copy">
+                <label class="admin-label__main" for="home-hero-image-src">Hero 图片地址</label>
+                <span class="admin-label__hint">（地址留空时回退内置默认图）</span>
+              </span>
+              <label class="admin-label__toggle" for="home-show-hero">
+                <input id="home-show-hero" type="checkbox" checked />
+                <span>展示</span>
+              </label>
+            </div>
+            <div class="admin-media-field-input">
+              <input
+                id="home-hero-image-src"
+                type="text"
+                inputmode="url"
+                spellcheck="false"
+                placeholder="当前使用：src/assets/hero.png"
+                aria-label="Hero 图片地址"
+              />
+              <button
+                class="admin-btn admin-btn--ghost"
+                type="button"
+                data-admin-media-open="home.heroImageSrc"
+                aria-label="选择本地 Hero 图片"
+              >
+                选择
+              </button>
+            </div>
+            <p class="admin-help">注：支持 src/assets/**、public/** 或 https:// 图床链接</p>
+            <p class="admin-help admin-help--inline" data-admin-media-meta="home.heroImageSrc" hidden></p>
+          </div>
+          <div class="admin-field">
+            <span class="admin-label">
+              <label class="admin-label__main" for="home-hero-image-alt">Hero 图片说明</label>
+              <span class="admin-label__hint">（用于图片替代文本，不在页面显示）</span>
+            </span>
+            <input
+              id="home-hero-image-alt"
+              type="text"
+              maxlength={ADMIN_HERO_IMAGE_ALT_MAX_LENGTH}
+              placeholder={ADMIN_HERO_IMAGE_ALT_DEFAULT}
+              aria-label="Hero 图片说明"
+            />
+          </div>
         </div>
-        <input
-          id="home-hero-image-alt"
-          class="admin-hero-grid__input admin-hero-grid__input--secondary"
-          type="text"
-          maxlength={ADMIN_HERO_IMAGE_ALT_MAX_LENGTH}
-          placeholder={ADMIN_HERO_IMAGE_ALT_DEFAULT}
-          aria-label="Hero 图片说明"
-        />
+        <div class="admin-hero-media__preview" aria-label="Hero 图片预览">
+          <p class="admin-media-field-preview-label">预览图片</p>
+          <div
+            class="admin-media-field-preview admin-media-field-preview--hero"
+            data-admin-media-preview="home.heroImageSrc"
+            data-admin-media-default-preview-src={defaultHero.src}
+            hidden
+          >
+            <img alt="" loading="lazy" decoding="async" data-admin-media-preview-img="home.heroImageSrc" />
+            <span class="admin-media-field-placeholder" data-admin-media-preview-placeholder="home.heroImageSrc" hidden>
+              首页 Hero 图未启用
+            </span>
+          </div>
+        </div>
       </div>
-      <div class="admin-media-field-preview admin-media-field-preview--hero" data-admin-media-preview="home.heroImageSrc" hidden>
-        <img alt="" loading="lazy" decoding="async" data-admin-media-preview-img="home.heroImageSrc" />
-      </div>
-      <p class="admin-help">注：支持 src/assets/**、public/** 或 https:// 图床链接</p>
     </div>
     <div class="admin-field admin-field--full">
       <div class="admin-label admin-label--split">

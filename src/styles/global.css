@@ -4,7 +4,7 @@
    - home.css / about.css / memo.css：页面私有规则
    - article.css：正文页专用（prose / figure / callout / lightbox / code-block）
    - bits-page.css：/bits/ 专用（bits / lightbox）
-   - admin.css：/admin 页面按需引入
+   - admin-shell.css + Admin 路由私有样式：/admin 页面按需引入
    断点变量覆盖仅保留共享层变量与跨页面公共规则。 */
 @import "./components/layout.css";
 @import "./components/lists.css";

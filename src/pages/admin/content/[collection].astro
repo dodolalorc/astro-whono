@@ -34,23 +34,29 @@ const collection: AdminContentCollectionKey = collectionParam;
 const isDev = import.meta.env.DEV;
 const base = import.meta.env.BASE_URL ?? '/';
 const withBase = createWithBase(base);
+const { default: adminShellStylesHref } = await import('../../../styles/components/admin-shell.css?url');
 
 const loadContentDevState = async () => {
-  const [{ default: adminContentScriptHref }, { default: adminStylesHref }] = await Promise.all([
+  const [
+    { default: adminContentScriptHref },
+    { default: adminContentStylesHref },
+    { default: adminMediaSharedStylesHref }
+  ] = await Promise.all([
     import('../../../scripts/admin-content/index.ts?url'),
-    import('../../../styles/components/admin.css?url')
+    import('../../../styles/components/admin-content.css?url'),
+    import('../../../styles/components/admin-media-shared.css?url')
   ]);
 
   return {
     adminContentScriptHref,
-    adminStylesHref,
+    stylesHref: [adminShellStylesHref, adminContentStylesHref, adminMediaSharedStylesHref],
     pageData: await getAdminContentCollectionPageData(collection, Astro.url.searchParams)
   };
 };
 
 const contentDevState = isDev ? await loadContentDevState() : null;
 const pageData = contentDevState?.pageData ?? null;
-const adminStylesHref = contentDevState?.adminStylesHref ?? null;
+const adminStylesHref = contentDevState?.stylesHref ?? adminShellStylesHref;
 const currentCollectionHref = getAdminContentCollectionHref(collection);
 const selectedEntryEditorPayload = isDev && pageData?.selectedEntry
   ? await readAdminContentEntryEditorPayload(collection, pageData.selectedEntry.id)

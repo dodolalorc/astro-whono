@@ -143,7 +143,7 @@ npm run check:preview-admin
 - 内容集合：`src/content.config.ts`
 - 样式共享入口：`src/styles/global.css`
 - 页面 / 场景样式入口：`src/styles/home.css`、`src/styles/about.css`、`src/styles/memo.css`、`src/styles/article.css`、`src/styles/bits-page.css`
-- 后台样式入口：`src/styles/components/admin.css`（仅 `/admin` 使用）
+- 后台样式入口：`src/styles/components/admin-shell.css` + 各 Admin 路由私有样式；`admin.css` 仅保留兼容聚合入口
 
 ### Admin Console（/admin）
 

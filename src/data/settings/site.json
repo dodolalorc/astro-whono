@@ -9,7 +9,7 @@
   },
   "adminOverview": {
     "publicVisible": true,
-    "hiddenMessage": "Admin 页面作者暂未公开。"
+    "hiddenMessage": "作者暂未公开此页面。"
   },
   "socialLinks": {
     "github": "https://github.com/cxro/astro-whono",

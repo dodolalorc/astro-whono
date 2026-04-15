@@ -213,27 +213,34 @@ const {
     <p class="admin-subtitle">
       <span class="admin-subtitle__main">/bits/页默认作者</span>
     </p>
-    <div class="admin-grid">
-      <label class="admin-field">
-        <span class="admin-label">
-          <span class="admin-label__main">默认作者名</span>
-        </span>
-        <input id="page-bits-author-name" type="text" autocomplete="off" />
-      </label>
-      <label class="admin-field">
-        <span class="admin-label">
-          <span class="admin-label__main">默认头像</span>
-          <span class="admin-label__hint">（相对路径）</span>
-        </span>
-        <div class="admin-media-field-input">
-          <input id="page-bits-author-avatar" type="text" autocomplete="off" />
-          <button class="admin-btn admin-btn--ghost" type="button" data-admin-media-open="page.bits.defaultAuthor.avatar">
-            选择本地图片
-          </button>
+    <div class="admin-author-media">
+      <div class="admin-author-media__fields">
+        <label class="admin-field">
+          <span class="admin-label">
+            <span class="admin-label__main">默认作者名</span>
+          </span>
+          <input id="page-bits-author-name" type="text" autocomplete="off" />
+        </label>
+        <div class="admin-field">
+          <span class="admin-label">
+            <label class="admin-label__main" for="page-bits-author-avatar">默认头像</label>
+            <span class="admin-label__hint">（相对路径）</span>
+          </span>
+          <div class="admin-media-field-input">
+            <input id="page-bits-author-avatar" type="text" autocomplete="off" />
+            <button
+              class="admin-btn admin-btn--ghost"
+              type="button"
+              data-admin-media-open="page.bits.defaultAuthor.avatar"
+              aria-label="选择 Bits 默认头像"
+            >
+              选择
+            </button>
+          </div>
         </div>
-        <p class="admin-help admin-help--inline" data-admin-media-meta="page.bits.defaultAuthor.avatar">
-          仅支持 public/** 下的相对图片路径
-        </p>
+      </div>
+      <div class="admin-author-media__preview" aria-label="默认头像预览">
+        <p class="admin-media-field-preview-label">预览头像</p>
         <div
           class="admin-media-field-preview admin-media-field-preview--avatar"
           data-admin-media-preview="page.bits.defaultAuthor.avatar"
@@ -241,7 +248,7 @@ const {
         >
           <img alt="" loading="lazy" decoding="async" data-admin-media-preview-img="page.bits.defaultAuthor.avatar" />
         </div>
-      </label>
+      </div>
     </div>
   </div>
 </fieldset>

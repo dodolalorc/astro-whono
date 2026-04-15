@@ -10,18 +10,19 @@ import { createWithBase } from '../../../utils/format';
 const isDev = import.meta.env.DEV;
 const base = import.meta.env.BASE_URL ?? '/';
 const withBase = createWithBase(base);
+const { default: adminShellStylesHref } = await import('../../../styles/components/admin-shell.css?url');
 
 const loadContentOverviewDevState = async () => {
-  const { default: adminStylesHref } = await import('../../../styles/components/admin.css?url');
+  const { default: adminContentStylesHref } = await import('../../../styles/components/admin-content.css?url');
 
   return {
-    adminStylesHref,
+    stylesHref: [adminShellStylesHref, adminContentStylesHref],
     overview: await getAdminContentOverviewData()
   };
 };
 
 const contentOverviewDevState = isDev ? await loadContentOverviewDevState() : null;
-const adminStylesHref = contentOverviewDevState?.adminStylesHref ?? null;
+const adminStylesHref = contentOverviewDevState?.stylesHref ?? adminShellStylesHref;
 const contentOverviewTotals = contentOverviewDevState
   ? contentOverviewDevState.overview.summaries.reduce(
       (acc, summary) => ({

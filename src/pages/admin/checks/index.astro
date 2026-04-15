@@ -13,6 +13,7 @@ import { createWithBase } from '../../../utils/format';
 const isDev = import.meta.env.DEV;
 const base = import.meta.env.BASE_URL ?? '/';
 const withBase = createWithBase(base);
+const { default: adminShellStylesHref } = await import('../../../styles/components/admin-shell.css?url');
 
 const selectedCategoryParam = Astro.url.searchParams.get('category')?.trim() ?? '';
 const selectedCategory: AdminChecksFilterValue = isAdminChecksCategoryId(selectedCategoryParam)
@@ -20,20 +21,20 @@ const selectedCategory: AdminChecksFilterValue = isAdminChecksCategoryId(selecte
   : 'all';
 
 const loadChecksDevState = async () => {
-  const [{ default: adminChecksScriptHref }, { default: adminStylesHref }] = await Promise.all([
+  const [{ default: adminChecksScriptHref }, { default: adminChecksStylesHref }] = await Promise.all([
     import('../../../scripts/admin-checks/index.ts?url'),
-    import('../../../styles/components/admin.css?url')
+    import('../../../styles/components/admin-checks.css?url')
   ]);
 
   return {
     adminChecksScriptHref,
-    adminStylesHref,
+    stylesHref: [adminShellStylesHref, adminChecksStylesHref],
     checks: await getAdminChecksData()
   };
 };
 
 const checksDevState = isDev ? await loadChecksDevState() : null;
-const adminStylesHref = checksDevState?.adminStylesHref ?? null;
+const adminStylesHref = checksDevState?.stylesHref ?? adminShellStylesHref;
 const visibleCategories = checksDevState
   ? (
       selectedCategory === 'all'

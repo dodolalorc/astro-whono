@@ -1,0 +1,106 @@
+---
+import type { SidebarNavId } from '../../lib/theme-settings';
+import AdminHomeSection from './AdminHomeSection.astro';
+import AdminPageSection from './AdminPageSection.astro';
+import AdminSidebarSection from './AdminSidebarSection.astro';
+import AdminSiteSection from './AdminSiteSection.astro';
+import AdminUiSection from './AdminUiSection.astro';
+
+interface Props {
+  bootstrapText: string;
+  footerStartYearMin: number;
+  footerStartYearMax: number;
+  homeIntroMaxLength: number;
+  memoSubtitlePlaceholder: string;
+  memoTitlePlaceholder: string;
+  navIdOrder: readonly SidebarNavId[];
+  pageSubtitleMaxLength: number;
+  pageTitleMaxLength: number;
+  settingsEndpoint: string;
+  socialCustomLimit: number;
+}
+
+const {
+  bootstrapText,
+  footerStartYearMin,
+  footerStartYearMax,
+  homeIntroMaxLength,
+  memoSubtitlePlaceholder,
+  memoTitlePlaceholder,
+  navIdOrder,
+  pageSubtitleMaxLength,
+  pageTitleMaxLength,
+  settingsEndpoint,
+  socialCustomLimit
+} = Astro.props;
+---
+
+<section class="admin-theme-console" data-admin-root data-settings-endpoint={settingsEndpoint}>
+  <section
+    id="admin-error-banner"
+    class="admin-banner admin-banner--error"
+    hidden
+    role="alert"
+    aria-atomic="true"
+    tabindex="-1"
+  >
+    <div class="admin-banner__header">
+      <div class="admin-banner__lead">
+        <span class="admin-banner__icon" aria-hidden="true">×</span>
+        <div class="admin-banner__copy">
+          <p id="admin-error-title" class="admin-banner__title">操作未完成</p>
+          <p id="admin-error-message" class="admin-banner__message" hidden></p>
+        </div>
+      </div>
+      <button
+        id="admin-error-retry"
+        class="admin-btn admin-btn--ghost admin-btn--danger admin-banner__retry"
+        type="button"
+        hidden
+      >
+        重新检查
+      </button>
+    </div>
+    <ul id="admin-error-list" class="admin-banner__list" hidden></ul>
+  </section>
+
+  <form id="admin-form" class="admin-form" novalidate>
+    <AdminSiteSection
+      footerStartYearMin={footerStartYearMin}
+      footerStartYearMax={footerStartYearMax}
+      socialCustomLimit={socialCustomLimit}
+    />
+
+    <AdminSidebarSection navIdOrder={navIdOrder} />
+
+    <AdminHomeSection homeIntroMaxLength={homeIntroMaxLength} />
+
+    <AdminPageSection
+      pageTitleMaxLength={pageTitleMaxLength}
+      pageSubtitleMaxLength={pageSubtitleMaxLength}
+      memoTitlePlaceholder={memoTitlePlaceholder}
+      memoSubtitlePlaceholder={memoSubtitlePlaceholder}
+    />
+
+    <AdminUiSection />
+  </form>
+
+  <div id="admin-actions-sentinel" class="admin-actions__sentinel" aria-hidden="true"></div>
+  <div id="admin-actions" class="admin-actions" data-dirty="false" data-sticky="false">
+    <div class="admin-actions__meta">
+      <p id="admin-dirty-banner" class="admin-banner admin-banner--dirty" hidden>
+        * 你有未保存更改，离开页面会触发提醒。
+      </p>
+      <p id="admin-status-inline" class="admin-status admin-status--inline" data-state="idle" aria-hidden="true">
+        等待加载
+      </p>
+    </div>
+    <div class="admin-actions__buttons">
+      <button id="admin-validate" class="admin-btn" type="button">检查配置</button>
+      <button id="admin-reset" class="admin-btn admin-btn--ghost" type="button">重置更改</button>
+      <button id="admin-save" class="admin-btn admin-btn--muted" type="button">保存</button>
+    </div>
+  </div>
+
+  <div id="admin-bootstrap" hidden>{bootstrapText}</div>
+</section>

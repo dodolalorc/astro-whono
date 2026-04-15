@@ -142,7 +142,7 @@ npm run check:preview-admin
 - Content collections: `src/content.config.ts`
 - Shared style entry: `src/styles/global.css`
 - Page / scene style entries: `src/styles/home.css`, `src/styles/about.css`, `src/styles/memo.css`, `src/styles/article.css`, `src/styles/bits-page.css`
-- Admin style entry: `src/styles/components/admin.css` (used only by `/admin`)
+- Admin style entry: `src/styles/components/admin-shell.css` + route-specific Admin styles; `admin.css` is kept only as a compatibility aggregate
 
 ### Theme Console (`/admin`)
 

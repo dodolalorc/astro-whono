@@ -159,7 +159,7 @@ const COLLECTION_LABELS: Record<AdminOverviewCollectionKey, string> = {
 };
 
 const COLLECTION_DETAILS: Record<AdminOverviewCollectionKey, string> = {
-  essay: '随笔',
+  essay: '文章',
   bits: '动态',
   memo: '小记'
 };

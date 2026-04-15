@@ -13,21 +13,20 @@ const isDev = import.meta.env.DEV;
 const base = import.meta.env.BASE_URL ?? '/';
 const withBase = createWithBase(base);
 const exportIncludedScopesLabel = `['${ADMIN_SETTINGS_EXPORT_SCOPE}']`;
+const { default: adminShellStylesHref } = await import('../../../styles/components/admin-shell.css?url');
 
 const loadDataDevState = async () => {
   const [
     { default: adminDataScriptHref },
-    { default: adminStylesHref },
     { default: adminDataStylesHref }
   ] = await Promise.all([
     import('../../../scripts/admin-data/index.ts?url'),
-    import('../../../styles/components/admin.css?url'),
     import('../../../styles/components/admin-data.css?url')
   ]);
 
   return {
     adminDataScriptHref,
-    stylesHref: [adminStylesHref, adminDataStylesHref],
+    stylesHref: [adminShellStylesHref, adminDataStylesHref],
     editableState: getEditableThemeSettingsState()
   };
 };
@@ -44,7 +43,7 @@ const bootstrapText =
     : null;
 ---
 
-<AdminLayout title="Data Console" stylesHref={dataDevState?.stylesHref ?? null}>
+<AdminLayout title="Data Console" stylesHref={dataDevState?.stylesHref ?? adminShellStylesHref}>
   <AdminShell
     currentRoute="data"
     title="Data Console"

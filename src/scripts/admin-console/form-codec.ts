@@ -238,6 +238,10 @@ export const createFormCodec = ({
   const getHomeIntroLinkLabel = (linkKey: HomeIntroLinkKey): string =>
     ADMIN_HOME_INTRO_LINK_OPTIONS.find((option) => option.id === linkKey)?.label || '链接';
 
+  const syncAdminOverviewControls = (): void => {
+    inputSiteAdminOverviewHiddenMessage.disabled = inputSiteAdminOverviewPublicVisible.checked;
+  };
+
   const collectHomeIntroLinks = (): HomeIntroLinkKey[] => {
     const primary = getSelectedHomeIntroLink(inputHomeIntroMoreLinkPrimary, defaultPrimaryHomeIntroLink);
     if (!inputHomeIntroMoreLinkSecondaryEnabled.checked) {
@@ -501,6 +505,7 @@ export const createFormCodec = ({
     inputSiteAdminOverviewPublicVisible.checked = settings.site.adminOverview?.publicVisible !== false;
     inputSiteAdminOverviewHiddenMessage.value =
       settings.site.adminOverview?.hiddenMessage || ADMIN_OVERVIEW_HIDDEN_MESSAGE_DEFAULT;
+    syncAdminOverviewControls();
     inputSiteSocialGithubOrder.value = String(
       settings.site.socialLinks?.presetOrder?.github ?? ADMIN_SOCIAL_PRESET_ORDER_DEFAULT.github
     );
@@ -580,6 +585,7 @@ export const createFormCodec = ({
     collectHomeIntroLinks,
     refreshArticleMetaPreview,
     refreshHomeIntroPreview,
+    syncAdminOverviewControls,
     syncHomeIntroLinkControls,
     syncHeroControls,
     refreshFooterPreview,

@@ -427,3 +427,19 @@
   background: rgba(159, 58, 58, 0.12);
   color: #e67a72;
 }
+
+@media (max-width: 900px) {
+  .admin-checks-category__head,
+  .admin-checks-issue__head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-checks-toolbar__summary {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-checks-toolbar__action {
+    justify-self: flex-start;
+  }
+}

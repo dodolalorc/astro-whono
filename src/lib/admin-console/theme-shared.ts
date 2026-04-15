@@ -135,7 +135,7 @@ export const ADMIN_NAV_ORNAMENT_DEFAULT = '·';
 export const ADMIN_NAV_ORNAMENT_MAX_LENGTH = 4;
 export const ADMIN_FOOTER_START_YEAR_MIN = 1900;
 export const ADMIN_FOOTER_COPYRIGHT_MAX_LENGTH = 120;
-export const ADMIN_OVERVIEW_HIDDEN_MESSAGE_DEFAULT = 'Admin 页面作者暂未公开。';
+export const ADMIN_OVERVIEW_HIDDEN_MESSAGE_DEFAULT = '作者暂未公开此页面。';
 export const ADMIN_OVERVIEW_HIDDEN_MESSAGE_MAX_LENGTH = 120;
 
 export const ADMIN_LOCALE_RE = /^[A-Za-z]{2,3}(?:-[A-Za-z0-9]{2,8})*$/;

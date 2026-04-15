@@ -375,8 +375,8 @@
 
 .admin-site-overview__structure-row {
   display: grid;
-  grid-template-columns: minmax(128px, 0.35fr) minmax(80px, 1fr) minmax(64px, max-content);
-  gap: 14px;
+  grid-template-columns: 104px minmax(96px, 1fr) max-content;
+  gap: 14px 12px;
   align-items: center;
   min-width: 0;
 }

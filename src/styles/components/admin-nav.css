@@ -1,5 +1,5 @@
 /* Admin Nav
-   负责后台真实路由 tabs 与侧栏导航排序编辑表格。
+   负责 Theme Console 侧栏导航排序编辑表格。
 */
 
 .admin-nav-row input[type='number'] {
@@ -204,65 +204,79 @@
   font-family: var(--admin-font-copy);
 }
 
-.admin-route-nav {
-  --admin-route-nav-link-color: color-mix(in srgb, var(--muted) 84%, var(--faint) 16%);
-  --admin-route-nav-link-hover-color: color-mix(in srgb, var(--muted) 90%, var(--text) 10%);
-  --admin-route-nav-link-rule-color: color-mix(in srgb, var(--muted) 54%, var(--faint) 46%);
-  --admin-route-nav-link-rule-hover-color: color-mix(in srgb, var(--muted) 68%, var(--faint) 32%);
-  position: relative;
-  min-width: 0;
-  padding: 0;
-}
+@media (max-width: 900px) {
+  .admin-nav-grid {
+    gap: 8px;
+    border: 0;
+    border-radius: 0;
+    overflow: visible;
+  }
 
-.admin-route-nav__list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 22px;
-}
+  .admin-nav-header {
+    display: none;
+  }
 
-.admin-route-nav__item {
-  position: relative;
-  min-width: fit-content;
-  max-width: 100%;
-}
+  .admin-nav-row {
+    grid-template-columns: 1fr;
+    align-items: start;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    gap: 10px;
+    padding: 12px;
+  }
 
-.admin-route-nav .admin-route-nav__link {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  min-height: 36px;
-  max-width: 100%;
-  padding: 6px 2px 8px;
-  border-bottom: 2px solid transparent;
-  color: var(--admin-route-nav-link-color);
-  text-decoration: none;
-  transition:
-    color 160ms ease,
-    border-bottom-color 160ms ease;
-}
+  .admin-nav-id {
+    order: 0;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed var(--border);
+  }
 
-.admin-route-nav__link:hover {
-  border-bottom-color: var(--admin-route-nav-link-rule-hover-color);
-  color: var(--admin-route-nav-link-hover-color);
-}
+  .admin-nav-field--order {
+    order: 1;
+  }
 
-.admin-route-nav__link:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 4px;
-  border-radius: 6px;
-}
+  .admin-nav-field--name {
+    order: 2;
+    padding-left: 0;
+  }
 
-.admin-route-nav .admin-route-nav__link.is-active {
-  border-bottom-color: var(--accent);
-  color: var(--text);
-}
+  .admin-nav-field--ornament {
+    order: 3;
+  }
 
-.admin-route-nav__label {
-  font-size: 15px;
-  line-height: 1.3;
-  white-space: nowrap;
+  .admin-toggle {
+    order: 4;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .admin-nav-id code {
+    min-width: 0;
+  }
+
+  .admin-nav-field,
+  .admin-toggle {
+    gap: 6px;
+  }
+
+  .admin-nav-cell-label {
+    display: block;
+  }
+
+  .admin-nav-field--name input,
+  .admin-nav-field--ornament input,
+  .admin-nav-field--order input {
+    margin-inline: 0;
+  }
+
+  .admin-nav-order-frame {
+    min-width: 0;
+  }
+
+  .admin-toggle__control {
+    min-height: 32px;
+  }
 }
