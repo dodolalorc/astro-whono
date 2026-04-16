@@ -22,13 +22,10 @@
     "check": "astro check",
     "test": "vitest run --config ./vitest.config.ts",
     "audit:prod": "npm audit --omit=dev --audit-level=high --registry=https://registry.npmjs.org",
-    "check:callout": "node ./scripts/check-callout.mjs",
-    "check:codeblock": "node ./scripts/check-codeblock.mjs",
-    "check:figure": "node ./scripts/check-figure.mjs",
-    "check:gallery": "node ./scripts/check-gallery.mjs",
+    "check:markdown-smoke": "node ./scripts/check-markdown-smoke.mjs",
     "check:prod-artifacts": "node ./scripts/check-production-artifacts.mjs",
     "check:preview-admin": "node ./scripts/check-preview-admin-boundary.mjs",
-    "ci:core": "npm run check && npm run test && npm run build && npm run check:callout && npm run check:codeblock && npm run check:gallery && npm run check:figure",
+    "ci:core": "npm run check && npm run test && npm run build && npm run check:markdown-smoke",
     "ci": "npm run ci:core",
     "font:charset": "node ./scripts/font-charset.mjs",
     "font:subset": "node ./scripts/font-subset.mjs",
@@ -38,7 +35,7 @@
   "dependencies": {
     "@astrojs/rss": "^4.0.18",
     "@astrojs/sitemap": "^3.7.2",
-    "astro": "^6.1.1"
+    "astro": "^6.1.7"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.8",
@@ -57,13 +54,9 @@
     "anymatch": {
       "picomatch": "2.3.2"
     },
-    "devalue": "5.6.4",
-    "fast-xml-parser": "5.5.7",
     "h3": "1.15.9",
     "picomatch": "4.0.4",
     "rollup": "4.59.0",
-    "smol-toml": "1.6.1",
-    "svgo": "4.0.1",
     "volar-service-yaml": "0.0.70",
     "yaml": "2.8.3",
     "yaml-language-server": "1.20.0"

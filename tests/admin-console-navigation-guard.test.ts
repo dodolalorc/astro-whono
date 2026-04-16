@@ -1,62 +1,68 @@
 import { describe, expect, it } from 'vitest';
-import { shouldGuardAdminNavigation } from '../src/scripts/admin-console/navigation-guard';
+import {
+  shouldGuardAdminNavigation,
+  type AdminNavigationGuardInput
+} from '../src/scripts/admin-console/navigation-guard';
 
 describe('admin-console/navigation-guard', () => {
-  it('guards same-origin route switches when the form is dirty', () => {
-    expect(
-      shouldGuardAdminNavigation({
-        isDirty: true,
-        currentUrl: 'http://localhost:4321/admin/theme/',
-        nextUrl: 'http://localhost:4321/admin/'
-      })
-    ).toBe(true);
-  });
-
-  it('ignores hash-only jumps on the same document', () => {
-    expect(
-      shouldGuardAdminNavigation({
-        isDirty: true,
-        currentUrl: 'http://localhost:4321/admin/theme/',
+  const baseInput: AdminNavigationGuardInput = {
+    isDirty: true,
+    currentUrl: 'http://localhost:4321/admin/theme/',
+    nextUrl: 'http://localhost:4321/admin/'
+  };
+  const cases: Array<{
+    name: string;
+    input: AdminNavigationGuardInput;
+    expected: boolean;
+  }> = [
+    {
+      name: 'guards same-origin route switches when the form is dirty',
+      input: baseInput,
+      expected: true
+    },
+    {
+      name: 'ignores hash-only jumps on the same document',
+      input: {
+        ...baseInput,
         nextUrl: 'http://localhost:4321/admin/theme/#site'
-      })
-    ).toBe(false);
-  });
-
-  it('ignores modified clicks and non-self targets', () => {
-    expect(
-      shouldGuardAdminNavigation({
-        isDirty: true,
-        currentUrl: 'http://localhost:4321/admin/theme/',
-        nextUrl: 'http://localhost:4321/admin/',
+      },
+      expected: false
+    },
+    {
+      name: 'ignores modified clicks',
+      input: {
+        ...baseInput,
         metaKey: true
-      })
-    ).toBe(false);
-
-    expect(
-      shouldGuardAdminNavigation({
-        isDirty: true,
-        currentUrl: 'http://localhost:4321/admin/theme/',
-        nextUrl: 'http://localhost:4321/admin/',
+      },
+      expected: false
+    },
+    {
+      name: 'ignores non-self targets',
+      input: {
+        ...baseInput,
         target: '_blank'
-      })
-    ).toBe(false);
-  });
-
-  it('ignores clean state and cross-origin jumps', () => {
-    expect(
-      shouldGuardAdminNavigation({
-        isDirty: false,
-        currentUrl: 'http://localhost:4321/admin/theme/',
-        nextUrl: 'http://localhost:4321/admin/'
-      })
-    ).toBe(false);
-
-    expect(
-      shouldGuardAdminNavigation({
-        isDirty: true,
-        currentUrl: 'http://localhost:4321/admin/theme/',
+      },
+      expected: false
+    },
+    {
+      name: 'ignores clean state',
+      input: {
+        ...baseInput,
+        isDirty: false
+      },
+      expected: false
+    },
+    {
+      name: 'ignores cross-origin jumps',
+      input: {
+        ...baseInput,
         nextUrl: 'https://example.com/admin/'
-      })
-    ).toBe(false);
+      },
+      expected: false
+    }
+  ];
+
+  it.each(cases)('$name', ({ input, expected }) => {
+    expect(shouldGuardAdminNavigation(input)).toBe(expected);
   });
 });

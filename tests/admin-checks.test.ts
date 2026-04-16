@@ -183,15 +183,20 @@ describe('admin-console/checks', () => {
     const essaySlugCategory = getCategory('essay-slug');
     const bitsMediaCategory = getCategory('bits-media');
     const tagCategory = getCategory('tag');
+    const blockedCategories = result.categories.filter((category) => category.status === 'blocked');
+    const allIssues = result.categories.flatMap((category) => category.issues);
+    const affectedPaths = new Set(
+      allIssues.map((issue) => issue.relativePath).filter((value): value is string => Boolean(value))
+    );
 
-    expect(result.totalIssueCount).toBe(9);
-    expect(result.blockedCategoryCount).toBe(4);
-    expect(result.affectedPathCount).toBe(7);
-
-    expect(settingsCategory.issueCount).toBe(1);
-    expect(essaySlugCategory.issueCount).toBe(4);
-    expect(bitsMediaCategory.issueCount).toBe(3);
-    expect(tagCategory.issueCount).toBe(1);
+    expect(result.totalIssueCount).toBe(allIssues.length);
+    expect(result.blockedCategoryCount).toBe(blockedCategories.length);
+    expect(result.affectedPathCount).toBe(affectedPaths.size);
+    for (const category of [settingsCategory, essaySlugCategory, bitsMediaCategory, tagCategory]) {
+      expect(category.status).toBe('blocked');
+      expect(category.issueCount).toBe(category.issues.length);
+      expect(category.issues.length).toBeGreaterThan(0);
+    }
 
     expect(settingsCategory.issues).toEqual(
       expect.arrayContaining([

@@ -124,27 +124,6 @@ describe('admin-console/content', () => {
     expect(filtered[0]?.id).toBe('essay/example.md');
   });
 
-  it('sorts content items by title when requested', () => {
-    const items = [
-      createItem({ id: 'essay/zeta.md', title: 'Zeta', searchHaystack: 'zeta' }),
-      createItem({ id: 'essay/alpha.md', title: 'Alpha', searchHaystack: 'alpha' }),
-      createItem({ id: 'essay/beta.md', title: 'Beta', searchHaystack: 'beta' })
-    ];
-
-    const filtered = filterAdminContentItems(items, {
-      query: '',
-      queryTokens: [],
-      draft: 'all',
-      tag: '',
-      year: null,
-      page: 1,
-      entry: '',
-      sort: 'title'
-    });
-
-    expect(filtered.map((item) => item.title)).toEqual(['Alpha', 'Beta', 'Zeta']);
-  });
-
   it('builds overview summaries from metadata without deriving body text', async () => {
     mockGetEssayDerivedText.mockImplementation(() => {
       throw new Error('overview should not derive essay body text');

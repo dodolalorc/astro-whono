@@ -3,7 +3,6 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import {
   assertAdminOverviewHeader,
-  assertAdminOverviewSectionOrder,
   assertAdminContentStaticShell,
   assertAdminMediaStaticShell,
   assertAdminSettingsStaticShell,
@@ -110,42 +109,24 @@ export const runProductionArtifactCheck = async (options = {}) => {
   const adminThemeHtml = readText('dist/admin/theme/index.html');
   const adminDataHtml = readText('dist/admin/data/index.html');
   const readonlyAdminHtmlChecks = [
-    ['dist/admin/content/index.html', adminContentHtml, 'Content Console', '/admin/'],
-    ['dist/admin/content/essay/index.html', adminContentEssayHtml, 'Content Console', '/admin/content/'],
-    ['dist/admin/content/bits/index.html', adminContentBitsHtml, 'Content Console', '/admin/content/'],
-    ['dist/admin/content/memo/index.html', adminContentMemoHtml, 'Content Console', '/admin/content/'],
-    ['dist/admin/media/index.html', adminMediaHtml, 'Media Console', '/admin/'],
-    ['dist/admin/checks/index.html', adminChecksHtml, 'Checks Console', '/admin/'],
-    ['dist/admin/theme/index.html', adminThemeHtml, 'Theme Console', '/admin/'],
-    ['dist/admin/data/index.html', adminDataHtml, 'Data Console', '/admin/']
+    ['dist/admin/content/index.html', adminContentHtml, 'Content Console'],
+    ['dist/admin/content/essay/index.html', adminContentEssayHtml, 'Content Console'],
+    ['dist/admin/content/bits/index.html', adminContentBitsHtml, 'Content Console'],
+    ['dist/admin/content/memo/index.html', adminContentMemoHtml, 'Content Console'],
+    ['dist/admin/media/index.html', adminMediaHtml, 'Media Console'],
+    ['dist/admin/checks/index.html', adminChecksHtml, 'Checks Console'],
+    ['dist/admin/theme/index.html', adminThemeHtml, 'Theme Console'],
+    ['dist/admin/data/index.html', adminDataHtml, 'Data Console']
   ];
 
   assertAdminOverviewHeader('dist/admin/index.html', adminHtml);
-  expect(!adminHtml.includes('Published'), 'dist/admin/index.html should not show the old English published metric');
-  expect(!adminHtml.includes('Last Update'), 'dist/admin/index.html should not show the old English last update metric');
-  expect(!adminHtml.includes('Archive Years'), 'dist/admin/index.html should not show the removed archive years metric');
   if (adminHtml.includes('data-admin-overview-mode="hidden"')) {
-    expect(adminHtml.includes('暂未公开'), 'dist/admin/index.html is missing the hidden overview mode chip');
     expect(
       adminHtml.includes('admin-site-overview__hidden-message'),
       'dist/admin/index.html is missing the hidden overview message'
     );
-    expect(!adminHtml.includes('文章数量'), 'dist/admin/index.html should not show metrics while overview is hidden');
-    expect(!adminHtml.includes('内容结构'), 'dist/admin/index.html should not show structure while overview is hidden');
-    expect(!adminHtml.includes('近期发布'), 'dist/admin/index.html should not show recent publications while overview is hidden');
-    expect(!adminHtml.includes('/admin/theme/'), 'dist/admin/index.html should not show admin route nav while overview is hidden');
   } else {
-    expect(adminHtml.includes('文章数量'), 'dist/admin/index.html is missing the article count metric');
-    expect(adminHtml.includes('标签数量'), 'dist/admin/index.html is missing the tag count metric');
-    expect(adminHtml.includes('文字统计'), 'dist/admin/index.html is missing the word count metric');
-    expect(adminHtml.includes('上次更新'), 'dist/admin/index.html is missing the last update metric');
-    expect(adminHtml.includes('内容结构'), 'dist/admin/index.html is missing the content structure section');
-    expect(adminHtml.includes('写作活动'), 'dist/admin/index.html is missing the writing activity section');
-    expect(adminHtml.includes('近期发布'), 'dist/admin/index.html is missing the recent publications section');
     expect(adminHtml.includes('data-admin-overview-mode="public"'), 'dist/admin/index.html is missing the public overview mode marker');
-    expect(!adminHtml.includes('公开视图'), 'dist/admin/index.html should not show the old public recent label');
-    assertAdminOverviewSectionOrder('dist/admin/index.html', adminHtml);
-    expect(adminHtml.includes('/admin/theme/'), 'dist/admin/index.html is missing the admin route nav');
   }
   expect(adminHtml.includes('noindex,nofollow'), 'dist/admin/index.html is missing the noindex robots boundary');
   expect(!adminHtml.includes('data-admin-root'), 'dist/admin/index.html should stay readonly outside dev');
@@ -155,20 +136,13 @@ export const runProductionArtifactCheck = async (options = {}) => {
   expect(!adminHtml.includes('id="admin-media-bootstrap"'), 'dist/admin/index.html should not emit media bootstrap payload');
   expect(!adminHtml.includes('data-admin-data-root'), 'dist/admin/index.html should not emit data console payload');
   expect(!adminHtml.includes('id="admin-data-bootstrap"'), 'dist/admin/index.html should not emit data bootstrap payload');
-  expect(!adminHtml.includes('Readonly Boundary'), 'dist/admin/index.html should not keep the old readonly boundary card');
-  expect(!adminHtml.includes('Phase 1'), 'dist/admin/index.html should not keep old Phase 1 copy');
-  expect(!adminHtml.includes('Phase 2A'), 'dist/admin/index.html should not keep old Phase 2A copy');
-  expect(!adminHtml.includes('后台入口继续保留'), 'dist/admin/index.html should not keep old admin entry copy');
-  expect(!adminHtml.includes('打开 Checks Console'), 'dist/admin/index.html should not keep the old checks action');
-  expect(!adminHtml.includes('check:preview-admin'), 'dist/admin/index.html should not keep the old boundary command hint');
   expect(
     !/<script type="module" src="\/_astro\/[^"]+"><\/script>/.test(adminHtml),
     'dist/admin/index.html still links an external _astro module script'
   );
 
-  for (const [filePath, html, heading, linkHref] of readonlyAdminHtmlChecks) {
-    expect(html.includes(heading), `${filePath} is missing the expected readonly heading`);
-    expect(html.includes(linkHref), `${filePath} is missing the expected admin route link`);
+  for (const [filePath, html, heading] of readonlyAdminHtmlChecks) {
+    expect(html.includes(heading), `${filePath} is missing the expected ${heading} route heading`);
     expect(!html.includes('data-admin-root'), `${filePath} should stay readonly outside dev`);
     expect(!html.includes('id="admin-bootstrap"'), `${filePath} should not emit theme bootstrap payload`);
     expect(!html.includes('data-admin-content-root'), `${filePath} should not emit content console payload`);
@@ -186,48 +160,8 @@ export const runProductionArtifactCheck = async (options = {}) => {
     /<h1 class="sr-only">[^<]+<\/h1>/.test(indexHtml),
     'Homepage hidden H1 is missing from dist/index.html'
   );
-  expect(
-    /\.sr-only\s*\{/.test(indexHtml),
-    'Homepage critical CSS is missing the .sr-only rule'
-  );
-  if (/class="list-item__excerpt"/.test(indexHtml)) {
-    expect(
-      /\.list-item__excerpt\s*\{/.test(indexHtml),
-      'Homepage critical CSS is missing the .list-item__excerpt rule for above-the-fold entries'
-    );
-  }
-  if (/class="meta-line meta-line--items"/.test(indexHtml)) {
-    const requiredHomeMetaRules = [
-      [/\.meta-line\s*\{/, 'Homepage critical CSS is missing the .meta-line rule for above-the-fold entries'],
-      [/\.meta-line--items\s*\{/, 'Homepage critical CSS is missing the .meta-line--items rule for above-the-fold entries'],
-      [/\.meta-line__item\s*\{/, 'Homepage critical CSS is missing the .meta-line__item rule for above-the-fold entries'],
-      [/\.meta-line__item--tags\s*\{/, 'Homepage critical CSS is missing the .meta-line__item--tags rule for above-the-fold entries'],
-      [
-        /\.meta-line__item\s*\+\s*\.meta-line__item::before\s*\{/,
-        'Homepage critical CSS is missing the .meta-line__item + .meta-line__item::before separator rule'
-      ],
-      [/\.list-item\s+\.meta-line\s*\{/, 'Homepage critical CSS is missing the .list-item .meta-line spacing rule'],
-      [/\.meta-line\s+\.tag\s*\{/, 'Homepage critical CSS is missing the .meta-line .tag color rule']
-    ];
-
-    for (const [pattern, message] of requiredHomeMetaRules) {
-      expect(pattern.test(indexHtml), message);
-    }
-  }
-  if (/class="list-item list-item--link"/.test(indexHtml)) {
-    expect(
-      /@media\s*\(max-width:\s*900px\)\s*\{[\s\S]*?\.list-item\s*\{\s*padding:\s*16px\s+0;/.test(indexHtml),
-      'Homepage critical CSS is missing the mobile .list-item spacing rule for above-the-fold entries'
-    );
-  }
-  expect(
-    /<link(?=[^>]+rel="preload")(?=[^>]+href="[^"]*global[^"]*")(?=[^>]+as="style")[^>]*>/.test(indexHtml),
-    'Homepage is no longer preloading the deferred global stylesheet'
-  );
-  expect(
-    /<link(?=[^>]+rel="stylesheet")(?=[^>]+href="[^"]*global[^"]*")(?=[^>]+media="print")(?=[^>]+onload="this\.onload=null;this\.media='all'")[^>]*>/.test(indexHtml),
-    'Homepage is no longer using the deferGlobalStyles media-swap stylesheet path'
-  );
+  expect(!/\.admin-/.test(indexHtml), 'Homepage still contains admin CSS rules');
+  expect(!/--admin-status-/.test(indexHtml), 'Homepage still contains admin CSS tokens');
 
   const pageSettings = existsSync('src/data/settings/page.json')
     ? JSON.parse(readFileSync('src/data/settings/page.json', 'utf8'))

@@ -413,9 +413,9 @@
 }
 
 .admin-title-pair:focus-within {
-  outline: 2px solid var(--muted);
-  outline-offset: 1px;
-  box-shadow: 0 0 0 3px var(--panel);
+  outline: none;
+  border-color: var(--admin-focus-border);
+  box-shadow: 0 0 0 1px var(--admin-focus-ring);
 }
 
 .admin-title-pair__input {
@@ -669,9 +669,9 @@
 }
 
 .admin-inline-field__input:focus-visible {
-  outline: 2px solid var(--muted);
-  outline-offset: 1px;
-  box-shadow: 0 0 0 3px var(--panel);
+  outline: none;
+  border-color: var(--admin-focus-border);
+  box-shadow: 0 0 0 1px var(--admin-focus-ring);
 }
 
 .admin-actions {

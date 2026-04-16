@@ -1,5 +1,6 @@
 ---
 import AdminLayout from '../../../components/admin/AdminLayout.astro';
+import AdminDiagnosticPanel from '../../../components/admin/AdminDiagnosticPanel.astro';
 import AdminMediaPicker from '../../../components/admin/AdminMediaPicker.astro';
 import AdminShell from '../../../components/admin/AdminShell.astro';
 import {
@@ -409,18 +410,14 @@ const activeFilterCount = pageData
                     </div>
                   </div>
 
-                  <div id="admin-content-editor-error-banner" class="admin-banner admin-banner--error" hidden>
-                    <div class="admin-banner__header">
-                      <div class="admin-banner__lead">
-                        <span class="admin-banner__icon" aria-hidden="true">!</span>
-                        <div class="admin-banner__copy">
-                          <p id="admin-content-editor-error-title" class="admin-banner__title">frontmatter 未写入</p>
-                          <p id="admin-content-editor-error-message" class="admin-banner__message" hidden></p>
-                        </div>
-                      </div>
-                    </div>
-                    <ul id="admin-content-editor-error-list" class="admin-banner__list" hidden></ul>
-                  </div>
+                  <AdminDiagnosticPanel
+                    bannerId="admin-content-editor-error-banner"
+                    titleId="admin-content-editor-error-title"
+                    messageId="admin-content-editor-error-message"
+                    listId="admin-content-editor-error-list"
+                    title="frontmatter 未写入"
+                    label="写入异常"
+                  />
 
                   <form id="admin-content-editor-form" class="admin-content-editor__form">
                     <div class="admin-content-editor__grid">

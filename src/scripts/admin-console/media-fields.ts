@@ -198,6 +198,7 @@ export const createAdminThemeMediaFields = ({
         field,
         value
       });
+      if (binding.input.value.trim() !== value) return;
       if (getFieldState(field).enabled === false) return;
       if (meta.previewSrc) {
         setPreview(
@@ -209,6 +210,7 @@ export const createAdminThemeMediaFields = ({
       }
       setMetaText(binding.metaEl, formatAdminMediaMetaSummary(meta));
     } catch (error) {
+      if (binding.input.value.trim() !== value) return;
       if (getFieldState(field).enabled === false) return;
       setMetaText(binding.metaEl, error instanceof Error ? error.message : '路径暂时无法读取');
     }

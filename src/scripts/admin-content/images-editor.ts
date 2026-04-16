@@ -161,12 +161,14 @@ export const initAdminContentBitsImagesEditor = ({
 
     try {
       const meta = await picker.readMeta({ field: 'bits.images', value });
+      if ((refs.srcInput?.value.trim() ?? '') !== value) return;
       setMeta(refs, formatAdminMediaMetaSummary(meta));
       if (meta.kind === 'local' && refs.widthInput && refs.heightInput) {
         if (meta.width) refs.widthInput.value = String(meta.width);
         if (meta.height) refs.heightInput.value = String(meta.height);
       }
     } catch (error) {
+      if ((refs.srcInput?.value.trim() ?? '') !== value) return;
       setMeta(refs, error instanceof Error ? error.message : '路径暂时无法读取');
     } finally {
       syncHiddenInput();

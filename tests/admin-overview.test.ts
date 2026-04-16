@@ -127,29 +127,18 @@ describe('admin-console/overview', () => {
     expect(countAdminOverviewWords('，。、；:!? -')).toBe(0);
   });
 
-  it('counts only public source bodies for the overview word metric', () => {
-    const draftBodyWordCount = countAdminOverviewWords('草稿 draft 999');
-    const publicSource = {
-      essays: [
-        withBody(essay('published-essay'), '中文 alpha 123')
-      ],
-      archiveEssays: [],
-      bits: [
-        withBody(bit('published-bit'), 'beta test 42')
-      ],
-      memos: [
-        withBody(memo('published-memo'), 'かな memo')
-      ],
-      bitsHrefById: new Map([['published-bit', '/bits/#bit-published-bit']])
-    } as unknown as AdminOverviewPublicSource;
-
-    const summary = buildAdminOverviewPublicSummary(publicSource);
-
-    expect(summary.stats.wordCount).toBe(10);
-    expect(summary.stats.wordCount).not.toBe(10 + draftBodyWordCount);
-  });
-
   it('excludes draft bodies from word count while maintainer data can still include drafts', async () => {
+    const publicWordCount = [
+      '中文 alpha 123',
+      'beta test 42',
+      'かな memo'
+    ].reduce((total, body) => total + countAdminOverviewWords(body), 0);
+    const draftWordCount = [
+      '草稿 draft 999',
+      '草稿 bit 888',
+      '草稿 memo 777'
+    ].reduce((total, body) => total + countAdminOverviewWords(body), 0);
+
     mockCollections({
       essay: [
         withBody(essay('published-essay'), '中文 alpha 123'),
@@ -170,7 +159,8 @@ describe('admin-console/overview', () => {
       includeDraftInRecent: true
     });
 
-    expect(data.stats.wordCount).toBe(10);
+    expect(data.stats.wordCount).toBe(publicWordCount);
+    expect(data.stats.wordCount).not.toBe(publicWordCount + draftWordCount);
     expect(data.maintainerSummary?.draftCount).toBe(3);
     expect(data.recentPublications.some((entry) => entry.isDraft)).toBe(true);
   });

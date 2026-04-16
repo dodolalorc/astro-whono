@@ -9,16 +9,18 @@
   --admin-status-warn-bg: #1f1f1f;
   --admin-status-error-bg: #7f1d1d;
   --admin-status-icon-fg: #f8f4eb;
-  --admin-error-border: #d8b2b4;
-  --admin-error-bg: #fcf8f8;
-  --admin-error-text: #2f2523;
-  --admin-error-muted: #6e6263;
+  --admin-error-border: #d7d1cb;
+  --admin-error-bg: #f7f4f1;
+  --admin-error-text: #2a2321;
+  --admin-error-muted: #685d5b;
   --admin-error-accent: #a84f4b;
   --admin-error-icon-bg: rgba(168, 79, 75, 0.14);
-  --admin-error-surface: rgba(255, 255, 255, 0.9);
-  --admin-error-surface-border: rgba(168, 79, 75, 0.12);
-  --admin-error-code-bg: rgba(58, 42, 42, 0.05);
-  --admin-error-shadow: rgba(118, 61, 58, 0.16);
+  --admin-error-surface: rgba(255, 255, 255, 0.72);
+  --admin-error-surface-border: rgba(90, 73, 71, 0.14);
+  --admin-error-code-bg: rgba(64, 49, 48, 0.04);
+  --admin-error-shadow: rgba(56, 40, 38, 0.14);
+  --admin-focus-border: color-mix(in srgb, var(--text) 68%, var(--border) 32%);
+  --admin-focus-ring: color-mix(in srgb, var(--text) 16%, transparent);
   --admin-font-ui:
     "Microsoft YaHei UI",
     "Microsoft YaHei",
@@ -44,16 +46,18 @@
   --admin-status-warn-bg: #0f0f10;
   --admin-status-error-bg: #9f3a3a;
   --admin-status-icon-fg: #f3eee3;
-  --admin-error-border: #73595d;
-  --admin-error-bg: #221f21;
-  --admin-error-text: #f0e8e6;
-  --admin-error-muted: #b8acab;
-  --admin-error-accent: #d79a95;
+  --admin-error-border: #38373a;
+  --admin-error-bg: #18181a;
+  --admin-error-text: #f0e8e3;
+  --admin-error-muted: #b3aeaa;
+  --admin-error-accent: #cc938d;
   --admin-error-icon-bg: rgba(215, 154, 149, 0.16);
-  --admin-error-surface: rgba(255, 255, 255, 0.03);
-  --admin-error-surface-border: rgba(215, 154, 149, 0.12);
-  --admin-error-code-bg: rgba(255, 255, 255, 0.05);
-  --admin-error-shadow: rgba(0, 0, 0, 0.28);
+  --admin-error-surface: rgba(255, 255, 255, 0.018);
+  --admin-error-surface-border: rgba(255, 255, 255, 0.06);
+  --admin-error-code-bg: rgba(255, 255, 255, 0.04);
+  --admin-error-shadow: rgba(0, 0, 0, 0.18);
+  --admin-focus-border: color-mix(in srgb, var(--text) 72%, var(--border) 28%);
+  --admin-focus-ring: color-mix(in srgb, var(--text) 24%, transparent);
 }
 
 .admin-console {
@@ -478,9 +482,9 @@
 .admin-field input:focus-visible,
 .admin-field textarea:focus-visible,
 .admin-field select:focus-visible {
-  outline: 2px solid var(--muted);
-  outline-offset: 1px;
-  box-shadow: 0 0 0 3px var(--panel);
+  outline: none;
+  border-color: var(--admin-focus-border);
+  box-shadow: 0 0 0 1px var(--admin-focus-ring);
 }
 
 .admin-toggle-row {
@@ -595,10 +599,14 @@
 }
 
 .admin-banner--error {
+  padding: 0;
   border-color: var(--admin-error-border);
+  border-radius: 8px;
   background: var(--admin-error-bg);
   color: var(--admin-error-text);
-  box-shadow: 0 18px 32px -28px var(--admin-error-shadow);
+  box-shadow: 0 8px 18px -24px var(--admin-error-shadow);
+  overflow: hidden;
+  font-family: var(--admin-font-ui);
 }
 
 :root[data-theme='dark'] .admin-banner--error {
@@ -611,39 +619,39 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 12px;
-}
-
-.admin-banner__lead {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  min-width: 0;
-  flex: 1 1 auto;
-}
-
-.admin-banner__icon {
-  flex: 0 0 auto;
-  width: 26px;
-  height: 26px;
-  display: inline-grid;
-  place-items: center;
-  border-radius: 999px;
-  border: 1px solid var(--admin-error-surface-border);
-  background: var(--admin-error-icon-bg);
-  color: var(--admin-error-accent);
-  font-size: 15px;
-  font-weight: 700;
-  line-height: 1;
-}
-
-:root[data-theme='dark'] .admin-banner__icon {
-  background: var(--admin-error-icon-bg);
+  gap: 8px;
+  padding: 9px 12px 6px;
 }
 
 .admin-banner__copy {
+  display: grid;
+  gap: 0;
   min-width: 0;
   flex: 1 1 auto;
+}
+
+.admin-banner__status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px 7px;
+  min-width: 0;
+}
+
+.admin-banner__label {
+  display: inline-flex;
+  align-items: center;
+  min-height: 18px;
+  padding: 0 6px;
+  border: 1px solid color-mix(in srgb, var(--admin-error-accent) 12%, var(--admin-error-border) 88%);
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--admin-error-accent) 4%, transparent);
+  color: var(--admin-error-accent);
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  opacity: 0.86;
 }
 
 .admin-banner__title,
@@ -653,108 +661,204 @@
 }
 
 .admin-banner__title {
-  font-size: 15px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.32;
   color: var(--admin-error-text);
+  letter-spacing: 0;
 }
 
 .admin-banner__message {
-  margin-top: 4px;
+  flex: 1 1 260px;
+  min-width: 0;
   color: var(--admin-error-muted);
   opacity: 1;
+  max-width: 64ch;
+  font-size: var(--admin-text-2xs);
+  line-height: 1.4;
+  overflow-wrap: anywhere;
 }
 
-.admin-banner__retry {
+.admin-banner__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 6px;
   flex: 0 0 auto;
-  min-height: 32px;
+}
+
+.admin-banner__actions:empty {
+  display: none;
+}
+
+.admin-banner__retry.admin-btn {
+  flex: 0 0 auto;
+  min-height: 20px;
+  padding: 0 5px;
+  border-radius: 3px;
+  font-family: var(--admin-font-ui);
+  font-size: var(--admin-text-2xs);
+  line-height: 1.15;
+  white-space: nowrap;
 }
 
 .admin-banner__retry.admin-btn--danger {
   color: var(--admin-error-text);
-  border-color: var(--admin-error-surface-border);
-  background: var(--admin-error-surface);
+  border-color: color-mix(in srgb, var(--admin-error-border) 88%, var(--text) 12%);
+  background: color-mix(in srgb, var(--panel) 96%, var(--admin-error-bg) 4%);
 }
 
 .admin-banner__retry.admin-btn--danger:hover {
-  background: var(--admin-error-code-bg);
+  color: var(--admin-error-text);
+  border-color: color-mix(in srgb, var(--admin-error-border) 78%, var(--text) 22%);
+  background: color-mix(in srgb, var(--panel) 88%, var(--admin-error-bg) 12%);
 }
 
 :root[data-theme='dark'] .admin-banner__retry.admin-btn--danger {
-  color: var(--admin-error-accent);
+  color: var(--admin-error-text);
   border-color: var(--admin-error-border);
-  background: rgba(215, 154, 149, 0.06);
+  background: color-mix(in srgb, var(--admin-error-bg) 82%, var(--panel) 18%);
 }
 
 :root[data-theme='dark'] .admin-banner__retry.admin-btn--danger:hover {
-  color: var(--admin-error-accent);
-  border-color: var(--admin-error-accent);
-  background: var(--admin-error-icon-bg);
+  color: var(--admin-error-text);
+  border-color: color-mix(in srgb, var(--admin-error-border) 78%, var(--text) 22%);
+  background: color-mix(in srgb, var(--admin-error-bg) 68%, var(--panel) 32%);
+}
+
+@media (pointer: coarse) {
+  .admin-banner__retry.admin-btn {
+    min-height: 24px;
+    padding: 0 6px;
+  }
 }
 
 .admin-banner__list {
-  margin: 14px 0 0;
-  padding: 0;
+  margin: 0;
+  padding: 0 12px 2px;
   list-style: none;
   display: grid;
-  gap: 10px;
 }
 
 .admin-banner__list-item {
+  position: relative;
   margin: 0;
-  padding: 10px 12px;
-  border-radius: 12px;
-  background: var(--admin-error-surface);
-  border: 1px solid var(--admin-error-surface-border);
+  padding: 8px 0 8px 15px;
+  border-top: 1px solid color-mix(in srgb, var(--admin-error-surface-border) 84%, transparent);
   color: var(--admin-error-text);
+  font-size: var(--admin-text-xs);
+  line-height: 1.45;
+  letter-spacing: 0;
   overflow-wrap: anywhere;
 }
 
-:root[data-theme='dark'] .admin-banner__list-item {
-  background: var(--admin-error-surface);
-  border-color: var(--admin-error-surface-border);
+.admin-banner__list-item::before {
+  content: '>';
+  position: absolute;
+  left: 0;
+  top: 8px;
+  color: color-mix(in srgb, var(--admin-error-accent) 78%, transparent);
+  font-family: ui-monospace, "SFMono-Regular", "Cascadia Code", "Fira Code", Consolas, monospace;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.45;
 }
 
 .admin-banner__list-item--diagnostic {
   display: grid;
-  gap: 8px;
+  gap: 6px;
+  padding-left: 0;
+}
+
+.admin-banner__list-item--diagnostic::before {
+  display: none;
 }
 
 .admin-banner__item-title {
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: 0.01em;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1.42;
   color: var(--admin-error-text);
 }
 
 .admin-banner__meta {
   display: grid;
   grid-template-columns: 56px minmax(0, 1fr);
-  gap: 6px 10px;
+  gap: 3px 10px;
   align-items: start;
 }
 
 .admin-banner__meta-label {
   color: var(--admin-error-muted);
-  font-size: 12px;
+  font-size: var(--admin-text-2xs);
+  font-weight: 700;
+  letter-spacing: var(--admin-tracking-tight);
 }
 
 .admin-banner__meta-value {
   min-width: 0;
-  color: var(--admin-error-text);
+  color: var(--admin-error-muted);
+  font-size: var(--admin-text-xs);
+  line-height: 1.45;
 }
 
 .admin-banner__meta-value--mono {
   display: block;
-  padding: 5px 8px;
-  border-radius: 8px;
-  border: 1px solid var(--admin-error-surface-border);
-  background: var(--admin-error-code-bg);
+  padding: 0;
+  border: 0;
+  background: transparent;
   font-size: var(--admin-text-xs);
   line-height: var(--admin-leading-body);
   font-family: ui-monospace, "SFMono-Regular", "Cascadia Code", "Fira Code", Consolas, monospace;
   white-space: pre-wrap;
   word-break: break-word;
   color: var(--admin-error-text);
+}
+
+.admin-banner__details {
+  margin: 0;
+}
+
+.admin-banner__details-summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--admin-error-muted);
+  font-size: var(--admin-text-xs);
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+}
+
+.admin-banner__details-summary::-webkit-details-marker {
+  display: none;
+}
+
+.admin-banner__details-summary::before {
+  content: '+';
+  display: inline-block;
+  color: var(--admin-error-accent);
+  font-size: 12px;
+  line-height: 1;
+}
+
+.admin-banner__details[open] .admin-banner__details-summary::before {
+  content: '−';
+}
+
+.admin-banner__details-body {
+  display: block;
+  margin-top: 6px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--admin-error-code-bg) 78%, transparent);
+  color: var(--admin-error-text);
+  font-size: var(--admin-text-xs);
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .admin-btn {
@@ -836,11 +940,6 @@
   .admin-status {
     margin-left: 0;
     transform: translateY(0);
-  }
-
-  .admin-banner__header {
-    flex-direction: column;
-    align-items: stretch;
   }
 
   .admin-banner__retry {

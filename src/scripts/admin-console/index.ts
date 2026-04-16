@@ -396,6 +396,7 @@ if (!root) {
 
     let baseline: EditableSettings | null = null;
     let currentRevision: string | null = null;
+    let pendingExternalUpdate: { revision: string; settings: EditableSettings } | null = null;
     const statusTargets = [statusEl, statusInlineEl].filter((target): target is HTMLElement => target !== null);
     const uiState = createAdminConsoleUiState({
       root,
@@ -470,7 +471,7 @@ if (!root) {
     const refreshDirty = (): void => {
       if (!baseline) return;
       const current = canonicalize(collectSettings());
-      uiState.setDirty(JSON.stringify(current) !== JSON.stringify(baseline));
+      uiState.setDirty(pendingExternalUpdate !== null || JSON.stringify(current) !== JSON.stringify(baseline));
     };
 
     const validateCurrentSettings = (): { draft: EditableSettings; issues: ValidationIssue[] } => {
@@ -478,6 +479,71 @@ if (!root) {
       const issues = validateSettings(draft);
       setValidationIssues(issues);
       return { draft, issues };
+    };
+
+    const runValidation = async (): Promise<void> => {
+      if (uiState.isSaving() || uiState.isValidating()) return;
+
+      const { draft, issues } = validateCurrentSettings();
+      if (issues.length) {
+        uiState.setStatus('error', '校验未通过', { announce: false });
+        revealErrorState(issues);
+        return;
+      }
+
+      const current = canonicalize(draft);
+      uiState.setValidating(true);
+      uiState.setStatus('loading', '正在进行服务端预检');
+
+      try {
+        if (!currentRevision) {
+          clearInvalidFields();
+          uiState.setErrors(['当前配置缺少 revision，请先同步最新配置后再检查'], {
+            title: '检查前需要重新同步配置'
+          });
+          uiState.setStatus('error', '检查配置失败', { announce: false });
+          revealErrorState();
+          return;
+        }
+
+        const { response, payload } = await requestSettingsWrite(current, { dryRun: true });
+        if (applyInvalidSettingsState(payload, { announceStatus: false, revealError: true })) {
+          return;
+        }
+
+        if (!response.ok || !isRecord(payload) || payload.ok !== true) {
+          clearInvalidFields();
+          const serverErrors = getPayloadErrors(payload);
+
+          if (
+            response.status === 409 &&
+            showExternalUpdateConflict(payload, '检查时发现外部更新', '检查时发现外部更新，当前草稿已保留')
+          ) {
+            return;
+          }
+
+          uiState.setErrors(serverErrors.length ? serverErrors : ['检查配置失败，请稍后重试'], {
+            title: '检查配置失败'
+          });
+          uiState.setStatus('error', '检查配置失败', { announce: false });
+          revealErrorState();
+          return;
+        }
+
+        clearInvalidFields();
+        clearExternalUpdate();
+        uiState.clearErrorBanner();
+        uiState.setStatus('ok', '服务端预检通过，可直接保存');
+      } catch (error) {
+        console.error(error);
+        clearInvalidFields();
+        uiState.setErrors(['检查配置请求失败，请检查本地服务日志'], { title: '检查配置失败' });
+        uiState.setStatus('error', '检查配置失败', { announce: false });
+        revealErrorState();
+      } finally {
+        uiState.setValidating(false);
+        syncEditableDerivedControls();
+      }
     };
 
     const extractSettingsPayload = (payload: unknown): ThemeSettingsEditablePayload | null => {
@@ -512,6 +578,32 @@ if (!root) {
       return payload.errors.filter((error): error is string => typeof error === 'string' && error.length > 0);
     };
 
+    const stageExternalUpdate = (payload: ThemeSettingsEditablePayload): void => {
+      pendingExternalUpdate = {
+        revision: payload.revision,
+        settings: canonicalize(payload.settings)
+      };
+    };
+
+    const clearExternalUpdate = (): void => {
+      pendingExternalUpdate = null;
+    };
+
+    const showExternalUpdateConflict = (payload: unknown, title: string, status: string): boolean => {
+      const latestPayload = extractSettingsPayload(payload);
+      if (!latestPayload) return false;
+
+      stageExternalUpdate(latestPayload);
+      uiState.setErrorBanner({
+        title,
+        items: ['你的修改仍保留在页面中；如需同步最新配置，请点击「重置更改」。']
+      });
+      uiState.setDirty(true);
+      uiState.setStatus('warn', status, { announce: false });
+      revealErrorState();
+      return true;
+    };
+
     const getDiagnosticHeadline = (diagnostic: ThemeSettingsReadDiagnostic): string => {
       const fileName = diagnostic.path.split('/').pop() || diagnostic.path;
       if (diagnostic.code === 'invalid-json') return `${fileName} 格式错误`;
@@ -536,6 +628,25 @@ if (!root) {
       return row;
     };
 
+    const shouldCollapseDiagnosticDetail = (value: string): boolean =>
+      value.includes('\n') || value.length > 72;
+
+    const createDiagnosticDetails = (value: string): HTMLElement => {
+      const details = document.createElement('details');
+      details.className = 'admin-banner__details';
+
+      const summary = document.createElement('summary');
+      summary.className = 'admin-banner__details-summary';
+      summary.textContent = '原始报错';
+
+      const body = document.createElement('code');
+      body.className = 'admin-banner__details-body';
+      body.textContent = value;
+
+      details.append(summary, body);
+      return details;
+    };
+
     const createDiagnosticListItem = (diagnostic: ThemeSettingsReadDiagnostic): HTMLElement => {
       const item = document.createElement('li');
       item.className = 'admin-banner__list-item admin-banner__list-item--diagnostic';
@@ -552,7 +663,11 @@ if (!root) {
       }
 
       if (diagnostic.detail) {
-        item.appendChild(createDiagnosticMeta('技术细节', diagnostic.detail, { mono: true }));
+        if (shouldCollapseDiagnosticDetail(diagnostic.detail)) {
+          item.appendChild(createDiagnosticDetails(diagnostic.detail));
+        } else {
+          item.appendChild(createDiagnosticMeta('说明', diagnostic.detail, { mono: true }));
+        }
       }
 
       return item;
@@ -561,7 +676,7 @@ if (!root) {
     const setInvalidSettingsErrorBanner = (invalidState: ThemeSettingsEditableErrorState): void => {
       uiState.setErrorBanner({
         title: '已切换为只读保护',
-        message: '检测到 settings 配置文件损坏。请先修复文件，再点击“重新检查”或刷新当前页面。',
+        message: '检测到 settings 配置文件损坏。请先修复文件，再点击“重新检测”或刷新当前页面。',
         items: invalidState.diagnostics.map((diagnostic) => createDiagnosticListItem(diagnostic)),
         retryable: true
       });
@@ -576,6 +691,7 @@ if (!root) {
 
       currentRevision = null;
       baseline = null;
+      clearExternalUpdate();
       clearInvalidFields();
       uiState.setDirty(false);
       uiState.setConsoleLocked(true);
@@ -616,6 +732,7 @@ if (!root) {
       }
 
       uiState.setConsoleLocked(false);
+      clearExternalUpdate();
       currentRevision = resolvedPayload.revision;
       const normalized = canonicalize(resolvedPayload.settings);
       applySettings(normalized);
@@ -634,13 +751,14 @@ if (!root) {
     const setInitialLoadError = (message: string): void => {
       currentRevision = null;
       baseline = null;
+      clearExternalUpdate();
       clearInvalidFields();
       uiState.setDirty(false);
       uiState.setConsoleLocked(true);
       uiState.setStatus('error', '初始化失败');
       uiState.setErrors([message], {
         title: '读取配置失败',
-        message: '未能读取 Theme Console 当前配置。请点击“重新检查”重试。',
+        message: '未能读取 Theme Console 当前配置。请点击“重新检测”重试。',
         retryable: true
       });
       revealErrorState();
@@ -737,8 +855,12 @@ if (!root) {
     };
 
     errorRetryBtn.addEventListener('click', () => {
-      if (!uiState.isConsoleLocked()) return;
-      void loadFromApi();
+      if (uiState.isSaving() || uiState.isValidating()) return;
+      if (uiState.isConsoleLocked()) {
+        void loadFromApi();
+        return;
+      }
+      void runValidation();
     });
 
     form.addEventListener('input', (event) => {
@@ -958,76 +1080,26 @@ if (!root) {
       }
     });
 
-    validateBtn.addEventListener('click', async () => {
-      if (uiState.isSaving() || uiState.isValidating()) return;
-
-      const { draft, issues } = validateCurrentSettings();
-      if (issues.length) {
-        uiState.setStatus('error', '校验未通过', { announce: false });
-        revealErrorState(issues);
-        return;
-      }
-
-      const current = canonicalize(draft);
-      uiState.setValidating(true);
-      uiState.setStatus('loading', '正在进行服务端预检');
-
-      try {
-        if (!currentRevision) {
-          clearInvalidFields();
-          uiState.setErrors(['当前配置缺少 revision，请先同步最新配置后再检查'], {
-            title: '检查前需要重新同步配置'
-          });
-          uiState.setStatus('error', '检查配置失败', { announce: false });
-          revealErrorState();
-          return;
-        }
-
-        const { response, payload } = await requestSettingsWrite(current, { dryRun: true });
-        if (applyInvalidSettingsState(payload, { announceStatus: false, revealError: true })) {
-          return;
-        }
-
-        if (!response.ok || !isRecord(payload) || payload.ok !== true) {
-          clearInvalidFields();
-          const serverErrors = getPayloadErrors(payload);
-
-          if (response.status === 409) {
-            uiState.setErrors(
-              serverErrors.length
-                ? serverErrors
-                : ['检测到配置已在外部更新；当前草稿仍保留在页面中，请先同步后再决定是否手工合并'],
-              { title: '检查时发现外部更新' }
-            );
-            uiState.setStatus('warn', '检查时发现外部更新', { announce: false });
-            revealErrorState();
-            return;
-          }
-
-          uiState.setErrors(serverErrors.length ? serverErrors : ['检查配置失败，请稍后重试'], {
-            title: '检查配置失败'
-          });
-          uiState.setStatus('error', '检查配置失败', { announce: false });
-          revealErrorState();
-          return;
-        }
-
-        clearInvalidFields();
-        uiState.clearErrorBanner();
-        uiState.setStatus('ok', '服务端预检通过，可直接保存');
-      } catch (error) {
-        console.error(error);
-        clearInvalidFields();
-        uiState.setErrors(['检查配置请求失败，请检查本地服务日志'], { title: '检查配置失败' });
-        uiState.setStatus('error', '检查配置失败', { announce: false });
-        revealErrorState();
-      } finally {
-        uiState.setValidating(false);
-        syncEditableDerivedControls();
-      }
+    validateBtn.addEventListener('click', () => {
+      void runValidation();
     });
 
     resetBtn.addEventListener('click', () => {
+      const externalUpdate = pendingExternalUpdate;
+      if (externalUpdate) {
+        const latestSettings = deepClone(externalUpdate.settings);
+        currentRevision = externalUpdate.revision;
+        baseline = latestSettings;
+        clearExternalUpdate();
+        applySettings(deepClone(latestSettings));
+        finalizeAppliedSettings();
+        clearInvalidFields();
+        uiState.clearErrorBanner();
+        uiState.setDirty(false);
+        uiState.setStatus('ready', '已同步外部最新配置');
+        return;
+      }
+
       if (!baseline) return;
       applySettings(deepClone(baseline));
       finalizeAppliedSettings();
@@ -1068,13 +1140,10 @@ if (!root) {
           }
 
           const serverErrors = getPayloadErrors(payload);
-          if (response.status === 409 && extractSettingsPayload(payload)) {
-            loadPayload(payload, 'remote', { announceStatus: false });
-            uiState.setErrors(serverErrors.length ? serverErrors : ['配置已更新，已同步最新配置，请重新确认后再保存'], {
-              title: '检测到外部更新'
-            });
-            uiState.setStatus('warn', '检测到外部更新，已同步最新配置', { announce: false });
-            revealErrorState();
+          if (
+            response.status === 409 &&
+            showExternalUpdateConflict(payload, '检测到外部更新，保存已暂停', '检测到外部更新，当前草稿已保留')
+          ) {
             return;
           }
 
@@ -1093,6 +1162,7 @@ if (!root) {
           uiState.setStatus('ok', '保存成功，请刷新目标页面查看效果');
         } else {
           baseline = current;
+          clearExternalUpdate();
           uiState.setDirty(false);
           uiState.setStatus('ok', '保存成功');
         }

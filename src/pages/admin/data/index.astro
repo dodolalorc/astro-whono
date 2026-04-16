@@ -1,5 +1,6 @@
 ---
 import Icon from '../../../components/Icon.astro';
+import AdminDiagnosticPanel from '../../../components/admin/AdminDiagnosticPanel.astro';
 import AdminLayout from '../../../components/admin/AdminLayout.astro';
 import AdminShell from '../../../components/admin/AdminShell.astro';
 import { getEditableThemeSettingsState } from '../../../lib/theme-settings';
@@ -60,25 +61,15 @@ const bootstrapText =
     {
       isDev && dataDevState && editableState?.ok && bootstrapText ? (
         <section class="admin-data-console" data-admin-data-root>
-          <section
-            id="admin-data-error-banner"
-            class="admin-banner admin-banner--error"
-            hidden
-            role="alert"
-            aria-atomic="true"
-            tabindex="-1"
-          >
-            <div class="admin-banner__header">
-              <div class="admin-banner__lead">
-                <span class="admin-banner__icon" aria-hidden="true">×</span>
-                <div class="admin-banner__copy">
-                  <p id="admin-data-error-title" class="admin-banner__title">导入导出未完成</p>
-                  <p id="admin-data-error-message" class="admin-banner__message" hidden></p>
-                </div>
-              </div>
-            </div>
-            <ul id="admin-data-error-list" class="admin-banner__list" hidden></ul>
-          </section>
+          <AdminDiagnosticPanel
+            bannerId="admin-data-error-banner"
+            titleId="admin-data-error-title"
+            messageId="admin-data-error-message"
+            listId="admin-data-error-list"
+            title="导入导出未完成"
+            label="导入异常"
+            tabindex={-1}
+          />
 
           <div class="admin-data-console__grid">
             <article class="admin-data-panel admin-data-panel--export">

@@ -1,0 +1,64 @@
+---
+interface RetryAction {
+  id: string;
+  label: string;
+}
+
+interface Props {
+  bannerId: string;
+  titleId: string;
+  messageId: string;
+  listId: string;
+  title: string;
+  label?: string;
+  retryAction?: RetryAction;
+  tabindex?: number;
+}
+
+const {
+  bannerId,
+  titleId,
+  messageId,
+  listId,
+  title,
+  label = '配置异常',
+  retryAction,
+  tabindex
+} = Astro.props;
+---
+
+<section
+  id={bannerId}
+  class="admin-banner admin-banner--error"
+  hidden
+  role="alert"
+  aria-atomic="true"
+  tabindex={tabindex}
+>
+  <div class="admin-banner__header">
+    <div class="admin-banner__copy">
+      <div class="admin-banner__status">
+        <span class="admin-banner__label">{label}</span>
+        <p id={titleId} class="admin-banner__title">{title}</p>
+        <p id={messageId} class="admin-banner__message" hidden></p>
+      </div>
+    </div>
+
+    {
+      retryAction ? (
+        <div class="admin-banner__actions">
+          <button
+            id={retryAction.id}
+            class="admin-btn admin-btn--ghost admin-btn--danger admin-banner__retry"
+            type="button"
+            hidden
+          >
+            {retryAction.label}
+          </button>
+        </div>
+      ) : null
+    }
+  </div>
+
+  <ul id={listId} class="admin-banner__list" hidden></ul>
+</section>

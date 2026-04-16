@@ -130,8 +130,8 @@
 }
 
 .admin-nav-name-frame:focus-within {
-  border-color: var(--muted);
-  box-shadow: 0 0 0 3px var(--panel);
+  border-color: var(--admin-focus-border);
+  box-shadow: 0 0 0 1px var(--admin-focus-ring);
 }
 
 .admin-nav-name-frame__mark {

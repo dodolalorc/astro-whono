@@ -1,5 +1,6 @@
 ---
 import type { SidebarNavId } from '../../lib/theme-settings';
+import AdminDiagnosticPanel from './AdminDiagnosticPanel.astro';
 import AdminHomeSection from './AdminHomeSection.astro';
 import AdminPageSection from './AdminPageSection.astro';
 import AdminSidebarSection from './AdminSidebarSection.astro';
@@ -36,33 +37,19 @@ const {
 ---
 
 <section class="admin-theme-console" data-admin-root data-settings-endpoint={settingsEndpoint}>
-  <section
-    id="admin-error-banner"
-    class="admin-banner admin-banner--error"
-    hidden
-    role="alert"
-    aria-atomic="true"
-    tabindex="-1"
-  >
-    <div class="admin-banner__header">
-      <div class="admin-banner__lead">
-        <span class="admin-banner__icon" aria-hidden="true">×</span>
-        <div class="admin-banner__copy">
-          <p id="admin-error-title" class="admin-banner__title">操作未完成</p>
-          <p id="admin-error-message" class="admin-banner__message" hidden></p>
-        </div>
-      </div>
-      <button
-        id="admin-error-retry"
-        class="admin-btn admin-btn--ghost admin-btn--danger admin-banner__retry"
-        type="button"
-        hidden
-      >
-        重新检查
-      </button>
-    </div>
-    <ul id="admin-error-list" class="admin-banner__list" hidden></ul>
-  </section>
+  <AdminDiagnosticPanel
+    bannerId="admin-error-banner"
+    titleId="admin-error-title"
+    messageId="admin-error-message"
+    listId="admin-error-list"
+    title="操作未完成"
+    label="配置异常"
+    retryAction={{
+      id: 'admin-error-retry',
+      label: '重新检测'
+    }}
+    tabindex={-1}
+  />
 
   <form id="admin-form" class="admin-form" novalidate>
     <AdminSiteSection

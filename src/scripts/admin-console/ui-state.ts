@@ -103,6 +103,7 @@ export const createAdminConsoleUiState = ({
     errorListEl.hidden = true;
     errorListEl.replaceChildren();
     errorRetryBtn.hidden = true;
+    delete errorRetryBtn.dataset.retryable;
   };
 
   const setErrorBanner = ({
@@ -142,6 +143,11 @@ export const createAdminConsoleUiState = ({
     }
 
     errorRetryBtn.hidden = !retryable;
+    if (retryable) {
+      errorRetryBtn.dataset.retryable = 'true';
+    } else {
+      delete errorRetryBtn.dataset.retryable;
+    }
   };
 
   const setErrors = (errors: string[], options: AdminConsoleErrorBannerOptions = {}): void => {

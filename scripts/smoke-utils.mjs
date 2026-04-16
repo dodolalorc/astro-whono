@@ -42,11 +42,16 @@ export const reportSmokeCheckResult = (label, failedIds) => {
   process.exit(1);
 };
 
-export const assertStaticRedirectShell = (label, body, expectedPath) => {
+export const assertStaticUnsupportedApiShell = (label, body, expectedPath) => {
   const expectedRedirectText = `Redirecting to: ${expectedPath}`;
+  const normalizedBody = body.trim();
+  const looksLikeNotFoundShell =
+    normalizedBody === 'Not Found'
+    || body.includes('<title>404: Not Found</title>')
+    || body.includes('<span class="statusCode">404: </span>');
   expect(
-    body.includes(expectedRedirectText),
-    `${label} no longer matches the current static redirect shell`
+    body.includes(expectedRedirectText) || looksLikeNotFoundShell,
+    `${label} did not match the current static non-JSON shell`
   );
 };
 
@@ -69,7 +74,7 @@ export const assertAdminOverviewSectionOrder = (label, body) => {
 };
 
 const assertAdminApiStaticShell = (label, body, expectedPath, leakedMarkers) => {
-  assertStaticRedirectShell(label, body, expectedPath);
+  assertStaticUnsupportedApiShell(label, body, expectedPath);
   for (const marker of leakedMarkers) {
     expect(
       !body.includes(marker),
