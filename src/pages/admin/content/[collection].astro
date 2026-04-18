@@ -2,6 +2,7 @@
 import AdminLayout from '../../../components/admin/AdminLayout.astro';
 import AdminDiagnosticPanel from '../../../components/admin/AdminDiagnosticPanel.astro';
 import AdminMediaPicker from '../../../components/admin/AdminMediaPicker.astro';
+import AdminReadonlyNotice from '../../../components/admin/AdminReadonlyNotice.astro';
 import AdminShell from '../../../components/admin/AdminShell.astro';
 import {
   ADMIN_CONTENT_COLLECTIONS,
@@ -76,9 +77,6 @@ const adminMediaMetaEndpoint = withBase(ADMIN_MEDIA_META_API_PATH);
 const contentConsoleSubtitle = pageData
   ? `${pageData.collectionLabel} · ${selectedEntryEditorPayload?.writable ? 'frontmatter 编辑' : '只读索引'}`
   : '内容索引';
-const contentConsoleModeLabel = isDev
-  ? (selectedEntryEditorPayload?.writable ? 'DEV frontmatter 编辑' : 'DEV 内容索引')
-  : '只读模式';
 
 type AdminBitsImageRow = {
   src: string;
@@ -175,7 +173,7 @@ const activeFilterCount = pageData
     currentRoute="content"
     title="Content Console"
     subtitle={contentConsoleSubtitle}
-    modeLabel={contentConsoleModeLabel}
+    showNav={isDev}
   >
     {isDev ? (
       <div slot="status" class="admin-status-slot">
@@ -852,19 +850,9 @@ const activeFilterCount = pageData
           </article>
         </section>
       ) : (
-        <section class="admin-overview">
-          <article class="admin-overview-card">
-            <p class="admin-overview-card__eyebrow">Readonly Boundary</p>
-            <h2 class="admin-overview-card__title">内容索引仅在本地开发环境可用</h2>
-            <p class="admin-overview-card__body">
-              当前环境继续保留 `/admin/content/:collection/` 路由结构，但不输出列表、详情卡片、复制路径按钮或任何内容索引载荷。
-            </p>
-            <div class="admin-overview-card__actions">
-              <a class="admin-btn admin-btn--ghost" href={withBase('/admin/content/')}>返回 Content 总入口</a>
-              <a class="admin-btn admin-btn--ghost" href={withBase('/admin/')}>返回 Admin 首页</a>
-            </div>
-          </article>
-        </section>
+        <AdminReadonlyNotice>
+          若需查看或编辑内容索引，请在本地运行 <code translate="no">npm run dev</code> 后从此入口进入。
+        </AdminReadonlyNotice>
       )
     }
   </AdminShell>

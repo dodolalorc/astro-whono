@@ -3,28 +3,12 @@
 */
 
 .admin-data-console {
-  --admin-data-surface: color-mix(in srgb, var(--bg) 96%, var(--panel) 4%);
-  --admin-data-surface-elevated: color-mix(in srgb, var(--panel) 78%, var(--bg) 22%);
-  --admin-data-surface-soft: color-mix(in srgb, var(--bg) 92%, var(--panel) 8%);
-  --admin-data-border-strong: color-mix(in srgb, var(--border) 86%, var(--text) 14%);
-  --admin-data-border-soft: color-mix(in srgb, var(--border) 76%, transparent);
-  --admin-data-divider-strong: color-mix(in srgb, var(--border) 84%, transparent);
-  --admin-data-shadow: 0 26px 60px -42px var(--overlay-35);
-  --admin-data-accent: color-mix(in srgb, var(--text) 88%, var(--bg) 12%);
-  --admin-data-button-primary-bg: #24292f;
-  --admin-data-button-primary-hover-bg: #000000;
-  --admin-data-button-primary-border: rgba(0, 0, 0, 0.1);
-  --admin-data-button-primary-color: #ffffff;
-  --admin-data-button-primary-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --admin-data-button-secondary-bg: color-mix(in srgb, var(--bg) 76%, var(--panel) 24%);
-  --admin-data-button-secondary-hover-bg: color-mix(in srgb, var(--bg) 58%, var(--panel) 42%);
-  --admin-data-button-secondary-border: var(--admin-data-border-strong);
-  --admin-data-button-secondary-color: var(--text);
-  --admin-data-button-secondary-shadow: none;
-  --admin-data-button-hover-shadow: 0 12px 24px -18px var(--overlay-35);
-  --admin-data-disabled-border: color-mix(in srgb, var(--border) 90%, var(--bg) 10%);
-  --admin-data-disabled-surface: color-mix(in srgb, var(--panel) 84%, var(--bg) 16%);
-  --admin-data-disabled-text: color-mix(in srgb, var(--muted) 58%, var(--faint) 42%);
+  --admin-data-surface: color-mix(in srgb, var(--bg) 94%, var(--admin-surface) 6%);
+  --admin-data-surface-elevated: color-mix(in srgb, var(--panel) 86%, var(--admin-surface-soft) 14%);
+  --admin-data-surface-soft: color-mix(in srgb, var(--bg) 88%, var(--admin-surface-muted) 12%);
+  --admin-data-border-strong: var(--admin-border);
+  --admin-data-border-soft: color-mix(in srgb, var(--admin-border) 68%, transparent);
+  --admin-data-divider-strong: color-mix(in srgb, var(--admin-border) 72%, transparent);
   --admin-data-button-height: 42px;
   --admin-data-summary-control-height: 28px;
   --admin-data-summary-label-width: 58px;
@@ -34,6 +18,7 @@
     background-color 180ms ease,
     color 180ms ease,
     box-shadow 180ms ease;
+  /* Terminal / diff preview keeps a fixed dark semantic palette by design. */
   --admin-data-terminal-bg: #0d1117;
   --admin-data-terminal-surface: #161b22;
   --admin-data-terminal-border: #30363d;
@@ -44,28 +29,19 @@
   --admin-data-terminal-green: #3fb950;
   --admin-data-terminal-amber: #d29922;
   --admin-data-terminal-red: #f85149;
+  --admin-data-terminal-on-accent: #ffffff;
+  --admin-data-terminal-blue-bg: color-mix(in srgb, var(--admin-data-terminal-blue) 12%, transparent);
+  --admin-data-terminal-blue-border: color-mix(in srgb, var(--admin-data-terminal-blue) 28%, transparent);
+  --admin-data-terminal-green-bg: color-mix(in srgb, var(--admin-data-terminal-green) 12%, transparent);
+  --admin-data-terminal-green-border: color-mix(in srgb, var(--admin-data-terminal-green) 28%, transparent);
+  --admin-data-terminal-amber-bg: color-mix(in srgb, var(--admin-data-terminal-amber) 12%, transparent);
+  --admin-data-terminal-amber-border: color-mix(in srgb, var(--admin-data-terminal-amber) 28%, transparent);
+  --admin-data-terminal-red-bg: color-mix(in srgb, var(--admin-data-terminal-red) 12%, transparent);
+  --admin-data-terminal-red-border: color-mix(in srgb, var(--admin-data-terminal-red) 28%, transparent);
 
   display: grid;
   gap: 20px;
   font-family: var(--admin-font-ui);
-}
-
-:root[data-theme='dark'] .admin-data-console {
-  --admin-data-surface: color-mix(in srgb, var(--bg) 94%, var(--panel) 6%);
-  --admin-data-surface-elevated: color-mix(in srgb, var(--panel) 88%, var(--bg) 12%);
-  --admin-data-surface-soft: color-mix(in srgb, var(--panel) 82%, var(--bg) 18%);
-  --admin-data-border-strong: color-mix(in srgb, var(--border) 88%, var(--text) 12%);
-  --admin-data-border-soft: color-mix(in srgb, var(--border) 68%, transparent);
-  --admin-data-divider-strong: color-mix(in srgb, var(--border) 78%, transparent);
-  --admin-data-disabled-border: color-mix(in srgb, var(--border) 82%, var(--bg) 18%);
-  --admin-data-disabled-surface: color-mix(in srgb, var(--panel) 88%, var(--bg) 12%);
-  --admin-data-disabled-text: color-mix(in srgb, var(--muted) 72%, var(--faint) 28%);
-  --admin-data-button-primary-bg: color-mix(in srgb, var(--text) 90%, var(--panel) 10%);
-  --admin-data-button-primary-hover-bg: var(--text);
-  --admin-data-button-primary-border: color-mix(in srgb, var(--text) 60%, transparent 40%);
-  --admin-data-button-primary-color: var(--bg);
-  --admin-data-button-secondary-bg: color-mix(in srgb, var(--panel) 90%, var(--bg) 10%);
-  --admin-data-button-secondary-hover-bg: var(--admin-data-button-secondary-bg);
 }
 
 @keyframes admin-data-btn-spin {
@@ -86,17 +62,9 @@
   align-items: stretch;
   padding: clamp(22px, 3vw, 30px);
   border: 1px solid var(--admin-data-border-strong);
-  border-radius: 24px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.52) 0%, rgba(255, 255, 255, 0) 100%),
-    var(--admin-data-surface);
-  box-shadow: var(--admin-data-shadow);
-}
-
-:root[data-theme='dark'] .admin-data-panel {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0) 100%),
-    var(--admin-data-surface);
+  border-radius: var(--admin-control-radius);
+  background: var(--admin-data-surface);
+  box-shadow: none;
 }
 
 .admin-data-panel--import {
@@ -154,15 +122,15 @@
 .admin-data-panel__title {
   margin: 0;
   color: var(--text);
-  font-size: clamp(1.18rem, 1.6vw, 1.42rem);
+  font-size: 1.25rem;
   font-weight: 600;
-  line-height: 1.22;
-  letter-spacing: -0.03em;
+  line-height: 1.25;
+  letter-spacing: 0;
 }
 
 .admin-data-panel--export .admin-data-panel__title,
 .admin-data-panel--import .admin-data-panel__title {
-  font-size: clamp(1.06rem, 1.42vw, 1.3rem);
+  font-size: 1.125rem;
 }
 
 .admin-data-panel__body {
@@ -200,41 +168,13 @@
 }
 
 .admin-data-btn {
-  --admin-data-btn-border: var(--admin-data-button-secondary-border);
-  --admin-data-btn-bg: var(--admin-data-button-secondary-bg);
-  --admin-data-btn-hover-bg: var(--admin-data-button-secondary-hover-bg);
-  --admin-data-btn-color: var(--admin-data-button-secondary-color);
-  --admin-data-btn-shadow: var(--admin-data-button-secondary-shadow);
   min-height: var(--admin-data-button-height);
   padding: 0 16px;
-  border-color: var(--admin-data-btn-border);
-  border-radius: 14px;
-  background: var(--admin-data-btn-bg);
-  color: var(--admin-data-btn-color);
-  font-family: var(--admin-font-ui);
-  font-size: 14px;
   font-weight: 500;
-  letter-spacing: 0.01em;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  letter-spacing: 0;
   gap: 8px;
   position: relative;
-  box-shadow: var(--admin-data-btn-shadow);
   transition: var(--admin-data-interactive-transition);
-}
-
-.admin-data-btn:disabled,
-.admin-data-btn:disabled:hover {
-  --admin-data-btn-border: var(--admin-data-disabled-border);
-  --admin-data-btn-bg: var(--admin-data-disabled-surface);
-  --admin-data-btn-color: var(--admin-data-disabled-text);
-  --admin-data-btn-shadow: none;
-  border-style: solid;
-  border-color: var(--admin-data-btn-border);
-  background: var(--admin-data-btn-bg);
-  color: var(--admin-data-btn-color);
-  box-shadow: var(--admin-data-btn-shadow);
 }
 
 .admin-data-btn::after {
@@ -255,47 +195,40 @@
 
 .admin-data-btn:hover:not(:disabled) {
   transform: translateY(-1px);
-  background: var(--admin-data-btn-hover-bg);
-  box-shadow: var(--admin-data-button-hover-shadow);
-}
-
-.admin-data-btn--primary {
-  --admin-data-btn-border: var(--admin-data-button-primary-border);
-  --admin-data-btn-bg: var(--admin-data-button-primary-bg);
-  --admin-data-btn-hover-bg: var(--admin-data-button-primary-hover-bg);
-  --admin-data-btn-color: var(--admin-data-button-primary-color);
-  --admin-data-btn-shadow: var(--admin-data-button-primary-shadow);
-}
-
-.admin-data-btn--secondary {
-  --admin-data-btn-border: var(--admin-data-button-secondary-border);
-  --admin-data-btn-bg: var(--admin-data-button-secondary-bg);
-  --admin-data-btn-hover-bg: var(--admin-data-button-secondary-hover-bg);
-  --admin-data-btn-color: var(--admin-data-button-secondary-color);
-  --admin-data-btn-shadow: var(--admin-data-button-secondary-shadow);
 }
 
 .admin-data-btn[data-step-state='ready'],
 .admin-data-btn[data-step-state='running'],
 .admin-data-btn[data-step-state='running']:disabled {
-  --admin-data-btn-border: var(--admin-data-button-primary-border);
-  --admin-data-btn-bg: var(--admin-data-button-primary-bg);
-  --admin-data-btn-hover-bg: var(--admin-data-button-primary-hover-bg);
-  --admin-data-btn-color: var(--admin-data-button-primary-color);
-  --admin-data-btn-shadow: var(--admin-data-button-primary-shadow);
+  border-color: var(--admin-button-primary-border);
+  background: var(--admin-button-primary-bg);
+  color: var(--admin-button-primary-text);
+}
+
+.admin-data-btn[data-step-state='ready']:hover:not(:disabled),
+.admin-data-btn[data-step-state='running']:hover:not(:disabled) {
+  border-color: var(--admin-button-primary-border);
+  background: var(--admin-button-primary-hover-bg);
+  color: var(--admin-button-primary-text);
 }
 
 .admin-data-btn[data-step-state='running']:disabled {
+  border-style: solid;
   cursor: progress;
 }
 
 .admin-data-btn[data-step-state='done'],
 .admin-data-btn[data-step-state='done']:disabled {
-  --admin-data-btn-border: var(--admin-data-button-secondary-border);
-  --admin-data-btn-bg: var(--admin-data-button-secondary-bg);
-  --admin-data-btn-hover-bg: var(--admin-data-button-secondary-hover-bg);
-  --admin-data-btn-color: var(--admin-data-button-secondary-color);
-  --admin-data-btn-shadow: var(--admin-data-button-secondary-shadow);
+  border-style: solid;
+  border-color: var(--admin-control-border);
+  background: var(--admin-control-bg);
+  color: var(--text);
+  box-shadow: none;
+}
+
+.admin-data-btn[data-step-state='done']:hover:not(:disabled) {
+  border-color: var(--admin-control-border-hover);
+  background: var(--admin-control-bg-hover);
 }
 
 .admin-data-btn[data-step-state='done']::after {
@@ -325,7 +258,7 @@
   align-items: center;
   padding: clamp(18px, 2vw, 24px);
   border: 1px solid var(--admin-data-border-soft);
-  border-radius: 20px;
+  border-radius: var(--admin-control-radius);
   background: var(--admin-data-surface-elevated);
 }
 
@@ -382,7 +315,7 @@
   border-radius: 8px;
   background: color-mix(in srgb, var(--bg) 84%, transparent);
   color: var(--text);
-  font-family: var(--font-mono);
+  font-family: var(--admin-font-mono);
   font-size: 12px;
   line-height: 1.5;
   word-break: break-word;
@@ -419,29 +352,20 @@
   --admin-data-dropzone-border-color:
     color-mix(in srgb, var(--admin-data-border-strong) 76%, var(--admin-data-border-soft) 24%);
   --admin-data-dropzone-border-hover-color: var(--admin-data-dropzone-border-color);
-  --admin-data-dropzone-border-drag-color: color-mix(in srgb, var(--accent) 34%, var(--text) 66%);
+  --admin-data-dropzone-border-drag-color: var(--admin-focus-border);
   --admin-data-dropzone-active-bg: color-mix(in srgb, var(--admin-data-surface-elevated) 88%, var(--bg) 12%);
-  --admin-data-dropzone-active-shadow: 0 18px 34px -28px var(--overlay-35);
   position: relative;
   width: 100%;
   min-height: clamp(152px, 16vw, 176px);
   padding: 0;
   border: 1px dashed var(--admin-data-dropzone-border-color);
-  border-radius: 18px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 100%),
-    var(--admin-data-surface-elevated);
+  border-radius: calc(var(--admin-control-radius) + 4px);
+  background: var(--admin-data-surface-elevated);
   display: grid;
   align-items: stretch;
   color: var(--text);
   overflow: hidden;
   transition: var(--admin-data-interactive-transition);
-}
-
-:root[data-theme='dark'] .admin-data-dropzone {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0) 100%),
-    var(--admin-data-surface-elevated);
 }
 
 .admin-data-dropzone__empty {
@@ -468,7 +392,6 @@
   transform: translateY(-1px);
   border-style: solid;
   background: var(--admin-data-dropzone-active-bg);
-  box-shadow: var(--admin-data-dropzone-active-shadow);
 }
 
 .admin-data-dropzone[data-has-file='false']:not([data-disabled='true']):hover {
@@ -485,15 +408,13 @@
   border-style: solid;
   min-height: 0;
   align-items: stretch;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.36) 0%, rgba(255, 255, 255, 0) 100%),
-    var(--admin-data-surface-elevated);
+  background: var(--admin-data-surface-elevated);
 }
 
 .admin-data-dropzone:focus-within {
   outline: none;
-  border-color: color-mix(in srgb, var(--accent) 42%, var(--text) 58%);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--bg) 72%, transparent);
+  border-color: var(--admin-focus-border);
+  box-shadow: 0 0 0 2px var(--admin-focus-ring);
 }
 
 .admin-data-dropzone[data-disabled='true'] {
@@ -549,7 +470,7 @@
 
 .admin-data-dropzone__note {
   color: var(--muted);
-  font-family: var(--font-mono);
+  font-family: var(--admin-font-mono);
   font-size: 12px;
   line-height: 1.65;
 }
@@ -630,7 +551,7 @@
   border-radius: 8px;
   background: color-mix(in srgb, var(--bg) 84%, transparent);
   color: var(--text);
-  font-family: var(--font-mono);
+  font-family: var(--admin-font-mono);
   font-size: 11px;
   line-height: 1.35;
   overflow-wrap: anywhere;
@@ -669,11 +590,15 @@
 }
 
 .admin-data-dropzone__summary-action:hover:not(:disabled),
-.admin-data-dropzone__summary-action:focus-visible,
 .admin-data-dropzone[data-drag-active='true'] .admin-data-dropzone__summary-action {
-  border-color: color-mix(in srgb, var(--accent) 22%, var(--admin-data-border-soft) 78%);
+  border-color: var(--admin-control-border-hover);
   background: color-mix(in srgb, var(--bg) 84%, var(--panel) 16%);
   color: var(--text);
+}
+
+.admin-data-dropzone__summary-action:focus-visible {
+  border-color: var(--admin-focus-border);
+  box-shadow: 0 0 0 2px var(--admin-focus-ring);
 }
 
 .admin-data-terminal {
@@ -705,7 +630,7 @@
   align-items: center;
   gap: 10px;
   color: var(--admin-data-terminal-text);
-  font-family: var(--font-mono);
+  font-family: var(--admin-font-mono);
   font-size: 13px;
   font-weight: 600;
 }
@@ -719,44 +644,44 @@
   align-items: center;
   min-height: 24px;
   padding: 0 10px;
-  border: 1px solid rgba(47, 129, 247, 0.28);
+  border: 1px solid var(--admin-data-terminal-blue-border);
   border-radius: 7px;
-  background: rgba(47, 129, 247, 0.12);
+  background: var(--admin-data-terminal-blue-bg);
   color: var(--admin-data-terminal-blue);
-  font-family: var(--font-mono);
+  font-family: var(--admin-font-mono);
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.05em;
 }
 
 .admin-data-terminal__badge[data-state='ready'] {
-  border-color: rgba(63, 185, 80, 0.28);
-  background: rgba(63, 185, 80, 0.12);
+  border-color: var(--admin-data-terminal-green-border);
+  background: var(--admin-data-terminal-green-bg);
   color: var(--admin-data-terminal-green);
 }
 
 .admin-data-terminal__badge[data-state='loading'] {
-  border-color: rgba(210, 153, 34, 0.28);
-  background: rgba(210, 153, 34, 0.12);
+  border-color: var(--admin-data-terminal-amber-border);
+  background: var(--admin-data-terminal-amber-bg);
   color: var(--admin-data-terminal-amber);
 }
 
 .admin-data-terminal__badge[data-state='clean'],
 .admin-data-terminal__badge[data-state='applied'] {
-  border-color: rgba(63, 185, 80, 0.28);
-  background: rgba(63, 185, 80, 0.12);
+  border-color: var(--admin-data-terminal-green-border);
+  background: var(--admin-data-terminal-green-bg);
   color: var(--admin-data-terminal-green);
 }
 
 .admin-data-terminal__badge[data-state='error'] {
-  border-color: rgba(248, 81, 73, 0.28);
-  background: rgba(248, 81, 73, 0.12);
+  border-color: var(--admin-data-terminal-red-border);
+  background: var(--admin-data-terminal-red-bg);
   color: var(--admin-data-terminal-red);
 }
 
 .admin-data-terminal__badge[data-state='warn'] {
-  border-color: rgba(210, 153, 34, 0.28);
-  background: rgba(210, 153, 34, 0.12);
+  border-color: var(--admin-data-terminal-amber-border);
+  background: var(--admin-data-terminal-amber-bg);
   color: var(--admin-data-terminal-amber);
 }
 
@@ -890,7 +815,7 @@
 
 .admin-data-terminal[data-preview-state='ready'] .admin-data-terminal__empty-body::first-line {
   color: var(--admin-data-terminal-text);
-  font-family: var(--font-mono);
+  font-family: var(--admin-font-mono);
   font-weight: 500;
   letter-spacing: 0.01em;
 }
@@ -957,7 +882,7 @@
 
 .admin-data-terminal__list-marker {
   color: var(--admin-data-terminal-blue);
-  font-family: var(--font-mono);
+  font-family: var(--admin-font-mono);
   font-size: 12px;
   font-weight: 600;
 }
@@ -975,8 +900,8 @@
   padding: 0 4px;
   border-radius: 999px;
   background: var(--admin-data-terminal-blue);
-  color: #ffffff;
-  font-family: var(--font-mono);
+  color: var(--admin-data-terminal-on-accent);
+  font-family: var(--admin-font-mono);
   font-size: 11px;
   font-weight: 700;
   line-height: 1;
@@ -985,7 +910,7 @@
 
 .admin-data-terminal__list-meta {
   padding-inline-start: 20px;
-  font-family: var(--font-mono);
+  font-family: var(--admin-font-mono);
   font-size: 12px;
   line-height: 1.65;
   overflow-wrap: anywhere;
@@ -1009,7 +934,7 @@
 
 .admin-data-terminal__path-marker {
   color: var(--admin-data-terminal-green);
-  font-family: var(--font-mono);
+  font-family: var(--admin-font-mono);
   font-size: 11px;
   font-weight: 600;
   line-height: 1.65;
@@ -1020,7 +945,7 @@
   width: auto;
   padding: 0;
   color: var(--admin-data-terminal-text);
-  font-family: var(--font-mono);
+  font-family: var(--admin-font-mono);
   font-size: 11.5px;
   line-height: 1.65;
   overflow-wrap: anywhere;
@@ -1051,7 +976,7 @@
 
 .admin-data-terminal__change-marker {
   color: var(--admin-data-terminal-amber);
-  font-family: var(--font-mono);
+  font-family: var(--admin-font-mono);
   font-size: 11px;
   font-weight: 700;
   line-height: 1.65;
@@ -1107,7 +1032,7 @@
 
 .admin-data-terminal__change-row-sign {
   color: currentColor;
-  font-family: var(--font-mono);
+  font-family: var(--admin-font-mono);
   font-size: 11px;
   font-weight: 700;
   line-height: 1;
@@ -1121,7 +1046,7 @@
   border-radius: 0;
   background: transparent;
   color: var(--admin-data-change-value-color);
-  font-family: var(--font-mono);
+  font-family: var(--admin-font-mono);
   font-size: 12px;
   line-height: 1.65;
   overflow-wrap: anywhere;
@@ -1191,11 +1116,11 @@
 @media (max-width: 640px) {
   .admin-data-panel {
     padding: 20px 16px;
-    border-radius: 20px;
+    border-radius: var(--admin-control-radius);
   }
 
   .admin-data-dropzone {
-    border-radius: 16px;
+    border-radius: calc(var(--admin-control-radius) + 4px);
   }
 
   .admin-data-dropzone__summary {

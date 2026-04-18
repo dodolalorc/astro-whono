@@ -75,8 +75,7 @@ const statItems = overview && wordMetric
     currentRoute="overview"
     title="Site Overview"
     subtitle="站点概览"
-    modeLabel={overviewMode === 'hidden' ? '暂未公开' : isDev ? 'DEV 可写' : '只读快照'}
-    showNav={overviewMode !== 'hidden'}
+    showNav={isDev && overviewMode !== 'hidden'}
   >
     {overview ? (
     <section class="admin-site-overview" aria-labelledby="admin-site-overview-title" data-admin-overview-mode={overviewMode}>

@@ -4,6 +4,27 @@
 
 .admin-media-console {
   --admin-media-browser-controls-bg: color-mix(in srgb, var(--bg) 96%, var(--panel) 4%);
+  --admin-media-origin-public-accent: #76716a;
+  --admin-media-origin-assets-accent: #9a7a45;
+  --admin-media-origin-content-accent: #647f9e;
+  --admin-media-origin-public-bg:
+    color-mix(in srgb, var(--admin-media-origin-public-accent) 13%, var(--admin-surface) 87%);
+  --admin-media-origin-public-border:
+    color-mix(in srgb, var(--admin-media-origin-public-accent) 34%, var(--admin-border) 66%);
+  --admin-media-origin-public-text:
+    color-mix(in srgb, var(--admin-media-origin-public-accent) 64%, var(--text) 36%);
+  --admin-media-origin-assets-bg:
+    color-mix(in srgb, var(--admin-media-origin-assets-accent) 14%, var(--admin-surface) 86%);
+  --admin-media-origin-assets-border:
+    color-mix(in srgb, var(--admin-media-origin-assets-accent) 34%, var(--admin-border) 66%);
+  --admin-media-origin-assets-text:
+    color-mix(in srgb, var(--admin-media-origin-assets-accent) 64%, var(--text) 36%);
+  --admin-media-origin-content-bg:
+    color-mix(in srgb, var(--admin-media-origin-content-accent) 14%, var(--admin-surface) 86%);
+  --admin-media-origin-content-border:
+    color-mix(in srgb, var(--admin-media-origin-content-accent) 34%, var(--admin-border) 66%);
+  --admin-media-origin-content-text:
+    color-mix(in srgb, var(--admin-media-origin-content-accent) 64%, var(--text) 36%);
 
   display: grid;
   gap: 18px;
@@ -19,6 +40,8 @@
   .admin-media-browser__tool-btn,
   .admin-media-browser__chip,
   .admin-media-browser__chip-count,
+  .admin-media-copy-btn,
+  .admin-media-copy-btn::after,
   .admin-media-browser__card,
   .admin-media-browser__thumb,
   .admin-media-browser__thumb img,
@@ -173,7 +196,7 @@
 }
 
 .admin-media-browser__search-shell:focus-within {
-  border-bottom-color: color-mix(in srgb, var(--accent) 70%, var(--border) 30%);
+  border-bottom-color: var(--admin-focus-border);
 }
 
 .admin-media-browser__search-shell input {
@@ -229,8 +252,8 @@
 }
 
 .admin-media-browser__tool-btn:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
+  outline: none;
+  box-shadow: 0 0 0 2px var(--admin-focus-ring);
 }
 
 .admin-media-browser__recent-link {
@@ -304,8 +327,10 @@
 }
 
 .admin-media-browser__chip:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
+  outline: none;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--bg) 72%, transparent 28%),
+    0 0 0 2px var(--admin-focus-ring);
 }
 
 .admin-media-browser__chip:disabled {
@@ -549,18 +574,21 @@
 }
 
 .admin-media-browser__origin-badge[data-origin='public'] {
-  background: color-mix(in srgb, #5db78b 22%, var(--card) 78%);
-  border-color: color-mix(in srgb, #5db78b 20%, transparent 80%);
+  background: var(--admin-media-origin-public-bg);
+  border-color: var(--admin-media-origin-public-border);
+  color: var(--admin-media-origin-public-text);
 }
 
 .admin-media-browser__origin-badge[data-origin='src/assets'] {
-  background: color-mix(in srgb, #cf9552 24%, var(--card) 76%);
-  border-color: color-mix(in srgb, #cf9552 20%, transparent 80%);
+  background: var(--admin-media-origin-assets-bg);
+  border-color: var(--admin-media-origin-assets-border);
+  color: var(--admin-media-origin-assets-text);
 }
 
 .admin-media-browser__origin-badge[data-origin='src/content'] {
-  background: color-mix(in srgb, #6992cf 24%, var(--card) 76%);
-  border-color: color-mix(in srgb, #6992cf 20%, transparent 80%);
+  background: var(--admin-media-origin-content-bg);
+  border-color: var(--admin-media-origin-content-border);
+  color: var(--admin-media-origin-content-text);
 }
 
 /* Semantic DL meta data list */
@@ -571,8 +599,8 @@
   margin: 0;
   padding: 12px;
   background: var(--code-content-bg);
-  border-radius: 10px;
-  border: 1px solid color-mix(in srgb, var(--border) 40%, transparent 60%);
+  border-radius: var(--admin-control-radius);
+  border: 1px solid color-mix(in srgb, var(--admin-border) 54%, transparent 46%);
 }
 
 .admin-media-browser__detail-meta-list div {
@@ -591,7 +619,7 @@
   margin: 0;
   color: var(--text);
   font-size: 0.9rem;
-  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
+  font-family: var(--admin-font-mono);
   font-weight: 500;
 }
 
@@ -616,8 +644,8 @@
 .admin-media-browser__code-wrapper {
   position: relative;
   background: var(--code-content-bg);
-  border: 1px solid color-mix(in srgb, var(--border) 80%, transparent 20%);
-  border-radius: 10px;
+  border: 1px solid var(--admin-control-border);
+  border-radius: var(--admin-control-radius);
   overflow: hidden;
 }
 
@@ -631,7 +659,7 @@
   margin: 0;
   padding: 12px 44px 12px 14px;
   color: var(--text);
-  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
+  font-family: var(--admin-font-mono);
   font-size: 0.85rem;
   line-height: 1.5;
   overflow-wrap: anywhere;
@@ -651,11 +679,16 @@
   border-radius: 6px;
   color: var(--muted);
   cursor: pointer;
-  transition: all 0.2s;
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease;
   z-index: 1;
 }
 
 .admin-media-copy-btn:hover {
+  border-color: var(--admin-control-border-hover);
   background: color-mix(in srgb, var(--border) 30%, transparent 70%);
   color: var(--text);
 }
@@ -682,14 +715,16 @@
 }
 
 .admin-media-copy-btn:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: none;
   outline-offset: 1px;
+  border-color: var(--admin-focus-border);
+  box-shadow: 0 0 0 2px var(--admin-focus-ring);
 }
 
 .admin-media-copy-btn[data-state='copied'] {
-  color: color-mix(in srgb, var(--admin-status-ready-bg) 86%, var(--text) 14%);
-  background: color-mix(in srgb, var(--admin-status-ready-bg) 14%, transparent 86%);
-  border-color: color-mix(in srgb, var(--admin-status-ready-bg) 32%, transparent 68%);
+  color: var(--admin-status-success-text);
+  background: var(--admin-status-success-bg);
+  border-color: var(--admin-status-success-border);
 }
 
 .admin-media-copy-btn[data-state='copied']::after {
@@ -710,39 +745,6 @@
   margin-top: auto;
   padding-top: 16px;
   border-top: 1px solid color-mix(in srgb, var(--border) 40%, transparent 60%);
-}
-
-.admin-media-browser__detail-actions .admin-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.admin-btn--primary {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: #24292f;
-  color: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  font-weight: 500;
-  transition: all 0.2s;
-}
-
-.admin-btn--primary:hover {
-  background: #000;
-  transform: translateY(-1px);
-}
-
-:root[data-theme='dark'] .admin-btn--primary {
-  background: color-mix(in srgb, var(--text) 90%, var(--panel) 10%);
-  color: var(--bg);
-  border-color: color-mix(in srgb, var(--text) 60%, transparent 40%);
-}
-
-:root[data-theme='dark'] .admin-btn--primary:hover {
-  background: var(--text);
 }
 
 :root[data-theme='dark'] .admin-media-browser__search-shell {

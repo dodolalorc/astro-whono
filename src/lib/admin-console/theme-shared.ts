@@ -387,6 +387,7 @@ export const canonicalizeAdminThemeSettings = (
   const rawUiArticleMeta: LooseRecord = isRecord(ui.articleMeta) ? ui.articleMeta : {};
   const rawUiLayout: LooseRecord = isRecord(ui.layout) ? ui.layout : {};
   const rawHeroPresetId = normalizeTrimmed(home.heroPresetId);
+  const heroPresetId = isAdminHeroPresetId(rawHeroPresetId) ? rawHeroPresetId : 'default';
   const rawSidebarDivider = normalizeTrimmed(rawUiLayout.sidebarDivider);
 
   const normalizedCustom: EditableThemeSettings['site']['socialLinks']['custom'] = customItems
@@ -433,6 +434,8 @@ export const canonicalizeAdminThemeSettings = (
     });
 
   const heroImageSrc = (() => {
+    if (heroPresetId === 'none') return null;
+
     const normalized = normalizeAdminHeroImageSrc(home.heroImageSrc);
     if (normalized === undefined) {
       const rawValue = normalizeTrimmed(home.heroImageSrc);
@@ -442,6 +445,8 @@ export const canonicalizeAdminThemeSettings = (
   })();
 
   const heroImageAlt = (() => {
+    if (heroPresetId === 'none') return ADMIN_HERO_IMAGE_ALT_DEFAULT;
+
     const normalized = normalizeTrimmed(home.heroImageAlt);
     return normalized || ADMIN_HERO_IMAGE_ALT_DEFAULT;
   })();
@@ -492,7 +497,7 @@ export const canonicalizeAdminThemeSettings = (
       introMoreLinks: normalizeHomeIntroLinks(home.introMoreLinks),
       showIntroLead: typeof home.showIntroLead === 'boolean' ? home.showIntroLead : true,
       showIntroMore: typeof home.showIntroMore === 'boolean' ? home.showIntroMore : true,
-      heroPresetId: isAdminHeroPresetId(rawHeroPresetId) ? rawHeroPresetId : 'default',
+      heroPresetId,
       heroImageSrc,
       heroImageAlt
     },

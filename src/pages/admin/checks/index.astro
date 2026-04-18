@@ -1,6 +1,7 @@
 ---
 import Icon from '../../../components/Icon.astro';
 import AdminLayout from '../../../components/admin/AdminLayout.astro';
+import AdminReadonlyNotice from '../../../components/admin/AdminReadonlyNotice.astro';
 import AdminShell from '../../../components/admin/AdminShell.astro';
 import {
   getAdminChecksData,
@@ -56,7 +57,7 @@ const buildChecksHref = (category: AdminChecksFilterValue): string => {
     currentRoute="checks"
     title="Checks Console"
     subtitle="后台诊断"
-    modeLabel={isDev ? 'DEV 快速扫描' : '只读模式'}
+    showNav={isDev}
   >
     {isDev ? (
       <p
@@ -143,8 +144,9 @@ const buildChecksHref = (category: AdminChecksFilterValue): string => {
                   </div>
                   <span
                     class:list={[
+                      'admin-badge',
                       'admin-checks-status',
-                      category.issueCount > 0 ? 'admin-checks-status--error' : 'admin-checks-status--ok'
+                      category.issueCount > 0 ? 'admin-badge--danger' : 'admin-badge--success'
                     ]}
                   >
                     {category.issueCount > 0 ? `${category.issueCount} 个问题` : '正常'}
@@ -225,29 +227,9 @@ const buildChecksHref = (category: AdminChecksFilterValue): string => {
           }
         </section>
       ) : (
-        <section class="admin-overview">
-          <div class="admin-overview__grid">
-            <article class="admin-overview-card">
-              <p class="admin-overview-card__eyebrow">Readonly Boundary</p>
-              <h2 class="admin-overview-card__title">Checks Console 仅在本地开发环境可用</h2>
-              <p class="admin-overview-card__body">
-                当前环境继续保留 `/admin/checks/` 稳定子入口，但不输出结构化诊断结果，也不代替发布前 CLI 校验。
-              </p>
-              <div class="admin-overview-card__actions">
-                <a class="admin-btn admin-btn--ghost" href={withBase('/admin/')}>返回 Admin 首页</a>
-                <a class="admin-btn admin-btn--ghost" href={withBase('/admin/theme/')}>查看 Theme 子入口</a>
-              </div>
-            </article>
-
-            <article class="admin-overview-card">
-              <p class="admin-overview-card__eyebrow">CLI Baseline</p>
-              <h2 class="admin-overview-card__title">结构化摘要不替代终端检查</h2>
-              <p class="admin-overview-card__body">
-                当前页面只展示源文件层高价值问题；`check:preview-admin`、构建产物断言与完整 build smoke check 仍在终端执行。
-              </p>
-            </article>
-          </div>
-        </section>
+        <AdminReadonlyNotice>
+          若需运行后台诊断，请在本地运行 <code translate="no">npm run dev</code>；发布前仍以终端检查为准。
+        </AdminReadonlyNotice>
       )
     }
   </AdminShell>

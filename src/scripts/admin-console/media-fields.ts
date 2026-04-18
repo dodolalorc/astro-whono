@@ -1,5 +1,5 @@
 import { createWithBase } from '../../utils/format';
-import { formatAdminMediaMetaSummary } from '../admin-shared/media-client';
+import { formatAdminMediaMetaSummary, type AdminMediaClientItem } from '../admin-shared/media-client';
 import type { AdminMediaPickerController, AdminMediaPickerField } from '../admin-shared/media-picker';
 
 type StatusSetter = (
@@ -17,6 +17,10 @@ type ThemeMediaFieldConfig = {
   buttonSelector: string;
   pickerTitle: string;
   pickerDescription: string;
+  pickerResetLabel: string;
+  pickerResetStatus: string;
+  pickerFallbackCurrentValue?: string;
+  pickerFallbackCurrentLabel?: string;
 };
 
 type ThemeMediaFieldState = {
@@ -35,15 +39,21 @@ const FIELD_CONFIGS: readonly ThemeMediaFieldConfig[] = [
     field: 'home.heroImageSrc',
     inputId: 'home-hero-image-src',
     buttonSelector: '[data-admin-media-open="home.heroImageSrc"]',
-    pickerTitle: '为 Hero 选择本地图片',
-    pickerDescription: '支持 src/assets/** 与 public/**，保存仍复用 Theme Console 现有写盘链路。'
+    pickerTitle: '更换 Hero 图片',
+    pickerDescription: '支持 src/assets/** 与 public/**，保存后会写入当前主题配置。',
+    pickerResetLabel: '恢复默认',
+    pickerResetStatus: '已恢复 Hero 默认图',
+    pickerFallbackCurrentValue: 'src/assets/hero.png',
+    pickerFallbackCurrentLabel: '默认图片'
   },
   {
     field: 'page.bits.defaultAuthor.avatar',
     inputId: 'page-bits-author-avatar',
     buttonSelector: '[data-admin-media-open="page.bits.defaultAuthor.avatar"]',
-    pickerTitle: '为 Bits 默认头像选择本地图片',
-    pickerDescription: '仅列出可直接写入 page.bits.defaultAuthor.avatar 的本地 public/** 资源。'
+    pickerTitle: '更换 Bits 作者头像',
+    pickerDescription: '仅列出可直接写入 page.bits.defaultAuthor.avatar 的本地 public/** 资源。',
+    pickerResetLabel: '清空头像',
+    pickerResetStatus: '已清空 Bits 默认头像'
   }
 ];
 
@@ -233,12 +243,22 @@ export const createAdminThemeMediaFields = ({
         return;
       }
 
-      picker.open({
+      const pickerOptions = {
         field: binding.config.field,
         title: binding.config.pickerTitle,
         description: binding.config.pickerDescription,
         query: binding.input?.value ?? '',
-        onSelect: (item) => {
+        currentValue: binding.input?.value ?? '',
+        resetLabel: binding.config.pickerResetLabel,
+        onReset: () => {
+          if (!(binding.input instanceof HTMLInputElement)) return;
+          if (getFieldState(binding.config.field).enabled === false) return;
+          binding.input.value = '';
+          binding.input.dispatchEvent(new Event('input', { bubbles: true }));
+          binding.input.dispatchEvent(new Event('change', { bubbles: true }));
+          setStatus('ok', binding.config.pickerResetStatus);
+        },
+        onSelect: (item: AdminMediaClientItem) => {
           if (!(binding.input instanceof HTMLInputElement)) return;
           if (getFieldState(binding.config.field).enabled === false) return;
           binding.input.value = item.value;
@@ -246,6 +266,18 @@ export const createAdminThemeMediaFields = ({
           binding.input.dispatchEvent(new Event('change', { bubbles: true }));
           setStatus('ok', `已选择本地图片：${item.value}`);
         }
+      };
+
+      picker.open({
+        ...pickerOptions,
+        ...(binding.config.pickerFallbackCurrentValue
+          ? {
+            fallbackCurrentValue: binding.config.pickerFallbackCurrentValue,
+            ...(binding.config.pickerFallbackCurrentLabel
+              ? { fallbackCurrentLabel: binding.config.pickerFallbackCurrentLabel }
+              : {})
+          }
+          : {})
       });
     });
 

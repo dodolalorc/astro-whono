@@ -1,5 +1,6 @@
 ---
 import AdminLayout from '../../../components/admin/AdminLayout.astro';
+import AdminReadonlyNotice from '../../../components/admin/AdminReadonlyNotice.astro';
 import AdminShell from '../../../components/admin/AdminShell.astro';
 import { createWithBase } from '../../../utils/format';
 
@@ -128,7 +129,7 @@ const AdminMediaPicker = adminDevState?.AdminMediaPicker;
     currentRoute="theme"
     title="Theme Console"
     subtitle="主题设置"
-    modeLabel={isDev ? 'DEV 可写' : '只读模式'}
+    showNav={isDev}
   >
     {isDev ? (
       <div slot="status" class="admin-status-slot">
@@ -152,14 +153,9 @@ const AdminMediaPicker = adminDevState?.AdminMediaPicker;
           socialCustomLimit={adminDevState.socialCustomLimit}
         />
       ) : (
-        <section class="admin-overview-card">
-          <p class="admin-overview-card__eyebrow">Readonly Boundary</p>
-          <h2 class="admin-overview-card__title">Theme Console 仅在本地开发环境可写</h2>
-          <p class="admin-overview-card__body">
-            当前路由继续保留为稳定子入口，用于验证 `/admin/theme/` 在 preview / production 下的只读边界。
-          </p>
-          <p class="admin-overview-card__meta">若需修改配置，请在本地运行 `npm run dev` 后从此入口进入。</p>
-        </section>
+        <AdminReadonlyNotice>
+          若需修改主题配置，请在本地运行 <code translate="no">npm run dev</code> 后从此入口进入。
+        </AdminReadonlyNotice>
       )
     }
   </AdminShell>

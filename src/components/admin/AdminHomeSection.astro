@@ -1,4 +1,5 @@
 ---
+import Icon from '../Icon.astro';
 import {
   ADMIN_HERO_IMAGE_ALT_DEFAULT,
   ADMIN_HERO_IMAGE_ALT_MAX_LENGTH,
@@ -16,9 +17,11 @@ const { homeIntroMaxLength } = Astro.props;
 
 <fieldset class="admin-group">
   <legend class="admin-group__legend">
-    <span class="admin-group__legend-zh">首页设置</span>
-    <span class="admin-group__legend-sep" aria-hidden="true">·</span>
-    <span class="admin-group__legend-en">Home</span>
+    <Icon name="admin-home" class="admin-group__legend-icon" size={14} />
+    <span class="admin-group__legend-copy">
+      <span class="admin-group__legend-zh">首页设置</span>
+      <span class="admin-group__legend-en">Home</span>
+    </span>
   </legend>
   <div class="admin-grid">
     <div class="admin-field admin-field--full">

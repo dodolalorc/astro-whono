@@ -1,5 +1,6 @@
 ---
 import AdminLayout from '../../../components/admin/AdminLayout.astro';
+import AdminReadonlyNotice from '../../../components/admin/AdminReadonlyNotice.astro';
 import AdminShell from '../../../components/admin/AdminShell.astro';
 import {
   getAdminContentCollectionHref,
@@ -39,7 +40,7 @@ const contentOverviewTotals = contentOverviewDevState
     currentRoute="content"
     title="Content Console"
     subtitle="内容总入口"
-    modeLabel={isDev ? 'DEV 只读索引' : '只读模式'}
+    showNav={isDev}
   >
     {
       isDev && contentOverviewDevState ? (
@@ -91,29 +92,9 @@ const contentOverviewTotals = contentOverviewDevState
           </article>
         </section>
       ) : (
-        <section class="admin-overview">
-          <div class="admin-overview__grid">
-            <article class="admin-overview-card">
-              <p class="admin-overview-card__eyebrow">Readonly Boundary</p>
-              <h2 class="admin-overview-card__title">Content Console 仅在本地开发环境可用</h2>
-              <p class="admin-overview-card__body">
-                当前环境继续保留 `/admin/content/` 与 `/admin/content/:collection/` 路由结构，但不输出内容列表、筛选结果或只读详情载荷。
-              </p>
-              <div class="admin-overview-card__actions">
-                <a class="admin-btn admin-btn--ghost" href={withBase('/admin/')}>返回 Admin 首页</a>
-                <a class="admin-btn admin-btn--ghost" href={withBase('/admin/theme/')}>查看 Theme 子入口</a>
-              </div>
-            </article>
-
-            <article class="admin-overview-card">
-              <p class="admin-overview-card__eyebrow">Phase 2A</p>
-              <h2 class="admin-overview-card__title">当前仅保留只读说明</h2>
-              <p class="admin-overview-card__body">
-                内容索引、分页与详情卡片只在 `npm run dev` 下可见；preview / production 继续把 `/admin` 视为只读工具壳层。
-              </p>
-            </article>
-          </div>
-        </section>
+        <AdminReadonlyNotice>
+          若需查看或编辑内容索引，请在本地运行 <code translate="no">npm run dev</code> 后从此入口进入。
+        </AdminReadonlyNotice>
       )
     }
   </AdminShell>

@@ -5,6 +5,7 @@ import {
   assertAdminOverviewHeader,
   assertAdminContentStaticShell,
   assertAdminMediaStaticShell,
+  assertNoAdminRouteNav,
   assertAdminSettingsStaticShell,
   expect
 } from './smoke-utils.mjs';
@@ -129,6 +130,7 @@ export const runProductionArtifactCheck = async (options = {}) => {
     expect(adminHtml.includes('data-admin-overview-mode="public"'), 'dist/admin/index.html is missing the public overview mode marker');
   }
   expect(adminHtml.includes('noindex,nofollow'), 'dist/admin/index.html is missing the noindex robots boundary');
+  assertNoAdminRouteNav('dist/admin/index.html', adminHtml);
   expect(!adminHtml.includes('data-admin-root'), 'dist/admin/index.html should stay readonly outside dev');
   expect(!adminHtml.includes('id="admin-bootstrap"'), 'dist/admin/index.html should not emit theme bootstrap payload');
   expect(!adminHtml.includes('data-admin-content-root'), 'dist/admin/index.html should not emit content console payload');
@@ -143,6 +145,7 @@ export const runProductionArtifactCheck = async (options = {}) => {
 
   for (const [filePath, html, heading] of readonlyAdminHtmlChecks) {
     expect(html.includes(heading), `${filePath} is missing the expected ${heading} route heading`);
+    assertNoAdminRouteNav(filePath, html);
     expect(!html.includes('data-admin-root'), `${filePath} should stay readonly outside dev`);
     expect(!html.includes('id="admin-bootstrap"'), `${filePath} should not emit theme bootstrap payload`);
     expect(!html.includes('data-admin-content-root'), `${filePath} should not emit content console payload`);

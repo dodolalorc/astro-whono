@@ -1,6 +1,7 @@
 ---
 import Icon from '../../../components/Icon.astro';
 import AdminLayout from '../../../components/admin/AdminLayout.astro';
+import AdminReadonlyNotice from '../../../components/admin/AdminReadonlyNotice.astro';
 import AdminShell from '../../../components/admin/AdminShell.astro';
 import {
   ADMIN_MEDIA_LIST_API_PATH,
@@ -85,7 +86,7 @@ const bootstrapText = mediaDevState
     currentRoute="media"
     title="Media Console"
     subtitle="图库"
-    modeLabel={isDev ? '本地浏览' : '只读说明'}
+    showNav={isDev}
   >
     {isDev ? (
       <div slot="status" class="admin-status-slot">
@@ -202,19 +203,9 @@ const bootstrapText = mediaDevState
           <div id="admin-media-bootstrap" hidden>{bootstrapText}</div>
         </section>
       ) : (
-        <section class="admin-overview">
-          <article class="admin-overview-card">
-            <p class="admin-overview-card__eyebrow">Readonly</p>
-            <h2 class="admin-overview-card__title">Media Console 仅在本地环境可用</h2>
-            <p class="admin-overview-card__body">
-              当前环境保留入口说明，但不会显示图片列表或路径复制功能。
-            </p>
-            <div class="admin-overview-card__actions">
-              <a class="admin-btn admin-btn--ghost" href={withBase('/admin/')}>返回 Admin 首页</a>
-              <a class="admin-btn admin-btn--ghost" href={withBase('/admin/content/')}>打开内容页</a>
-            </div>
-          </article>
-        </section>
+        <AdminReadonlyNotice>
+          若需浏览媒体库或复制资源路径，请在本地运行 <code translate="no">npm run dev</code> 后从此入口进入。
+        </AdminReadonlyNotice>
       )
     }
   </AdminShell>

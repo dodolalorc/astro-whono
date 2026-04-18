@@ -35,6 +35,13 @@ const JSON_HEADERS = {
 };
 
 const DEV_ONLY_NOT_FOUND_RESPONSE = new Response('Not Found', { status: 404 });
+const METHOD_NOT_ALLOWED_RESPONSE = new Response('Method Not Allowed', {
+  status: 405,
+  headers: {
+    allow: 'POST',
+    'cache-control': 'no-store'
+  }
+});
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -178,6 +185,14 @@ const withAdminContentWriteLock = async <T>(task: () => Promise<T>): Promise<T> 
   } finally {
     releaseLock();
   }
+};
+
+export const GET: APIRoute = async () => {
+  if (!import.meta.env.DEV && !process.env.VITEST) {
+    return DEV_ONLY_NOT_FOUND_RESPONSE.clone();
+  }
+
+  return METHOD_NOT_ALLOWED_RESPONSE.clone();
 };
 
 export const POST: APIRoute = async ({ request, url }) => {

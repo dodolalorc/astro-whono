@@ -17,6 +17,7 @@ import {
 } from './media-browse';
 import {
   AdminMediaError,
+  getAdminMediaFieldAllowedOrigins,
   getAdminMediaCompatibleFieldValues,
   getAdminMediaFieldSortRank,
   getAdminMediaFieldValue,
@@ -40,6 +41,7 @@ export type { AdminMediaScopeIndex } from './media-browse';
 export {
   ADMIN_MEDIA_DIRECTORY_OPTIONS,
   AdminMediaError,
+  getAdminMediaFieldAllowedOrigins,
   getAdminMediaListRequest,
   getAdminMediaMetaRequest,
   isAdminMediaDirectory,
@@ -1115,6 +1117,7 @@ export const listAdminMediaItems = async ({
   field = null,
   directory = '',
   owner = '',
+  origin = '',
   group = '',
   subgroup = '',
   query = '',
@@ -1122,6 +1125,9 @@ export const listAdminMediaItems = async ({
   limit = 20
 }: Partial<AdminMediaListRequest> = {}): Promise<AdminMediaListResult> => {
   const normalizedQuery = query.trim();
+  const normalizedOrigin = getAdminMediaFieldAllowedOrigins(field).includes(origin as AdminMediaOrigin)
+    ? origin
+    : '';
   const normalizedGroup = normalizeAdminMediaBrowseGroup(group);
   const normalizedSubgroup = normalizeAdminMediaBrowseSubgroup(subgroup);
   const safeLimit = Math.max(1, Math.min(limit, 60));
@@ -1187,7 +1193,10 @@ export const listAdminMediaItems = async ({
         return ownerOptions.some((option) => option.value === candidate) ? candidate : '';
       })()
     : '';
-  const filtered = queryMatchedAssets.filter((asset) => !normalizedOwner || asset.owner === normalizedOwner);
+  const filtered = queryMatchedAssets.filter((asset) =>
+    (!normalizedOwner || asset.owner === normalizedOwner)
+    && (!normalizedOrigin || asset.origin === normalizedOrigin)
+  );
   const totalPages = Math.max(1, Math.ceil(filtered.length / safeLimit));
   const safePage = Math.min(Math.max(page, 1), totalPages);
   const startIndex = (safePage - 1) * safeLimit;

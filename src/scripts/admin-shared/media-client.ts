@@ -50,7 +50,7 @@ export const formatAdminMediaBytes = (size: number | null): string => {
   return `${(size / (1024 * 1024)).toFixed(1)} MB`;
 };
 
-const getOriginLabel = (origin: AdminMediaClientMeta['origin']): string => {
+export const getAdminMediaOriginLabel = (origin: AdminMediaClientMeta['origin']): string => {
   if (origin === 'public') return '公开资源';
   if (origin === 'src/assets') return '站点素材';
   if (origin === 'src/content') return '文章附件';
@@ -64,7 +64,7 @@ export const formatAdminMediaMetaSummary = (
     return '远程图片；不自动读取本地尺寸';
   }
 
-  const originLabel = getOriginLabel(meta.origin);
+  const originLabel = getAdminMediaOriginLabel(meta.origin);
   const sizeLabel = formatAdminMediaBytes(meta.size);
   if (meta.width && meta.height) {
     return `${originLabel} · ${meta.width}×${meta.height} · ${sizeLabel}`;

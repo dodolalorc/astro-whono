@@ -1,5 +1,6 @@
 import {
   ADMIN_MEDIA_DEFAULT_LIST_LIMIT,
+  isAdminMediaOrigin,
   type AdminMediaOrigin
 } from './media-contract';
 import {
@@ -32,6 +33,7 @@ export type AdminMediaListRequest = {
   field: AdminMediaFieldContext | null;
   directory: AdminMediaDirectory;
   owner: string;
+  origin: AdminMediaOrigin | '';
   group: string;
   subgroup: string;
   query: string;
@@ -82,6 +84,7 @@ const FIELD_CONFIG: Record<AdminMediaFieldContext, AdminMediaFieldConfig> = {
 };
 
 const ADMIN_MEDIA_FIELD_CONTEXTS = Object.freeze(Object.keys(FIELD_CONFIG) as AdminMediaFieldContext[]);
+const ADMIN_MEDIA_ALL_ORIGINS = ['public', 'src/assets', 'src/content'] as const satisfies readonly AdminMediaOrigin[];
 
 export const ADMIN_MEDIA_DIRECTORY_OPTIONS = [
   {
@@ -167,6 +170,10 @@ export const getAdminMediaFieldValue = (
   return config.toValue(assetPath, origin);
 };
 
+export const getAdminMediaFieldAllowedOrigins = (
+  field: AdminMediaFieldContext | null
+): readonly AdminMediaOrigin[] => (field ? FIELD_CONFIG[field].allowedOrigins : ADMIN_MEDIA_ALL_ORIGINS);
+
 export const getAdminMediaFieldSortRank = (
   field: AdminMediaFieldContext | null,
   assetPath: string
@@ -215,10 +222,17 @@ export const normalizeAdminBitsImageSource = (value: string): string | null => {
 
 export const getAdminMediaListRequest = (searchParams: URLSearchParams): AdminMediaListRequest => {
   const rawField = (searchParams.get('field') ?? '').trim();
+  const field = isAdminMediaFieldContext(rawField) ? rawField : null;
+  const rawOrigin = (searchParams.get('origin') ?? '').trim();
+  const origin = isAdminMediaOrigin(rawOrigin) && getAdminMediaFieldAllowedOrigins(field).includes(rawOrigin)
+    ? rawOrigin
+    : '';
+
   return {
-    field: isAdminMediaFieldContext(rawField) ? rawField : null,
+    field,
     directory: normalizeAdminMediaDirectory(searchParams.get('dir')),
     owner: normalizeAdminMediaOwnerValue(searchParams.get('owner')),
+    origin,
     group: normalizeAdminMediaBrowseGroup(searchParams.get('group')),
     subgroup: normalizeAdminMediaBrowseSubgroup(searchParams.get('sub')),
     query: normalizeSearchQuery(searchParams.get('q')),

@@ -2,6 +2,7 @@
 import Icon from '../../../components/Icon.astro';
 import AdminDiagnosticPanel from '../../../components/admin/AdminDiagnosticPanel.astro';
 import AdminLayout from '../../../components/admin/AdminLayout.astro';
+import AdminReadonlyNotice from '../../../components/admin/AdminReadonlyNotice.astro';
 import AdminShell from '../../../components/admin/AdminShell.astro';
 import { getEditableThemeSettingsState } from '../../../lib/theme-settings';
 import {
@@ -49,7 +50,7 @@ const bootstrapText =
     currentRoute="data"
     title="Data Console"
     subtitle="配置快照"
-    modeLabel={isDev ? 'DEV 可写' : '只读模式'}
+    showNav={isDev}
   >
     {isDev ? (
       <div slot="status" class="admin-status-slot">
@@ -84,7 +85,7 @@ const bootstrapText =
                 <div class="admin-data-panel__actions">
                   <button
                     id="admin-data-export"
-                    class="admin-btn admin-data-btn admin-data-btn--secondary"
+                    class="admin-btn admin-btn--secondary admin-data-btn"
                     type="button"
                   >
                     <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -198,7 +199,7 @@ const bootstrapText =
               <div class="admin-data-panel__actions admin-data-panel__actions--stack admin-data-panel__actions--import">
                 <button
                   id="admin-data-dry-run"
-                  class="admin-btn admin-data-btn admin-data-btn--secondary"
+                  class="admin-btn admin-btn--secondary admin-data-btn"
                   type="button"
                   data-step-state="blocked"
                   disabled
@@ -207,7 +208,7 @@ const bootstrapText =
                 </button>
                 <button
                   id="admin-data-apply"
-                  class="admin-btn admin-data-btn admin-data-btn--primary"
+                  class="admin-btn admin-btn--primary admin-data-btn"
                   type="button"
                   data-step-state="blocked"
                   disabled
@@ -290,16 +291,9 @@ const bootstrapText =
           </article>
         </section>
       ) : (
-        <section class="admin-overview">
-          <article class="admin-overview-card">
-            <p class="admin-overview-card__eyebrow">Readonly Boundary</p>
-            <h2 class="admin-overview-card__title">Data Console 仅在本地开发环境可用</h2>
-            <p class="admin-overview-card__body">
-              当前环境继续保留 `/admin/data/` 稳定子入口，但不提供 settings 导出、dry-run 导入或写盘能力。
-            </p>
-            <p class="admin-overview-card__meta">若需导入导出，请在本地运行 `npm run dev` 后再进入此页面。</p>
-          </article>
-        </section>
+        <AdminReadonlyNotice>
+          若需导入或导出 settings 快照，请在本地运行 <code translate="no">npm run dev</code> 后从此入口进入。
+        </AdminReadonlyNotice>
       )
     }
   </AdminShell>

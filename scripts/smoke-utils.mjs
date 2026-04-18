@@ -8,6 +8,7 @@ const ADMIN_OVERVIEW_HEADER_PATTERN = new RegExp([
   '<h1\\b(?=[^>]*\\bclass="[^"]*\\bpage-title\\b[^"]*")[^>]*>\\s*Site Overview\\s*</h1>',
   '<span\\b(?=[^>]*\\bclass="[^"]*\\bpage-subtitle\\b[^"]*")[^>]*>\\s*站点概览\\s*</span>'
 ].join('\\s*'));
+const ADMIN_ROUTE_NAV_PATTERN = /<nav\b(?=[^>]*\bclass=(["'])[^"']*\badmin-route-nav\b[^"']*\1)[^>]*>/;
 
 export const expect = (condition, message) => {
   if (!condition) {
@@ -59,6 +60,20 @@ export const assertAdminOverviewHeader = (label, body) => {
   expect(
     ADMIN_OVERVIEW_HEADER_PATTERN.test(body),
     `${label} is missing the visible Site Overview heading and 站点概览 subtitle`
+  );
+};
+
+export const assertNoAdminRouteNav = (label, body) => {
+  expect(
+    !ADMIN_ROUTE_NAV_PATTERN.test(body),
+    `${label} should not expose admin route tabs outside dev`
+  );
+};
+
+export const assertHasAdminRouteNav = (label, body) => {
+  expect(
+    ADMIN_ROUTE_NAV_PATTERN.test(body),
+    `${label} is missing admin route tabs in dev`
   );
 };
 

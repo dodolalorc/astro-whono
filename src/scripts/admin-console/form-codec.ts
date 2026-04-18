@@ -408,6 +408,8 @@ export const createFormCodec = ({
       };
     });
 
+    const showHero = Boolean(inputHomeShowHero.checked);
+
     return {
       site: {
         title: inputSiteTitle.value.trim(),
@@ -444,9 +446,9 @@ export const createFormCodec = ({
         introMoreLinks: collectHomeIntroLinks(),
         showIntroLead: Boolean(inputHomeShowIntroLead.checked),
         showIntroMore: Boolean(inputHomeShowIntroMore.checked),
-        heroPresetId: inputHomeShowHero.checked ? 'default' : 'none',
-        heroImageSrc: normalizeHeroImageInput(inputHeroImageSrc.value),
-        heroImageAlt: normalizeHeroImageAlt(inputHeroImageAlt.value)
+        heroPresetId: showHero ? 'default' : 'none',
+        heroImageSrc: showHero ? normalizeHeroImageInput(inputHeroImageSrc.value) : null,
+        heroImageAlt: showHero ? normalizeHeroImageAlt(inputHeroImageAlt.value) : ADMIN_HERO_IMAGE_ALT_DEFAULT
       },
       page: {
         essay: {

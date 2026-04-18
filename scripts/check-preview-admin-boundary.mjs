@@ -8,6 +8,8 @@ import {
   assertAdminContentStaticResponse,
   assertAdminMediaStaticResponse,
   assertAdminOverviewHeader,
+  assertHasAdminRouteNav,
+  assertNoAdminRouteNav,
   assertAdminSettingsStaticResponse,
   expect,
   findAvailablePort,
@@ -110,11 +112,13 @@ const assertAdminOverviewShell = (label, response, options = {}) => {
   expect(!response.body.includes('id="admin-data-bootstrap"'), `${label} should not emit data bootstrap payload`);
 
   if (expectMaintainerView) {
+    assertHasAdminRouteNav(label, response.body);
     expect(
       response.body.includes('data-admin-overview-mode="maintainer"'),
       `${label} is missing the maintainer overview mode marker`
     );
   } else {
+    assertNoAdminRouteNav(label, response.body);
     expect(
       response.body.includes('data-admin-overview-mode="public"')
         || response.body.includes('data-admin-overview-mode="hidden"'),
@@ -130,6 +134,7 @@ const assertReadonlyAdminThemeShell = (label, response) => {
     `${label} did not return HTML`
   );
   expect(response.body.includes('Theme Console'), `${label} is missing the Theme Console route heading`);
+  assertNoAdminRouteNav(label, response.body);
   expect(!response.body.includes('data-admin-root'), `${label} should stay readonly outside dev`);
   expect(!response.body.includes('id="admin-bootstrap"'), `${label} should not emit theme bootstrap payload outside dev`);
 };
@@ -141,6 +146,7 @@ const assertReadonlyAdminDataShell = (label, response) => {
     `${label} did not return HTML`
   );
   expect(response.body.includes('Data Console'), `${label} is missing the Data Console route heading`);
+  assertNoAdminRouteNav(label, response.body);
   expect(!response.body.includes('data-admin-data-root'), `${label} should stay readonly outside dev`);
   expect(!response.body.includes('id="admin-data-bootstrap"'), `${label} should not emit data bootstrap payload outside dev`);
 };
@@ -152,6 +158,7 @@ const assertReadonlyAdminChecksShell = (label, response) => {
     `${label} did not return HTML`
   );
   expect(response.body.includes('Checks Console'), `${label} is missing the Checks Console route heading`);
+  assertNoAdminRouteNav(label, response.body);
 };
 
 const assertReadonlyAdminMediaShell = (label, response) => {
@@ -161,6 +168,7 @@ const assertReadonlyAdminMediaShell = (label, response) => {
     `${label} did not return HTML`
   );
   expect(response.body.includes('Media Console'), `${label} is missing the Media Console route heading`);
+  assertNoAdminRouteNav(label, response.body);
   expect(!response.body.includes('data-admin-media-root'), `${label} should stay readonly outside dev`);
   expect(!response.body.includes('id="admin-media-bootstrap"'), `${label} should not emit media bootstrap payload outside dev`);
 };
@@ -172,6 +180,7 @@ const assertReadonlyAdminContentShell = (label, response) => {
     `${label} did not return HTML`
   );
   expect(response.body.includes('Content Console'), `${label} is missing the Content Console route heading`);
+  assertNoAdminRouteNav(label, response.body);
   expect(!response.body.includes('data-admin-content-root'), `${label} should stay readonly outside dev`);
 };
 
@@ -182,6 +191,7 @@ const assertAdminThemeDevBootstrapSafe = (label, response) => {
     `${label} did not return HTML`
   );
   expect(response.body.includes('data-admin-root'), `${label} lost the admin console shell`);
+  assertHasAdminRouteNav(label, response.body);
   expect(response.body.includes('id="admin-bootstrap"'), `${label} is missing the bootstrap container`);
   expect(
     response.body.includes(ADMIN_BOOTSTRAP_XSS_SENTINEL),
@@ -203,6 +213,7 @@ const assertDevAdminHtmlRoute = (label, response) => {
     response.contentType.toLowerCase().includes('text/html'),
     `${label} did not return HTML`
   );
+  assertHasAdminRouteNav(label, response.body);
 };
 
 const stopProcess = async (child) => {

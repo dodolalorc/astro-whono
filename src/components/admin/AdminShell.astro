@@ -6,25 +6,26 @@ const {
   currentRoute,
   title,
   subtitle,
-  modeLabel,
   showNav = true
 } = Astro.props as {
   currentRoute: AdminRouteId;
   title: string;
   subtitle: string;
-  modeLabel: string;
   showNav?: boolean;
 };
 ---
 
-<section class="admin-console admin-console--shell">
+<section
+  class="admin-console admin-console--shell"
+  data-admin-route={currentRoute}
+  data-admin-nav-visible={showNav ? 'true' : 'false'}
+>
   <header class="page-header page-header--admin">
     <div class="admin-heading">
       <div class="admin-heading__copy">
         <h1 class="page-title">{title}</h1>
         <span class="page-subtitle">{subtitle}</span>
       </div>
-      <span class="admin-mode-chip">{modeLabel}</span>
     </div>
     <slot name="status" />
   </header>
