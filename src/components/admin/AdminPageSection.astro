@@ -216,8 +216,8 @@ const {
     <p class="admin-subtitle">
       <span class="admin-subtitle__main">/bits/页默认作者</span>
     </p>
-    <div class="admin-author-media">
-      <div class="admin-author-media__fields">
+    <div class="admin-author-image">
+      <div class="admin-author-image__fields">
         <label class="admin-field">
           <span class="admin-label">
             <span class="admin-label__main">默认作者名</span>
@@ -229,12 +229,12 @@ const {
             <label class="admin-label__main" for="page-bits-author-avatar">默认头像</label>
             <span class="admin-label__hint">（相对路径）</span>
           </span>
-          <div class="admin-media-field-input">
+          <div class="admin-images-field-input">
             <input id="page-bits-author-avatar" type="text" autocomplete="off" />
             <button
               class="admin-btn admin-btn--ghost"
               type="button"
-              data-admin-media-open="page.bits.defaultAuthor.avatar"
+              data-admin-images-open="page.bits.defaultAuthor.avatar"
               aria-label="选择 Bits 默认头像"
             >
               选择
@@ -242,14 +242,14 @@ const {
           </div>
         </div>
       </div>
-      <div class="admin-author-media__preview" aria-label="默认头像预览">
-        <p class="admin-media-field-preview-label">预览头像</p>
+      <div class="admin-author-image__preview" aria-label="默认头像预览">
+        <p class="admin-images-field-preview-label">预览头像</p>
         <div
-          class="admin-media-field-preview admin-media-field-preview--avatar"
-          data-admin-media-preview="page.bits.defaultAuthor.avatar"
+          class="admin-images-field-preview admin-images-field-preview--avatar"
+          data-admin-images-preview="page.bits.defaultAuthor.avatar"
           hidden
         >
-          <img alt="" loading="lazy" decoding="async" data-admin-media-preview-img="page.bits.defaultAuthor.avatar" />
+          <img alt="" loading="lazy" decoding="async" data-admin-images-preview-img="page.bits.defaultAuthor.avatar" />
         </div>
       </div>
     </div>

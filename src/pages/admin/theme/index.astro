@@ -24,24 +24,24 @@ const loadThemeDevState = async () => {
       getAdminFooterStartYearMax
     },
     {
-      ADMIN_MEDIA_LIST_API_PATH,
-      ADMIN_MEDIA_META_API_PATH
+      ADMIN_IMAGE_LIST_API_PATH,
+      ADMIN_IMAGE_META_API_PATH
     },
     { default: AdminThemeDevConsole },
-    { default: AdminMediaPicker },
+    { default: AdminImagePicker },
     { default: adminConsoleScriptHref },
     { default: adminThemeStylesHref },
-    { default: adminMediaSharedStylesHref }
+    { default: adminImageSharedStylesHref }
   ] = await Promise.all([
     import('astro:content'),
     import('../../../lib/theme-settings'),
     import('../../../lib/admin-console/theme-shared'),
-    import('../../../lib/admin-console/media-shared'),
+    import('../../../lib/admin-console/image-shared'),
     import('../../../components/admin/AdminThemeDevConsole.astro'),
-    import('../../../components/admin/AdminMediaPicker.astro'),
+    import('../../../components/admin/AdminImagePicker.astro'),
     import('../../../scripts/admin-console/index.ts?url'),
     import('../../../styles/components/admin-theme.css?url'),
-    import('../../../styles/components/admin-media-shared.css?url')
+    import('../../../styles/components/admin-images-shared.css?url')
   ]);
 
   const settingsEndpoint = withBase('/api/admin/settings/');
@@ -99,12 +99,12 @@ const loadThemeDevState = async () => {
     : initialState;
 
   return {
-    AdminMediaPicker,
+    AdminImagePicker,
     AdminThemeDevConsole,
     adminConsoleScriptHref,
-    adminMediaListEndpoint: withBase(ADMIN_MEDIA_LIST_API_PATH),
-    adminMediaMetaEndpoint: withBase(ADMIN_MEDIA_META_API_PATH),
-    stylesHref: [adminShellStylesHref, adminThemeStylesHref, adminMediaSharedStylesHref],
+    adminImageListEndpoint: withBase(ADMIN_IMAGE_LIST_API_PATH),
+    adminImageMetaEndpoint: withBase(ADMIN_IMAGE_META_API_PATH),
+    stylesHref: [adminShellStylesHref, adminThemeStylesHref, adminImageSharedStylesHref],
     bootstrapText: JSON.stringify(bootstrapState),
     footerStartYearMin,
     footerStartYearMax,
@@ -121,7 +121,7 @@ const loadThemeDevState = async () => {
 
 const adminDevState = isDev ? await loadThemeDevState() : null;
 const AdminThemeDevConsole = adminDevState?.AdminThemeDevConsole;
-const AdminMediaPicker = adminDevState?.AdminMediaPicker;
+const AdminImagePicker = adminDevState?.AdminImagePicker;
 ---
 
 <AdminLayout title="Theme Console" stylesHref={adminDevState?.stylesHref ?? adminShellStylesHref}>
@@ -160,10 +160,10 @@ const AdminMediaPicker = adminDevState?.AdminMediaPicker;
     }
   </AdminShell>
   {
-    isDev && adminDevState && AdminMediaPicker ? (
-      <AdminMediaPicker
-        listEndpoint={adminDevState.adminMediaListEndpoint}
-        metaEndpoint={adminDevState.adminMediaMetaEndpoint}
+    isDev && adminDevState && AdminImagePicker ? (
+      <AdminImagePicker
+        listEndpoint={adminDevState.adminImageListEndpoint}
+        metaEndpoint={adminDevState.adminImageMetaEndpoint}
       />
     ) : null
   }

@@ -20,9 +20,9 @@ import {
   resolveAdminContentEntryIdFromSourcePath,
   type AdminContentCollectionKey
 } from './content-shared';
-import { normalizeAdminBitsImageSource } from './media-shared';
+import { normalizeAdminBitsImageSource } from './image-shared';
 
-export type AdminChecksCategoryId = 'settings' | 'essay-slug' | 'bits-media' | 'tag';
+export type AdminChecksCategoryId = 'settings' | 'essay-slug' | 'bits-images' | 'tag';
 export type AdminChecksFilterValue = 'all' | AdminChecksCategoryId;
 export type AdminChecksCategoryStatus = 'ready' | 'blocked';
 
@@ -85,7 +85,7 @@ const ADMIN_CHECKS_CATEGORIES = [
     description: '检查 slug 格式、重复和保留路由冲突。'
   },
   {
-    id: 'bits-media',
+    id: 'bits-images',
     label: 'Bits 图片',
     description: '检查头像和图片路径是否有效，引用文件是否存在。'
   },
@@ -310,12 +310,12 @@ const createEssaySlugIssues = (sources: readonly AdminContentSourceRecord[]): Ad
   return issues;
 };
 
-const createBitsMediaIssues = (sources: readonly AdminContentSourceRecord[]): AdminChecksIssue[] => {
+const createBitsImagesIssues = (sources: readonly AdminContentSourceRecord[]): AdminChecksIssue[] => {
   const issues: AdminChecksIssue[] = [];
 
   for (const source of sources) {
     if (source.readError || !source.frontmatter) {
-      issues.push(createSourceReadIssue('bits-media', source));
+      issues.push(createSourceReadIssue('bits-images', source));
       continue;
     }
 
@@ -326,7 +326,7 @@ const createBitsMediaIssues = (sources: readonly AdminContentSourceRecord[]): Ad
       if (normalizedAvatar === undefined) {
         issues.push(
           createIssue(
-            'bits-media',
+            'bits-images',
             'bits.author.avatar 路径非法',
             'author.avatar 只允许相对图片路径，不要带 public/、/、URL、..、? 或 #。',
             {
@@ -344,7 +344,7 @@ const createBitsMediaIssues = (sources: readonly AdminContentSourceRecord[]): Ad
         if (avatarFilePath && !existsSync(path.join(getProjectRoot(), ...avatarFilePath.split('/')))) {
           issues.push(
             createIssue(
-              'bits-media',
+              'bits-images',
               'bits.author.avatar 指向的文件不存在',
               `author.avatar 指向的本地文件不存在：${avatarFilePath}`,
               {
@@ -369,7 +369,7 @@ const createBitsMediaIssues = (sources: readonly AdminContentSourceRecord[]): Ad
       if (!normalizedSrc) {
         issues.push(
           createIssue(
-            'bits-media',
+            'bits-images',
             'bits.images[*].src 路径非法',
             'bits.images[*].src 只允许 public/** 下的相对图片路径或 https:// 远程 URL。',
             {
@@ -390,7 +390,7 @@ const createBitsMediaIssues = (sources: readonly AdminContentSourceRecord[]): Ad
         if (!existsSync(path.join(getProjectRoot(), ...imageFilePath.split('/')))) {
           issues.push(
             createIssue(
-              'bits-media',
+              'bits-images',
               'bits.images[*].src 指向的文件不存在',
               `bits.images[*].src 指向的本地文件不存在：${imageFilePath}`,
               {
@@ -469,7 +469,7 @@ export const getAdminChecksData = async (): Promise<AdminChecksData> => {
   const issuesByCategory: Record<AdminChecksCategoryId, AdminChecksIssue[]> = {
     settings: createSettingsIssues(),
     'essay-slug': createEssaySlugIssues(essaySources),
-    'bits-media': createBitsMediaIssues(bitsSources),
+    'bits-images': createBitsImagesIssues(bitsSources),
     tag: createTagIssues([...essaySources, ...bitsSources])
   };
 

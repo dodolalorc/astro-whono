@@ -25,7 +25,7 @@ const { homeIntroMaxLength } = Astro.props;
   </legend>
   <div class="admin-grid">
     <div class="admin-field admin-field--full">
-      <div class="admin-hero-media">
+      <div class="admin-hero-image">
         <div class="admin-hero-fields">
           <div class="admin-field">
             <div class="admin-label admin-label--split">
@@ -38,7 +38,7 @@ const { homeIntroMaxLength } = Astro.props;
                 <span>展示</span>
               </label>
             </div>
-            <div class="admin-media-field-input">
+            <div class="admin-images-field-input">
               <input
                 id="home-hero-image-src"
                 type="text"
@@ -50,14 +50,14 @@ const { homeIntroMaxLength } = Astro.props;
               <button
                 class="admin-btn admin-btn--ghost"
                 type="button"
-                data-admin-media-open="home.heroImageSrc"
+                data-admin-images-open="home.heroImageSrc"
                 aria-label="选择本地 Hero 图片"
               >
                 选择
               </button>
             </div>
             <p class="admin-help">注：支持 src/assets/**、public/** 或 https:// 图床链接</p>
-            <p class="admin-help admin-help--inline" data-admin-media-meta="home.heroImageSrc" hidden></p>
+            <p class="admin-help admin-help--inline" data-admin-images-meta="home.heroImageSrc" hidden></p>
           </div>
           <div class="admin-field">
             <span class="admin-label">
@@ -73,16 +73,16 @@ const { homeIntroMaxLength } = Astro.props;
             />
           </div>
         </div>
-        <div class="admin-hero-media__preview" aria-label="Hero 图片预览">
-          <p class="admin-media-field-preview-label">预览图片</p>
+        <div class="admin-hero-image__preview" aria-label="Hero 图片预览">
+          <p class="admin-images-field-preview-label">预览图片</p>
           <div
-            class="admin-media-field-preview admin-media-field-preview--hero"
-            data-admin-media-preview="home.heroImageSrc"
-            data-admin-media-default-preview-src={defaultHero.src}
+            class="admin-images-field-preview admin-images-field-preview--hero"
+            data-admin-images-preview="home.heroImageSrc"
+            data-admin-images-default-preview-src={defaultHero.src}
             hidden
           >
-            <img alt="" loading="lazy" decoding="async" data-admin-media-preview-img="home.heroImageSrc" />
-            <span class="admin-media-field-placeholder" data-admin-media-preview-placeholder="home.heroImageSrc" hidden>
+            <img alt="" loading="lazy" decoding="async" data-admin-images-preview-img="home.heroImageSrc" />
+            <span class="admin-images-field-placeholder" data-admin-images-preview-placeholder="home.heroImageSrc" hidden>
               首页 Hero 图未启用
             </span>
           </div>

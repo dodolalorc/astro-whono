@@ -1,0 +1,275 @@
+---
+import AdminIcon from '../../../components/admin/AdminIcon.astro';
+import AdminLayout from '../../../components/admin/AdminLayout.astro';
+import AdminReadonlyNotice from '../../../components/admin/AdminReadonlyNotice.astro';
+import AdminShell from '../../../components/admin/AdminShell.astro';
+import {
+  ADMIN_IMAGE_LIST_API_PATH,
+  ADMIN_IMAGE_META_API_PATH,
+  invalidateAdminImageCaches,
+  listAdminImageBrowseIndex,
+  type AdminImageBrowseIndexItem
+} from '../../../lib/admin-console/image-shared';
+import { createWithBase } from '../../../utils/format';
+
+const isDev = import.meta.env.DEV;
+const base = import.meta.env.BASE_URL ?? '/';
+const withBase = createWithBase(base);
+const { default: adminShellStylesHref } = await import('../../../styles/components/admin-shell.css?url');
+const DEFAULT_IMAGE_GROUP = 'all' as const;
+const DEFAULT_IMAGE_SCOPE = '' as const;
+
+const rawGroup = Astro.url.searchParams.get('group')?.trim().toLowerCase() ?? DEFAULT_IMAGE_GROUP;
+const rawScope = Astro.url.searchParams.get('scope')?.trim().toLowerCase() ?? DEFAULT_IMAGE_SCOPE;
+const rawSubgroup = Astro.url.searchParams.get('sub')?.trim() ?? '';
+const rawQuery = Astro.url.searchParams.get('q')?.trim() ?? '';
+const hasInitialQuery = rawQuery.length > 0;
+const rawPage = Number.parseInt(Astro.url.searchParams.get('page')?.trim() ?? '1', 10);
+const shouldRefresh = Astro.url.searchParams.get('refresh')?.trim() === '1';
+const selectedGroup = rawGroup || DEFAULT_IMAGE_GROUP;
+const selectedScope = rawScope === 'recent' ? 'recent' : DEFAULT_IMAGE_SCOPE;
+const selectedSubgroup = selectedGroup === DEFAULT_IMAGE_GROUP ? '' : rawSubgroup;
+const selectedPage = Number.isInteger(rawPage) && rawPage > 0 ? rawPage : 1;
+const hasInitialFilters =
+  selectedScope === DEFAULT_IMAGE_SCOPE
+  && (selectedGroup !== DEFAULT_IMAGE_GROUP || selectedSubgroup.length > 0);
+
+const loadImagesDevState = async (): Promise<{
+  adminImageScriptHref: string;
+  stylesHref: readonly string[];
+  browseIndex: AdminImageBrowseIndexItem[] | null;
+  didRefresh: boolean;
+}> => {
+  if (shouldRefresh) {
+    invalidateAdminImageCaches();
+  }
+
+  const [{ default: adminImageScriptHref }, { default: adminImageStylesHref }] = await Promise.all([
+    import('../../../scripts/admin-images/index.ts?url'),
+    import('../../../styles/components/admin-images.css?url')
+  ]);
+  const browseIndex = await listAdminImageBrowseIndex().catch(() => null);
+
+  return {
+    adminImageScriptHref,
+    stylesHref: [adminShellStylesHref, adminImageStylesHref],
+    browseIndex,
+    didRefresh: shouldRefresh
+  };
+};
+
+const imagesDevState = isDev ? await loadImagesDevState() : null;
+const bootstrapText = imagesDevState
+  ? JSON.stringify({
+      listEndpoint: withBase(ADMIN_IMAGE_LIST_API_PATH),
+      metaEndpoint: withBase(ADMIN_IMAGE_META_API_PATH),
+      initialState: {
+        scope: selectedScope,
+        group: selectedGroup,
+        subgroup: selectedSubgroup,
+        query: rawQuery,
+        page: selectedPage
+      },
+      browseIndex: imagesDevState.browseIndex,
+      didRefresh: imagesDevState.didRefresh
+    })
+  : null;
+---
+
+<AdminLayout title="Images Console" stylesHref={imagesDevState?.stylesHref ?? adminShellStylesHref}>
+  <AdminShell
+    currentRoute="images"
+    title="Images Console"
+    subtitle="图库"
+    showNav={isDev}
+  >
+    {isDev ? (
+      <div slot="status" class="admin-status-slot">
+        <p id="admin-images-status-live" class="admin-sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
+        <p id="admin-images-status" class="admin-status" data-state="idle">准备中</p>
+      </div>
+    ) : null}
+
+    {
+      isDev && bootstrapText ? (
+        <section class="admin-overview admin-images-console" data-admin-images-root>
+          <form id="admin-images-form" class="admin-images-browser__controls">
+            <div class="admin-images-browser__toolbar">
+              <div class="admin-images-browser__toolbar-main">
+                <h2 class="admin-overview-card__title">图片管理</h2>
+                <div class="admin-images-browser__toolbar-primary">
+                  <span class="admin-images-browser__toolbar-separator" aria-hidden="true">｜</span>
+
+                  <div class="admin-images-browser__toolbar-search">
+                    <button
+                      id="admin-images-filter-toggle"
+                      class="admin-images-browser__filter-toggle"
+                      type="button"
+                      aria-label={hasInitialFilters ? '收起图片筛选' : '展开图片筛选'}
+                      aria-controls="admin-images-filters"
+                      aria-expanded={hasInitialFilters ? 'true' : 'false'}
+                      data-active={hasInitialFilters ? 'true' : 'false'}
+                    >
+                      <AdminIcon name="funnel" size={16} />
+                      <span>筛选</span>
+                    </button>
+
+                    <button
+                      id="admin-images-search-toggle"
+                      class="admin-images-browser__tool-btn admin-images-browser__search-toggle"
+                      type="button"
+                      aria-label="搜索图片"
+                      aria-controls="admin-images-search-panel"
+                      aria-expanded={hasInitialQuery ? 'true' : 'false'}
+                      data-active={hasInitialQuery ? 'true' : 'false'}
+                      title="搜索图片"
+                    >
+                      <span class="admin-images-browser__search-label">搜索</span>
+                      <span class="admin-images-browser__search-icon" aria-hidden="true">
+                        <AdminIcon name="search" size={18} />
+                      </span>
+                    </button>
+
+                    <div
+                      id="admin-images-search-panel"
+                      class="admin-images-browser__search-panel"
+                      data-open={hasInitialQuery ? 'true' : 'false'}
+                      aria-hidden={hasInitialQuery ? 'false' : 'true'}
+                    >
+                      <label class="admin-images-browser__search-shell" for="admin-images-query">
+                        <span class="admin-sr-only">搜索图片</span>
+                        <input
+                          id="admin-images-query"
+                          name="q"
+                          type="search"
+                          inputmode="search"
+                          tabindex={hasInitialQuery ? undefined : '-1'}
+                          value={rawQuery}
+                          placeholder="搜索图片路径、文件名或 owner"
+                          autocomplete="off"
+                        />
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="admin-images-browser__toolbar-actions">
+                <div class="admin-images-browser__view-switch" role="group" aria-label="图片浏览视图">
+                  <button
+                    id="admin-images-view-grid"
+                    class="admin-images-browser__tool-btn"
+                    type="button"
+                    aria-label="网格视图"
+                    aria-pressed="true"
+                    data-active="true"
+                    title="网格视图"
+                  >
+                    <AdminIcon name="grid-tiles" size={18} />
+                  </button>
+                  <button
+                    id="admin-images-view-list"
+                    class="admin-images-browser__tool-btn"
+                    type="button"
+                    aria-label="列表视图"
+                    aria-pressed="false"
+                    title="列表视图"
+                  >
+                    <AdminIcon name="list" size={18} />
+                  </button>
+                </div>
+
+                <button id="admin-images-recent" class="admin-images-browser__recent-link" type="button">最新修改</button>
+
+                <button
+                  id="admin-images-refresh"
+                  class="admin-images-browser__tool-btn"
+                  type="button"
+                  aria-label="刷新图库并重置筛选"
+                  title="刷新图库并重置筛选"
+                >
+                  <AdminIcon name="refresh" size={18} />
+                </button>
+              </div>
+            </div>
+
+            <div
+              id="admin-images-filters"
+              class="admin-images-browser__filters"
+              data-open={hasInitialFilters ? 'true' : 'false'}
+              aria-hidden={hasInitialFilters ? 'false' : 'true'}
+              hidden={!hasInitialFilters}
+            >
+              <div id="admin-images-groups-wrap" class="admin-images-browser__filter-group">
+                <div class="admin-images-browser__filter-head">
+                  <p class="admin-images-browser__filter-label">
+                    <AdminIcon name="images" class="admin-images-browser__filter-label-icon" size={13} />
+                    <span>图片分类</span>
+                  </p>
+                </div>
+                <div id="admin-images-groups" class="admin-images-browser__chips"></div>
+              </div>
+
+              <div id="admin-images-subgroups-wrap" class="admin-images-browser__filter-group" hidden>
+                <p class="admin-images-browser__filter-label">
+                  <AdminIcon name="waypoints" class="admin-images-browser__filter-label-icon" size={13} />
+                  <span>应用位置</span>
+                </p>
+                <div id="admin-images-subgroups" class="admin-images-browser__chips"></div>
+              </div>
+            </div>
+          </form>
+
+          <article class="admin-images-browser__results">
+            <ul id="admin-images-result-list" class="admin-images-browser__items" data-view="grid"></ul>
+            <p id="admin-images-empty" class="admin-content-empty" hidden>没有找到符合条件的图片。</p>
+
+            <nav class="admin-images-browser__pager" aria-label="图库分页">
+              <button
+                id="admin-images-prev"
+                class="admin-btn admin-btn--ghost admin-images-browser__pager-btn"
+                type="button"
+                aria-label="上一页"
+                title="上一页"
+                disabled
+              >
+                &lt;
+              </button>
+              <p id="admin-images-page-meta" class="admin-images-browser__page-progress">1 / 1</p>
+              <button
+                id="admin-images-next"
+                class="admin-btn admin-btn--ghost admin-images-browser__pager-btn"
+                type="button"
+                aria-label="下一页"
+                title="下一页"
+                disabled
+              >
+                &gt;
+              </button>
+            </nav>
+          </article>
+
+          <article id="admin-images-detail" class="admin-overview-card admin-images-browser__detail" hidden></article>
+
+          <div id="admin-images-icon-library" hidden aria-hidden="true">
+            <span data-icon="copy"><AdminIcon name="copy" size={15} /></span>
+            <span data-icon="link"><AdminIcon name="link" size={15} /></span>
+            <span data-icon="eye"><AdminIcon name="eye" size={15} /></span>
+          </div>
+
+          <div id="admin-images-bootstrap" hidden>{bootstrapText}</div>
+        </section>
+      ) : (
+        <AdminReadonlyNotice>
+          若需浏览图库或复制资源路径，请在本地运行 <code translate="no">npm run dev</code> 后从此入口进入。
+        </AdminReadonlyNotice>
+      )
+    }
+  </AdminShell>
+
+  {
+    isDev && imagesDevState?.adminImageScriptHref ? (
+      <script is:inline type="module" src={imagesDevState.adminImageScriptHref}></script>
+    ) : null
+  }
+</AdminLayout>

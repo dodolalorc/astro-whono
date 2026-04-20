@@ -1,12 +1,12 @@
 import {
-  isAdminMediaOrigin,
-  type AdminMediaOrigin
-} from '../../lib/admin-console/media-contract';
+  isAdminImageOrigin,
+  type AdminImageOrigin
+} from '../../lib/admin-console/image-contract';
 
-export type AdminMediaClientItem = {
+export type AdminImageClientItem = {
   path: string;
   value: string;
-  origin: AdminMediaOrigin;
+  origin: AdminImageOrigin;
   fileName: string;
   width: number | null;
   height: number | null;
@@ -15,11 +15,11 @@ export type AdminMediaClientItem = {
   previewSrc: string | null;
 };
 
-export type AdminMediaClientMeta = {
+export type AdminImageClientMeta = {
   kind: 'local' | 'remote';
   path: string | null;
   value: string;
-  origin: AdminMediaOrigin | null;
+  origin: AdminImageOrigin | null;
   width: number | null;
   height: number | null;
   size: number | null;
@@ -27,7 +27,7 @@ export type AdminMediaClientMeta = {
   previewSrc: string | null;
 };
 
-export type AdminMediaListPage<TItem> = {
+export type AdminImageListPage<TItem> = {
   items: TItem[];
   page: number;
   totalPages: number;
@@ -43,45 +43,45 @@ export const isNullableNumber = (value: unknown): value is number | null => valu
 const parsePositiveInteger = (value: unknown, fallback: number): number =>
   typeof value === 'number' && Number.isInteger(value) && value > 0 ? value : fallback;
 
-export const formatAdminMediaBytes = (size: number | null): string => {
+export const formatAdminImageBytes = (size: number | null): string => {
   if (!size || size <= 0) return '大小未知';
   if (size < 1024) return `${size} B`;
   if (size < 1024 * 1024) return `${(size / 1024).toFixed(size < 10 * 1024 ? 1 : 0)} KB`;
   return `${(size / (1024 * 1024)).toFixed(1)} MB`;
 };
 
-export const getAdminMediaOriginLabel = (origin: AdminMediaClientMeta['origin']): string => {
+export const getAdminImageOriginLabel = (origin: AdminImageClientMeta['origin']): string => {
   if (origin === 'public') return '公开资源';
   if (origin === 'src/assets') return '站点素材';
   if (origin === 'src/content') return '文章附件';
   return '本地资源';
 };
 
-export const formatAdminMediaMetaSummary = (
-  meta: Pick<AdminMediaClientMeta, 'kind' | 'origin' | 'width' | 'height' | 'size'>
+export const formatAdminImageMetaSummary = (
+  meta: Pick<AdminImageClientMeta, 'kind' | 'origin' | 'width' | 'height' | 'size'>
 ): string => {
   if (meta.kind === 'remote') {
     return '远程图片；不自动读取本地尺寸';
   }
 
-  const originLabel = getAdminMediaOriginLabel(meta.origin);
-  const sizeLabel = formatAdminMediaBytes(meta.size);
+  const originLabel = getAdminImageOriginLabel(meta.origin);
+  const sizeLabel = formatAdminImageBytes(meta.size);
   if (meta.width && meta.height) {
     return `${originLabel} · ${meta.width}×${meta.height} · ${sizeLabel}`;
   }
   return `${originLabel} · 尺寸未知 · ${sizeLabel}`;
 };
 
-export const getAdminMediaResponseErrors = (payload: unknown): string[] =>
+export const getAdminImageResponseErrors = (payload: unknown): string[] =>
   isRecord(payload) && Array.isArray(payload.errors)
     ? payload.errors.filter((item): item is string => typeof item === 'string' && item.trim().length > 0)
     : [];
 
-const isAdminMediaClientItem = (item: unknown): item is AdminMediaClientItem =>
+const isAdminImageClientItem = (item: unknown): item is AdminImageClientItem =>
   isRecord(item)
   && typeof item.path === 'string'
   && typeof item.value === 'string'
-  && isAdminMediaOrigin(item.origin)
+  && isAdminImageOrigin(item.origin)
   && typeof item.fileName === 'string'
   && isNullableNumber(item.width)
   && isNullableNumber(item.height)
@@ -89,25 +89,25 @@ const isAdminMediaClientItem = (item: unknown): item is AdminMediaClientItem =>
   && isNullableString(item.mimeType)
   && isNullableString(item.previewSrc);
 
-export const isAdminMediaClientMeta = (meta: unknown): meta is AdminMediaClientMeta =>
+export const isAdminImageClientMeta = (meta: unknown): meta is AdminImageClientMeta =>
   isRecord(meta)
   && (meta.kind === 'local' || meta.kind === 'remote')
   && isNullableString(meta.path)
   && typeof meta.value === 'string'
-  && (meta.origin === null || isAdminMediaOrigin(meta.origin))
+  && (meta.origin === null || isAdminImageOrigin(meta.origin))
   && isNullableNumber(meta.width)
   && isNullableNumber(meta.height)
   && isNullableNumber(meta.size)
   && isNullableString(meta.mimeType)
   && isNullableString(meta.previewSrc);
 
-export const parseAdminMediaListResponse = (payload: unknown): AdminMediaListPage<AdminMediaClientItem> => {
+export const parseAdminImageListResponse = (payload: unknown): AdminImageListPage<AdminImageClientItem> => {
   if (!isRecord(payload) || !isRecord(payload.result) || !Array.isArray(payload.result.items)) {
-    throw new Error('媒体列表响应格式无效');
+    throw new Error('图片列表响应格式无效');
   }
 
   return {
-    items: payload.result.items.filter(isAdminMediaClientItem),
+    items: payload.result.items.filter(isAdminImageClientItem),
     page: parsePositiveInteger(payload.result.page, 1),
     totalPages: parsePositiveInteger(payload.result.totalPages, 1),
     totalCount: typeof payload.result.totalCount === 'number' && payload.result.totalCount >= 0
@@ -116,15 +116,15 @@ export const parseAdminMediaListResponse = (payload: unknown): AdminMediaListPag
   };
 };
 
-export const parseAdminMediaMetaResponse = (payload: unknown): AdminMediaClientMeta => {
-  if (!isRecord(payload) || !isRecord(payload.result) || !isAdminMediaClientMeta(payload.result)) {
-    throw new Error('媒体元数据响应格式无效');
+export const parseAdminImageMetaResponse = (payload: unknown): AdminImageClientMeta => {
+  if (!isRecord(payload) || !isRecord(payload.result) || !isAdminImageClientMeta(payload.result)) {
+    throw new Error('图片元数据响应格式无效');
   }
 
   return payload.result;
 };
 
-export const fetchAdminMediaJson = async (url: string, fallbackMessage = '媒体接口请求失败'): Promise<unknown> => {
+export const fetchAdminImageJson = async (url: string, fallbackMessage = '图片接口请求失败'): Promise<unknown> => {
   const response = await fetch(url, {
     method: 'GET',
     headers: { Accept: 'application/json' },
@@ -136,7 +136,7 @@ export const fetchAdminMediaJson = async (url: string, fallbackMessage = '媒体
     return payload;
   }
 
-  const errors = getAdminMediaResponseErrors(payload);
+  const errors = getAdminImageResponseErrors(payload);
   if (!response.ok) {
     throw new Error(errors[0] ?? `${fallbackMessage}（HTTP ${response.status}）`);
   }

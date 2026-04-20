@@ -10,15 +10,21 @@
   --admin-border-strong: color-mix(in srgb, var(--border) 72%, var(--text) 28%);
   --admin-control-height: 34px;
   --admin-control-radius: 8px;
+  --admin-panel-radius: var(--admin-control-radius);
+  --admin-panel-bg: var(--admin-surface);
+  --admin-panel-bg-muted: var(--panel);
+  --admin-panel-border: var(--border);
+  --admin-panel-shadow: none;
   --admin-control-bg: var(--panel);
   --admin-control-bg-hover: var(--code-content-bg);
   --admin-control-bg-disabled: color-mix(in srgb, var(--panel) 86%, var(--bg) 14%);
   --admin-control-border: var(--border);
   --admin-control-border-hover: color-mix(in srgb, var(--border) 68%, var(--text) 32%);
   --admin-control-text-disabled: var(--faint);
-  --admin-button-primary-bg: color-mix(in srgb, var(--text) 88%, var(--bg) 12%);
-  --admin-button-primary-hover-bg: var(--text);
-  --admin-button-primary-border: color-mix(in srgb, var(--text) 62%, transparent);
+  --admin-button-primary-bg: var(--text);
+  --admin-button-primary-hover-bg: color-mix(in srgb, var(--text) 92%, var(--bg) 8%);
+  --admin-button-primary-border: var(--text);
+  --admin-button-primary-hover-border: color-mix(in srgb, var(--text) 82%, var(--bg) 18%);
   --admin-button-primary-text: var(--bg);
   --admin-status-neutral-accent: #78716c;
   --admin-status-info-accent: #596f82;
@@ -165,6 +171,13 @@
 }
 
 .admin-status {
+  --admin-status-icon-size: 14px;
+  --admin-status-glyph-size: 9px;
+  --admin-status-glyph-inset: 2.5px;
+  --admin-status-padding-inline: 10px;
+  --admin-status-icon-mask: none;
+
+  position: relative;
   margin: 0 0 0 auto;
   display: inline-flex;
   align-items: center;
@@ -172,7 +185,7 @@
   transform: translateY(12px);
   gap: 7px;
   min-height: 28px;
-  padding: 0 10px;
+  padding: 0 var(--admin-status-padding-inline);
   border: 1px solid var(--border);
   border-radius: 999px;
   background: var(--panel);
@@ -195,38 +208,56 @@
 }
 
 .admin-status::before {
-  content: '↻';
-  display: inline-grid;
-  place-items: center;
-  width: 14px;
-  height: 14px;
+  content: '';
+  display: block;
+  width: var(--admin-status-icon-size);
+  height: var(--admin-status-icon-size);
   border-radius: 999px;
   background: var(--admin-status-loading-bg);
-  color: var(--admin-status-icon-fg);
-  font-size: 9px;
-  font-weight: 700;
-  line-height: 1;
+  flex: 0 0 var(--admin-status-icon-size);
+}
+
+.admin-status::after {
+  content: '';
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: calc(var(--admin-status-padding-inline) + var(--admin-status-glyph-inset));
+  width: var(--admin-status-glyph-size);
+  height: var(--admin-status-glyph-size);
+  background: var(--admin-status-icon-fg);
+  pointer-events: none;
+  transform: translateY(-50%);
+  -webkit-mask: var(--admin-status-icon-mask) center / contain no-repeat;
+  mask: var(--admin-status-icon-mask) center / contain no-repeat;
 }
 
 .admin-status[data-state='idle']::before,
 .admin-status[data-state='loading']::before {
-  content: '↻';
   background: var(--admin-status-loading-bg);
 }
 
-.admin-status[data-state='idle']::before {
+.admin-status[data-state='idle'],
+.admin-status[data-state='loading'] {
+  --admin-status-icon-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8'/%3E%3Cpath d='M21 3v5h-5'/%3E%3Cpath d='M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16'/%3E%3Cpath d='M8 16H3v5'/%3E%3C/svg%3E");
+}
+
+.admin-status[data-state='idle']::after {
   animation: none;
 }
 
-.admin-status[data-state='loading']::before {
+.admin-status[data-state='loading']::after {
   animation: admin-status-spin 1s linear infinite;
 }
 
 .admin-status[data-state='ready']::before {
-  content: '';
   width: 10px;
   height: 10px;
   background: var(--admin-status-ready-bg);
+  flex-basis: 10px;
+}
+
+.admin-status[data-state='ready']::after {
+  content: none;
 }
 
 .admin-status[data-state='info'],
@@ -240,26 +271,38 @@
 }
 
 .admin-status[data-state='info']::before {
-  content: 'i';
   background: var(--admin-status-loading-bg);
 }
 
 .admin-status[data-state='ok']::before,
 .admin-status[data-state='success']::before {
-  content: '✓';
   background: var(--admin-status-ok-bg);
+}
+
+.admin-status[data-state='ok'],
+.admin-status[data-state='success'] {
+  --admin-status-icon-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");
 }
 
 .admin-status[data-state='error']::before,
 .admin-status[data-state='danger']::before {
-  content: '×';
   background: var(--admin-status-error-bg);
+}
+
+.admin-status[data-state='error'],
+.admin-status[data-state='danger'] {
+  --admin-status-icon-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 6 6 18'/%3E%3Cpath d='m6 6 12 12'/%3E%3C/svg%3E");
 }
 
 .admin-status[data-state='warn']::before,
 .admin-status[data-state='warning']::before {
-  content: '!';
   background: var(--admin-status-warn-bg);
+}
+
+.admin-status[data-state='info'],
+.admin-status[data-state='warn'],
+.admin-status[data-state='warning'] {
+  --admin-status-icon-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 8v4'/%3E%3Cpath d='M12 16h.01'/%3E%3C/svg%3E");
 }
 
 @keyframes admin-status-spin {
@@ -326,10 +369,10 @@
   gap: 10px;
   min-width: 0;
   padding: 18px;
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  background: linear-gradient(180deg, var(--bg) 0%, var(--code-content-bg) 100%);
-  box-shadow: 0 20px 40px -34px var(--overlay-35);
+  border: 1px solid var(--admin-panel-border);
+  border-radius: var(--admin-panel-radius);
+  background: var(--admin-panel-bg);
+  box-shadow: var(--admin-panel-shadow);
 }
 
 .admin-overview-card__eyebrow {
@@ -382,9 +425,9 @@
 .admin-metric-card {
   min-width: 0;
   padding: 12px 14px;
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  background: var(--panel);
+  border: 1px solid var(--admin-panel-border);
+  border-radius: var(--admin-panel-radius);
+  background: var(--admin-panel-bg-muted);
 }
 
 .admin-metric-card__label,
@@ -420,9 +463,9 @@
 
 .admin-recent-list__item {
   padding: 12px 14px;
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  background: var(--panel);
+  border: 1px solid var(--admin-panel-border);
+  border-radius: var(--admin-panel-radius);
+  background: var(--admin-panel-bg-muted);
 }
 
 .admin-recent-list__link {
@@ -688,9 +731,9 @@
 .admin-banner {
   margin: 12px 0 0;
   padding: 14px 16px;
-  border-radius: 16px;
-  border: 1px solid var(--border);
-  background: var(--panel);
+  border-radius: var(--admin-panel-radius);
+  border: 1px solid var(--admin-panel-border);
+  background: var(--admin-panel-bg-muted);
   font-size: var(--admin-text-sm);
   line-height: var(--admin-leading-body);
   color: var(--text);
@@ -715,7 +758,7 @@
 .admin-banner--error {
   padding: 0;
   border-color: var(--admin-error-border);
-  border-radius: 8px;
+  border-radius: var(--admin-panel-radius);
   background: var(--admin-error-bg);
   color: var(--admin-error-text);
   box-shadow: 0 8px 18px -24px var(--admin-error-shadow);
@@ -1031,7 +1074,7 @@
 
 .admin-btn--primary:not(:disabled):hover,
 .admin-btn--muted:not(:disabled):hover {
-  border-color: var(--admin-button-primary-border);
+  border-color: var(--admin-button-primary-hover-border);
   background: var(--admin-button-primary-hover-bg);
   color: var(--admin-button-primary-text);
 }

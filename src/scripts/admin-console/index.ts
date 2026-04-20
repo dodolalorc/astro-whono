@@ -10,8 +10,8 @@ import {
   getAdminFooterStartYearMax
 } from '@/lib/admin-console/theme-shared';
 import { createFormCodec, type EditableSettings } from './form-codec';
-import { createAdminMediaPicker } from '../admin-shared/media-picker';
-import { createAdminThemeMediaFields } from './media-fields';
+import { createAdminImagePicker } from '../admin-shared/image-picker';
+import { createAdminThemeImageFields } from './image-fields';
 import { shouldGuardAdminNavigation } from './navigation-guard';
 import { createSocialLinks } from './social-links';
 import { createAdminConsoleUiState } from './ui-state';
@@ -314,7 +314,7 @@ if (!root) {
       inputSidebarDividerSubtle,
       inputSidebarDividerNone
     });
-    let themeMediaFields: ReturnType<typeof createAdminThemeMediaFields> | null = null;
+    let themeImageFields: ReturnType<typeof createAdminThemeImageFields> | null = null;
 
     const finalizeAppliedSettings = (): void => {
       getPresetRows().forEach((row) => {
@@ -322,7 +322,7 @@ if (!root) {
         delete row.dataset.stashedOrder;
         syncPresetRow(row);
       });
-      themeMediaFields?.refreshAll();
+      themeImageFields?.refreshAll();
     };
 
     const getNavFieldTarget = (
@@ -440,10 +440,10 @@ if (!root) {
 
     const STATUS_INVALID_SETTINGS = '配置损坏';
 
-    const mediaPicker = createAdminMediaPicker();
-    themeMediaFields = createAdminThemeMediaFields({
+    const imagePicker = createAdminImagePicker();
+    themeImageFields = createAdminThemeImageFields({
       root,
-      picker: mediaPicker,
+      picker: imagePicker,
       setStatus: uiState.setStatus,
       getFieldState: (field) => {
         if (field !== 'home.heroImageSrc') return { enabled: true };
@@ -460,7 +460,7 @@ if (!root) {
       syncHomeIntroLinkControls();
       syncHeroControls();
       syncFooterYearControls();
-      themeMediaFields?.refresh('home.heroImageSrc');
+      themeImageFields?.refresh('home.heroImageSrc');
     };
 
     const setValidationIssues = (issues: readonly ValidationIssue[]): void => {
@@ -915,7 +915,7 @@ if (!root) {
     });
     inputHomeShowHero.addEventListener('change', () => {
       syncHeroControls();
-      themeMediaFields?.refresh('home.heroImageSrc');
+      themeImageFields?.refresh('home.heroImageSrc');
       refreshDirty();
     });
 

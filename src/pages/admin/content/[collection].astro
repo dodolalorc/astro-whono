@@ -1,7 +1,7 @@
 ---
 import AdminLayout from '../../../components/admin/AdminLayout.astro';
 import AdminDiagnosticPanel from '../../../components/admin/AdminDiagnosticPanel.astro';
-import AdminMediaPicker from '../../../components/admin/AdminMediaPicker.astro';
+import AdminImagePicker from '../../../components/admin/AdminImagePicker.astro';
 import AdminReadonlyNotice from '../../../components/admin/AdminReadonlyNotice.astro';
 import AdminShell from '../../../components/admin/AdminShell.astro';
 import {
@@ -15,9 +15,9 @@ import {
   type AdminContentCollectionKey
 } from '../../../lib/admin-console/content';
 import {
-  ADMIN_MEDIA_LIST_API_PATH,
-  ADMIN_MEDIA_META_API_PATH
-} from '../../../lib/admin-console/media-shared';
+  ADMIN_IMAGE_LIST_API_PATH,
+  ADMIN_IMAGE_META_API_PATH
+} from '../../../lib/admin-console/image-shared';
 import { readAdminContentEntryEditorPayload } from '../../../lib/admin-console/content-shared';
 import { createWithBase } from '../../../utils/format';
 
@@ -42,16 +42,16 @@ const loadContentDevState = async () => {
   const [
     { default: adminContentScriptHref },
     { default: adminContentStylesHref },
-    { default: adminMediaSharedStylesHref }
+    { default: adminImageSharedStylesHref }
   ] = await Promise.all([
     import('../../../scripts/admin-content/index.ts?url'),
     import('../../../styles/components/admin-content.css?url'),
-    import('../../../styles/components/admin-media-shared.css?url')
+    import('../../../styles/components/admin-images-shared.css?url')
   ]);
 
   return {
     adminContentScriptHref,
-    stylesHref: [adminShellStylesHref, adminContentStylesHref, adminMediaSharedStylesHref],
+    stylesHref: [adminShellStylesHref, adminContentStylesHref, adminImageSharedStylesHref],
     pageData: await getAdminContentCollectionPageData(collection, Astro.url.searchParams)
   };
 };
@@ -72,8 +72,8 @@ const adminContentBootstrap = selectedEntryEditorPayload?.writable
       revision: selectedEntryEditorPayload.revision
     })
   : null;
-const adminMediaListEndpoint = withBase(ADMIN_MEDIA_LIST_API_PATH);
-const adminMediaMetaEndpoint = withBase(ADMIN_MEDIA_META_API_PATH);
+const adminImageListEndpoint = withBase(ADMIN_IMAGE_LIST_API_PATH);
+const adminImageMetaEndpoint = withBase(ADMIN_IMAGE_META_API_PATH);
 const contentConsoleSubtitle = pageData
   ? `${pageData.collectionLabel} · ${selectedEntryEditorPayload?.writable ? 'frontmatter 编辑' : '只读索引'}`
   : '内容索引';
@@ -856,7 +856,7 @@ const activeFilterCount = pageData
       )
     }
   </AdminShell>
-  {isDev ? <AdminMediaPicker listEndpoint={adminMediaListEndpoint} metaEndpoint={adminMediaMetaEndpoint} /> : null}
+  {isDev ? <AdminImagePicker listEndpoint={adminImageListEndpoint} metaEndpoint={adminImageMetaEndpoint} /> : null}
 
   {
     isDev && contentDevState?.adminContentScriptHref ? (

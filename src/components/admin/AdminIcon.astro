@@ -12,6 +12,7 @@ import Funnel from '@lucide/astro/icons/funnel';
 import GitBranch from '@lucide/astro/icons/git-branch';
 import Globe from '@lucide/astro/icons/globe';
 import House from '@lucide/astro/icons/house';
+import Images from '@lucide/astro/icons/images';
 import Layers from '@lucide/astro/icons/layers';
 import LayoutGrid from '@lucide/astro/icons/layout-grid';
 import Link from '@lucide/astro/icons/link';
@@ -25,6 +26,7 @@ import Tags from '@lucide/astro/icons/tags';
 import Terminal from '@lucide/astro/icons/terminal';
 import Trash2 from '@lucide/astro/icons/trash-2';
 import Upload from '@lucide/astro/icons/upload';
+import Waypoints from '@lucide/astro/icons/waypoints';
 import X from '@lucide/astro/icons/x';
 
 type AdminIconName =
@@ -42,6 +44,7 @@ type AdminIconName =
   | 'eye'
   | 'funnel'
   | 'grid-tiles'
+  | 'images'
   | 'layers'
   | 'link'
   | 'list'
@@ -53,6 +56,7 @@ type AdminIconName =
   | 'terminal'
   | 'trash'
   | 'upload'
+  | 'waypoints'
   | 'x-mark';
 
 interface Props {
@@ -86,6 +90,7 @@ const adminIconComponents = {
   eye: Eye,
   funnel: Funnel,
   'grid-tiles': LayoutGrid,
+  images: Images,
   layers: Layers,
   link: Link,
   list: List,
@@ -97,6 +102,7 @@ const adminIconComponents = {
   terminal: Terminal,
   trash: Trash2,
   upload: Upload,
+  waypoints: Waypoints,
   'x-mark': X
 } as const satisfies Record<AdminIconName, AstroComponent>;
 

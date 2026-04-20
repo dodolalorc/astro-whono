@@ -1,4 +1,4 @@
-export type AdminRouteId = 'overview' | 'theme' | 'content' | 'media' | 'checks' | 'data';
+export type AdminRouteId = 'overview' | 'theme' | 'content' | 'images' | 'checks' | 'data';
 
 export type AdminRouteDefinition = {
   id: AdminRouteId;
@@ -6,7 +6,7 @@ export type AdminRouteDefinition = {
     | '/admin/'
     | '/admin/theme/'
     | '/admin/content/'
-    | '/admin/media/'
+    | '/admin/images/'
     | '/admin/checks/'
     | '/admin/data/';
   label: string;
@@ -33,10 +33,10 @@ export const ADMIN_ROUTES = [
     description: '内容索引与 frontmatter 控制台'
   },
   {
-    id: 'media',
-    href: '/admin/media/',
-    label: 'Media',
-    description: '媒体浏览与路径辅助'
+    id: 'images',
+    href: '/admin/images/',
+    label: 'Images',
+    description: '图片浏览与路径辅助'
   },
   {
     id: 'checks',

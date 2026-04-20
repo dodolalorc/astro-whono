@@ -1,6 +1,6 @@
 import { createWithBase } from '../../utils/format';
-import { formatAdminMediaMetaSummary } from '../admin-shared/media-client';
-import type { AdminMediaPickerController } from '../admin-shared/media-picker';
+import { formatAdminImageMetaSummary } from '../admin-shared/image-client';
+import type { AdminImagePickerController } from '../admin-shared/image-picker';
 
 type StatusSetter = (
   state: 'idle' | 'loading' | 'ready' | 'ok' | 'warn' | 'error',
@@ -129,7 +129,7 @@ export const initAdminContentBitsImagesEditor = ({
   setStatus
 }: {
   root: HTMLElement;
-  picker: AdminMediaPickerController | null;
+  picker: AdminImagePickerController | null;
   setStatus: StatusSetter;
 }) => {
   const editor = root.querySelector<HTMLElement>('#admin-content-image-editor');
@@ -155,14 +155,14 @@ export const initAdminContentBitsImagesEditor = ({
       return;
     }
     if (!picker) {
-      setMeta(refs, '当前页面未挂载 media picker');
+      setMeta(refs, '当前页面未挂载 image picker');
       return;
     }
 
     try {
       const meta = await picker.readMeta({ field: 'bits.images', value });
       if ((refs.srcInput?.value.trim() ?? '') !== value) return;
-      setMeta(refs, formatAdminMediaMetaSummary(meta));
+      setMeta(refs, formatAdminImageMetaSummary(meta));
       if (meta.kind === 'local' && refs.widthInput && refs.heightInput) {
         if (meta.width) refs.widthInput.value = String(meta.width);
         if (meta.height) refs.heightInput.value = String(meta.height);
@@ -207,7 +207,7 @@ export const initAdminContentBitsImagesEditor = ({
 
     refs.pickBtn?.addEventListener('click', () => {
       if (!picker) {
-        setStatus('warn', '当前页面未挂载 media picker');
+        setStatus('warn', '当前页面未挂载 image picker');
         return;
       }
       picker.open({
@@ -220,7 +220,7 @@ export const initAdminContentBitsImagesEditor = ({
           if (refs.widthInput && item.width) refs.widthInput.value = String(item.width);
           if (refs.heightInput && item.height) refs.heightInput.value = String(item.height);
           setPreview(refs, item.value);
-          setMeta(refs, formatAdminMediaMetaSummary({ kind: 'local', origin: item.origin, width: item.width, height: item.height, size: item.size }));
+          setMeta(refs, formatAdminImageMetaSummary({ kind: 'local', origin: item.origin, width: item.width, height: item.height, size: item.size }));
           syncHiddenInput();
           setStatus('ok', `已选择本地图片：${item.value}`);
         }

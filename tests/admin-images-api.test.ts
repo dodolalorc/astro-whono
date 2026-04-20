@@ -8,11 +8,11 @@ const PNG_1X1 = Buffer.from(
   'base64'
 );
 
-describe('admin media api', () => {
+describe('admin images api', () => {
   let tempRoot = '';
 
   beforeEach(async () => {
-    tempRoot = await mkdtemp(path.join(tmpdir(), 'astro-whono-media-api-'));
+    tempRoot = await mkdtemp(path.join(tmpdir(), 'astro-whono-images-api-'));
     process.env.ASTRO_WHONO_INTERNAL_TEST_PROJECT_ROOT = tempRoot;
 
     await mkdir(path.join(tempRoot, 'public', 'author'), { recursive: true });
@@ -23,6 +23,7 @@ describe('admin media api', () => {
     await mkdir(path.join(tempRoot, 'src', 'assets'), { recursive: true });
 
     await writeFile(path.join(tempRoot, 'public', 'favicon.png'), PNG_1X1);
+    await writeFile(path.join(tempRoot, 'public', 'apple-touch-icon.png'), PNG_1X1);
     await writeFile(path.join(tempRoot, 'public', 'author', 'avatar.png'), PNG_1X1);
     await writeFile(path.join(tempRoot, 'public', 'bits', 'demo.png'), PNG_1X1);
     await writeFile(path.join(tempRoot, 'public', 'images', 'archive', 'cover.png'), PNG_1X1);
@@ -41,8 +42,8 @@ describe('admin media api', () => {
   afterEach(async () => {
     delete process.env.ASTRO_WHONO_INTERNAL_TEST_PROJECT_ROOT;
     try {
-      const mediaShared = await import('../src/lib/admin-console/media-shared');
-      mediaShared.invalidateAdminMediaCaches();
+      const imageShared = await import('../src/lib/admin-console/image-shared');
+      imageShared.invalidateAdminImageCaches();
     } catch {
       // Ignore cache cleanup failures during teardown.
     }
@@ -52,10 +53,10 @@ describe('admin media api', () => {
   });
 
   it('lists field-scoped items in dev/test mode', async () => {
-    const { GET } = await import('../src/pages/api/admin/media/list');
+    const { GET } = await import('../src/pages/api/admin/images/list');
 
     const response = await GET({
-      url: new URL('http://127.0.0.1:4321/api/admin/media/list?field=bits.images&dir=public/bits&page=1&limit=10')
+      url: new URL('http://127.0.0.1:4321/api/admin/images/list?field=bits.images&dir=public/bits&page=1&limit=10')
     } as never);
 
     expect(response.status).toBe(200);
@@ -74,10 +75,10 @@ describe('admin media api', () => {
   });
 
   it('supports browse mode for assets and returns a single stable preferred value with dev preview src', async () => {
-    const { GET } = await import('../src/pages/api/admin/media/list');
+    const { GET } = await import('../src/pages/api/admin/images/list');
 
     const response = await GET({
-      url: new URL('http://127.0.0.1:4321/api/admin/media/list?group=assets&sub=other&page=1&limit=10')
+      url: new URL('http://127.0.0.1:4321/api/admin/images/list?group=assets&sub=other&page=1&limit=10')
     } as never);
 
     expect(response.status).toBe(200);
@@ -99,11 +100,11 @@ describe('admin media api', () => {
   });
 
   it('filters content attachments by owner and resolves relative asset references', async () => {
-    const { GET } = await import('../src/pages/api/admin/media/list');
+    const { GET } = await import('../src/pages/api/admin/images/list');
 
     const response = await GET({
       url: new URL(
-        'http://127.0.0.1:4321/api/admin/media/list?dir=src/content&owner=src/content/essay/guide&page=1&limit=10'
+        'http://127.0.0.1:4321/api/admin/images/list?dir=src/content&owner=src/content/essay/guide&page=1&limit=10'
       )
     } as never);
 
@@ -143,10 +144,10 @@ describe('admin media api', () => {
   });
 
   it('returns metadata for field values and keeps remote urls readonly-compatible', async () => {
-    const { GET } = await import('../src/pages/api/admin/media/meta');
+    const { GET } = await import('../src/pages/api/admin/images/meta');
 
     const localResponse = await GET({
-      url: new URL('http://127.0.0.1:4321/api/admin/media/meta?field=home.heroImageSrc&value=src/assets/hero.png')
+      url: new URL('http://127.0.0.1:4321/api/admin/images/meta?field=home.heroImageSrc&value=src/assets/hero.png')
     } as never);
     expect(localResponse.status).toBe(200);
     const localPayload = JSON.parse(await localResponse.text());
@@ -156,7 +157,7 @@ describe('admin media api', () => {
     expect(localPayload.result.height).toBe(1);
 
     const remoteResponse = await GET({
-      url: new URL('http://127.0.0.1:4321/api/admin/media/meta?field=bits.images&value=https://example.com/demo.webp')
+      url: new URL('http://127.0.0.1:4321/api/admin/images/meta?field=bits.images&value=https://example.com/demo.webp')
     } as never);
     expect(remoteResponse.status).toBe(200);
     const remotePayload = JSON.parse(await remoteResponse.text());
@@ -167,10 +168,10 @@ describe('admin media api', () => {
   });
 
   it('returns metadata for canonical local path values and rejects unsafe path traversal', async () => {
-    const { GET } = await import('../src/pages/api/admin/media/meta');
+    const { GET } = await import('../src/pages/api/admin/images/meta');
 
     const pathResponse = await GET({
-      url: new URL('http://127.0.0.1:4321/api/admin/media/meta?path=src/assets/hero.png')
+      url: new URL('http://127.0.0.1:4321/api/admin/images/meta?path=src/assets/hero.png')
     } as never);
     expect(pathResponse.status).toBe(200);
     const pathPayload = JSON.parse(await pathResponse.text());
@@ -182,7 +183,7 @@ describe('admin media api', () => {
     expect(pathPayload.result.height).toBe(1);
 
     const unsafeResponse = await GET({
-      url: new URL('http://127.0.0.1:4321/api/admin/media/meta?path=public/../src/assets/hero.png')
+      url: new URL('http://127.0.0.1:4321/api/admin/images/meta?path=public/../src/assets/hero.png')
     } as never);
     expect(unsafeResponse.status).toBe(400);
     const unsafePayload = JSON.parse(await unsafeResponse.text());
@@ -191,7 +192,8 @@ describe('admin media api', () => {
   });
 
   it('derives recent scope from local file mtime and excludes hidden system assets', async () => {
-    const { listAdminMediaScopeIndex } = await import('../src/lib/admin-console/media-shared');
+    const { listAdminImageScopeIndex } = await import('../src/lib/admin-console/image-shared');
+    const { GET } = await import('../src/pages/api/admin/images/list');
     const touch = async (relativePath: string, isoTime: string) => {
       const nextTime = new Date(isoTime);
       await utimes(path.join(tempRoot, ...relativePath.split('/')), nextTime, nextTime);
@@ -202,8 +204,9 @@ describe('admin media api', () => {
     await touch('public/images/archive/cover.png', '2026-04-03T00:00:00.000Z');
     await touch('src/content/essay/guide-assets/hero.png', '2026-03-31T00:00:00.000Z');
     await touch('src/assets/hero.png', '2026-04-04T00:00:00.000Z');
+    await touch('public/apple-touch-icon.png', '2026-04-05T00:00:00.000Z');
 
-    const scopeIndex = await listAdminMediaScopeIndex();
+    const scopeIndex = await listAdminImageScopeIndex();
 
     expect(scopeIndex.recent.slice(0, 4)).toEqual([
       'src/assets/hero.png',
@@ -213,6 +216,19 @@ describe('admin media api', () => {
     ]);
     expect(scopeIndex.recent).toContain('src/content/essay/guide-assets/hero.png');
     expect(scopeIndex.recent).not.toContain('public/favicon.png');
+    expect(scopeIndex.recent).not.toContain('public/apple-touch-icon.png');
+
+    const response = await GET({
+      url: new URL('http://127.0.0.1:4321/api/admin/images/list?scope=recent&page=1&limit=3')
+    } as never);
+    const payload = JSON.parse(await response.text());
+    expect(response.status).toBe(200);
+    expect(payload.result.scope).toBe('recent');
+    expect(payload.result.items.map((item: { path: string }) => item.path)).toEqual([
+      'src/assets/hero.png',
+      'public/images/archive/cover.png',
+      'public/bits/demo.png'
+    ]);
   });
 
 });

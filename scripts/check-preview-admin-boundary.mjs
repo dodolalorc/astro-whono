@@ -6,7 +6,7 @@ import { pathToFileURL } from 'node:url';
 import { preview } from 'astro';
 import {
   assertAdminContentStaticResponse,
-  assertAdminMediaStaticResponse,
+  assertAdminImageStaticResponse,
   assertAdminOverviewHeader,
   assertHasAdminRouteNav,
   assertNoAdminRouteNav,
@@ -106,8 +106,8 @@ const assertAdminOverviewShell = (label, response, options = {}) => {
   expect(!response.body.includes('data-admin-root'), `${label} should not mount the theme form root`);
   expect(!response.body.includes('id="admin-bootstrap"'), `${label} should not emit theme bootstrap payload`);
   expect(!response.body.includes('data-admin-content-root'), `${label} should not emit content console payload`);
-  expect(!response.body.includes('data-admin-media-root'), `${label} should not emit media console payload`);
-  expect(!response.body.includes('id="admin-media-bootstrap"'), `${label} should not emit media bootstrap payload`);
+  expect(!response.body.includes('data-admin-images-root'), `${label} should not emit images console payload`);
+  expect(!response.body.includes('id="admin-images-bootstrap"'), `${label} should not emit images bootstrap payload`);
   expect(!response.body.includes('data-admin-data-root'), `${label} should not emit data console payload`);
   expect(!response.body.includes('id="admin-data-bootstrap"'), `${label} should not emit data bootstrap payload`);
 
@@ -161,16 +161,16 @@ const assertReadonlyAdminChecksShell = (label, response) => {
   assertNoAdminRouteNav(label, response.body);
 };
 
-const assertReadonlyAdminMediaShell = (label, response) => {
+const assertReadonlyAdminImageShell = (label, response) => {
   expect(response.status === 200, `${label} returned ${response.status}`);
   expect(
     response.contentType.toLowerCase().includes('text/html'),
     `${label} did not return HTML`
   );
-  expect(response.body.includes('Media Console'), `${label} is missing the Media Console route heading`);
+  expect(response.body.includes('Images Console'), `${label} is missing the Images Console route heading`);
   assertNoAdminRouteNav(label, response.body);
-  expect(!response.body.includes('data-admin-media-root'), `${label} should stay readonly outside dev`);
-  expect(!response.body.includes('id="admin-media-bootstrap"'), `${label} should not emit media bootstrap payload outside dev`);
+  expect(!response.body.includes('data-admin-images-root'), `${label} should stay readonly outside dev`);
+  expect(!response.body.includes('id="admin-images-bootstrap"'), `${label} should not emit images bootstrap payload outside dev`);
 };
 
 const assertReadonlyAdminContentShell = (label, response) => {
@@ -254,14 +254,14 @@ export const runPreviewAdminBoundaryCheck = async () => {
     const adminThemeResponse = await request(baseUrl, '/admin/theme/');
     const adminContentResponse = await request(baseUrl, '/admin/content/');
     const adminEssayContentResponse = await request(baseUrl, '/admin/content/essay/');
-    const adminMediaResponse = await request(baseUrl, '/admin/media/');
+    const adminImageResponse = await request(baseUrl, '/admin/images/');
     const adminChecksResponse = await request(baseUrl, '/admin/checks/');
     const adminDataResponse = await request(baseUrl, '/admin/data/');
     const getResponse = await request(baseUrl, '/api/admin/settings/');
     const exportResponse = await request(baseUrl, '/api/admin/data/settings/');
     const contentGetResponse = await request(baseUrl, '/api/admin/content/entry/');
-    const mediaListResponse = await request(baseUrl, '/api/admin/media/list/');
-    const mediaMetaResponse = await request(baseUrl, '/api/admin/media/meta/');
+    const imageListResponse = await request(baseUrl, '/api/admin/images/list/');
+    const imageMetaResponse = await request(baseUrl, '/api/admin/images/meta/');
     const contentPostResponse = await request(baseUrl, '/api/admin/content/entry/', {
       method: 'POST',
       headers: {
@@ -288,14 +288,14 @@ export const runPreviewAdminBoundaryCheck = async () => {
     assertReadonlyAdminThemeShell('Preview GET /admin/theme/', adminThemeResponse);
     assertReadonlyAdminContentShell('Preview GET /admin/content/', adminContentResponse);
     assertReadonlyAdminContentShell('Preview GET /admin/content/essay/', adminEssayContentResponse);
-    assertReadonlyAdminMediaShell('Preview GET /admin/media/', adminMediaResponse);
+    assertReadonlyAdminImageShell('Preview GET /admin/images/', adminImageResponse);
     assertReadonlyAdminChecksShell('Preview GET /admin/checks/', adminChecksResponse);
     assertReadonlyAdminDataShell('Preview GET /admin/data/', adminDataResponse);
     assertAdminSettingsStaticResponse('GET /api/admin/settings/', getResponse);
     assertAdminSettingsStaticResponse('GET /api/admin/data/settings/', exportResponse, '/api/admin/data/settings/');
     assertAdminContentStaticResponse('GET /api/admin/content/entry/', contentGetResponse);
-    assertAdminMediaStaticResponse('GET /api/admin/media/list/', mediaListResponse, '/api/admin/media/list/');
-    assertAdminMediaStaticResponse('GET /api/admin/media/meta/', mediaMetaResponse, '/api/admin/media/meta/');
+    assertAdminImageStaticResponse('GET /api/admin/images/list/', imageListResponse, '/api/admin/images/list/');
+    assertAdminImageStaticResponse('GET /api/admin/images/meta/', imageMetaResponse, '/api/admin/images/meta/');
     assertAdminContentStaticResponse('POST /api/admin/content/entry/', contentPostResponse);
     assertAdminSettingsStaticResponse('POST /api/admin/settings/', postResponse);
     console.log('Preview admin boundary check passed.');

@@ -7,7 +7,7 @@ import {
   getBitsAvatarLocalFilePath,
   normalizeBitsAvatarPath
 } from '../../utils/format';
-import { normalizeAdminBitsImageSource } from './media-shared';
+import { normalizeAdminBitsImageSource } from './image-shared';
 import {
   ESSAY_PUBLIC_SLUG_RE,
   RESERVED_ESSAY_SLUGS,

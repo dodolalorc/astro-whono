@@ -1,9 +1,9 @@
 import type { APIRoute } from 'astro';
 import {
-  AdminMediaError,
-  getAdminMediaMetaRequest
-} from '../../../../lib/admin-console/media-params';
-import { getAdminMediaMeta } from '../../../../lib/admin-console/media-shared';
+  AdminImageError,
+  getAdminImageMetaRequest
+} from '../../../../lib/admin-console/image-params';
+import { getAdminImageMeta } from '../../../../lib/admin-console/image-shared';
 
 const JSON_HEADERS = {
   'content-type': 'application/json; charset=utf-8',
@@ -18,15 +18,15 @@ export const GET: APIRoute = async ({ url }) => {
   }
 
   try {
-    const request = getAdminMediaMetaRequest(url.searchParams);
-    const result = await getAdminMediaMeta(request);
+    const request = getAdminImageMetaRequest(url.searchParams);
+    const result = await getAdminImageMeta(request);
 
     return new Response(JSON.stringify({ ok: true, result }, null, 2), {
       headers: JSON_HEADERS
     });
   } catch (error) {
-    const status = error instanceof AdminMediaError ? error.status : 500;
-    const message = error instanceof Error ? error.message : '媒体元数据读取失败';
+    const status = error instanceof AdminImageError ? error.status : 500;
+    const message = error instanceof Error ? error.message : '图片元数据读取失败';
     return new Response(JSON.stringify({ ok: false, errors: [message] }, null, 2), {
       status,
       headers: JSON_HEADERS

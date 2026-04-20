@@ -4,7 +4,7 @@ export const ADMIN_SETTINGS_EXPORT_SCHEMA_VERSION = 1;
 export const ADMIN_SETTINGS_EXPORT_SCOPE = 'settings';
 export const ADMIN_SETTINGS_EXPORT_EXCLUDES = [
   'content',
-  'media',
+  'images',
   '.local',
   'private-files',
   'credentials'

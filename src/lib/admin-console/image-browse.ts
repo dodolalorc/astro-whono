@@ -1,77 +1,78 @@
 import {
-  ADMIN_MEDIA_BROWSE_GROUP_LABELS,
-  ADMIN_MEDIA_BROWSE_GROUP_ORDER,
-  isAdminMediaBrowseGroup,
-  type AdminMediaBrowseGroup,
-  type AdminMediaScopeKey
-} from './media-contract';
+  ADMIN_IMAGE_BROWSE_GROUP_LABELS,
+  ADMIN_IMAGE_BROWSE_GROUP_ORDER,
+  isAdminImageBrowseGroup,
+  type AdminImageBrowseGroup,
+  type AdminImageScopeKey
+} from './image-contract';
 
-export type AdminMediaBrowseResolvedGroup = Exclude<AdminMediaBrowseGroup, 'all'>;
+export type AdminImageBrowseResolvedGroup = Exclude<AdminImageBrowseGroup, 'all'>;
 
-export type AdminMediaBrowseFilterOption = {
+export type AdminImageBrowseFilterOption = {
   value: string;
   label: string;
   count: number;
-  hidden?: boolean;
 };
 
-type AdminMediaQueryItem = {
+type AdminImageQueryItem = {
   path: string;
   fileName: string;
   owner: string | null;
   ownerLabel: string | null;
 };
 
-export type AdminMediaBrowseFacetItem = AdminMediaQueryItem & {
-  browseGroup: AdminMediaBrowseResolvedGroup;
+export type AdminImageBrowseFacetItem = AdminImageQueryItem & {
+  browseGroup: AdminImageBrowseResolvedGroup;
   browseSubgroup: string;
   browseSubgroupLabel: string | null;
 };
 
-export type AdminMediaScopeIndex = {
+export type AdminImageScopeIndex = {
   recent: string[];
 };
 
-export const normalizeAdminMediaBrowseGroup = (value: string | null | undefined): string =>
+export const normalizeAdminImageBrowseGroup = (value: string | null | undefined): string =>
   (value ?? '').trim().toLowerCase().replace(/\\/g, '/');
 
-export const normalizeAdminMediaBrowseSubgroup = (value: string | null | undefined): string =>
+export const normalizeAdminImageBrowseSubgroup = (value: string | null | undefined): string =>
   (value ?? '').trim().replace(/\\/g, '/');
 
-const normalizeAdminMediaQuery = (query: string): string => query.trim().toLowerCase();
+const normalizeAdminImageQuery = (query: string): string => query.trim().toLowerCase();
 
-export const matchesAdminMediaQuery = (item: AdminMediaQueryItem, query: string): boolean => {
-  const normalizedQuery = normalizeAdminMediaQuery(query);
+export const matchesAdminImageQuery = (item: AdminImageQueryItem, query: string): boolean => {
+  const normalizedQuery = normalizeAdminImageQuery(query);
   if (!normalizedQuery) return true;
 
   const haystack = `${item.path} ${item.fileName} ${item.owner ?? ''} ${item.ownerLabel ?? ''}`.toLowerCase();
   return haystack.includes(normalizedQuery);
 };
 
-export const buildAdminMediaBrowseGroupOptions = <
-  TItem extends Pick<AdminMediaBrowseFacetItem, 'browseGroup'>
+export const buildAdminImageBrowseGroupOptions = <
+  TItem extends Pick<AdminImageBrowseFacetItem, 'browseGroup'>
 >(
   items: readonly TItem[]
-): AdminMediaBrowseFilterOption[] => {
+): AdminImageBrowseFilterOption[] => {
   const counts = items.reduce((map, item) => {
     map.set(item.browseGroup, (map.get(item.browseGroup) ?? 0) + 1);
     return map;
-  }, new Map<AdminMediaBrowseResolvedGroup, number>());
+  }, new Map<AdminImageBrowseResolvedGroup, number>());
+  const totalCount = items.length;
+  const getGroupCount = (group: AdminImageBrowseGroup): number =>
+    group === 'all' ? totalCount : (counts.get(group) ?? 0);
 
-  return ADMIN_MEDIA_BROWSE_GROUP_ORDER.map((group) => ({
+  return ADMIN_IMAGE_BROWSE_GROUP_ORDER.map((group) => ({
     value: group,
-    label: ADMIN_MEDIA_BROWSE_GROUP_LABELS[group],
-    count: group === 'all' ? items.length : (counts.get(group) ?? 0),
-    hidden: group === 'uncategorized'
+    label: ADMIN_IMAGE_BROWSE_GROUP_LABELS[group],
+    count: getGroupCount(group)
   }));
 };
 
-export const buildAdminMediaBrowseSubgroupOptions = <
-  TItem extends Pick<AdminMediaBrowseFacetItem, 'browseGroup' | 'browseSubgroup' | 'browseSubgroupLabel'>
+export const buildAdminImageBrowseSubgroupOptions = <
+  TItem extends Pick<AdminImageBrowseFacetItem, 'browseGroup' | 'browseSubgroup' | 'browseSubgroupLabel'>
 >(
-  group: AdminMediaBrowseResolvedGroup,
+  group: AdminImageBrowseResolvedGroup,
   items: readonly TItem[]
-): AdminMediaBrowseFilterOption[] => {
+): AdminImageBrowseFilterOption[] => {
   const subgroupMap = items.reduce((map, item) => {
     if (item.browseGroup !== group || !item.browseSubgroup) return map;
     const current = map.get(item.browseSubgroup);
@@ -86,7 +87,7 @@ export const buildAdminMediaBrowseSubgroupOptions = <
       count: 1
     });
     return map;
-  }, new Map<string, AdminMediaBrowseFilterOption>());
+  }, new Map<string, AdminImageBrowseFilterOption>());
 
   return Array.from(subgroupMap.values()).sort((left, right) => {
     if (/^(?:19|20)\d{2}$/.test(left.value) && /^(?:19|20)\d{2}$/.test(right.value)) {
@@ -97,7 +98,7 @@ export const buildAdminMediaBrowseSubgroupOptions = <
   });
 };
 
-export const paginateAdminMediaItems = <TItem>({
+export const paginateAdminImageItems = <TItem>({
   items,
   page,
   limit
@@ -125,7 +126,7 @@ export const paginateAdminMediaItems = <TItem>({
   };
 };
 
-export const resolveAdminMediaBrowsePage = <TItem extends AdminMediaBrowseFacetItem>({
+export const resolveAdminImageBrowsePage = <TItem extends AdminImageBrowseFacetItem>({
   items,
   group,
   subgroup,
@@ -142,28 +143,28 @@ export const resolveAdminMediaBrowsePage = <TItem extends AdminMediaBrowseFacetI
 }): {
   query: string;
   isKnownGroup: boolean;
-  activeGroup: AdminMediaBrowseGroup;
-  groupOptions: AdminMediaBrowseFilterOption[];
-  subgroupOptions: AdminMediaBrowseFilterOption[];
+  activeGroup: AdminImageBrowseGroup;
+  groupOptions: AdminImageBrowseFilterOption[];
+  subgroupOptions: AdminImageBrowseFilterOption[];
   activeSubgroup: string;
   items: TItem[];
   page: number;
   totalPages: number;
   totalCount: number;
 } => {
-  const normalizedGroup = normalizeAdminMediaBrowseGroup(group);
-  const normalizedSubgroup = normalizeAdminMediaBrowseSubgroup(subgroup);
+  const normalizedGroup = normalizeAdminImageBrowseGroup(group);
+  const normalizedSubgroup = normalizeAdminImageBrowseSubgroup(subgroup);
+  const isKnownGroup = isAdminImageBrowseGroup(normalizedGroup);
+  const activeGroup: AdminImageBrowseGroup = isKnownGroup ? normalizedGroup : 'all';
   const trimmedQuery = query.trim();
-  const queryPool = items.filter((item) => matchesAdminMediaQuery(item, trimmedQuery));
-  const groupOptions = buildAdminMediaBrowseGroupOptions(queryPool);
-  const isKnownGroup = isAdminMediaBrowseGroup(normalizedGroup);
-  const activeGroup: AdminMediaBrowseGroup = isKnownGroup ? normalizedGroup : 'all';
+  const queryPool = items.filter((item) => matchesAdminImageQuery(item, trimmedQuery));
+  const groupOptions = buildAdminImageBrowseGroupOptions(queryPool);
   const browsePool = (() => {
     if (activeGroup === 'all') return queryPool;
     return queryPool.filter((item) => item.browseGroup === activeGroup);
   })();
   const subgroupOptions = activeGroup !== 'all'
-    ? buildAdminMediaBrowseSubgroupOptions(activeGroup, browsePool)
+    ? buildAdminImageBrowseSubgroupOptions(activeGroup, browsePool)
     : [];
   const activeSubgroup = activeGroup !== 'all'
     && subgroupOptions.some((option) => option.value === normalizedSubgroup)
@@ -172,7 +173,7 @@ export const resolveAdminMediaBrowsePage = <TItem extends AdminMediaBrowseFacetI
   const filteredItems = activeSubgroup
     ? browsePool.filter((item) => item.browseSubgroup === activeSubgroup)
     : browsePool;
-  const pagination = paginateAdminMediaItems({
+  const pagination = paginateAdminImageItems({
     items: filteredItems,
     page,
     limit
@@ -189,12 +190,12 @@ export const resolveAdminMediaBrowsePage = <TItem extends AdminMediaBrowseFacetI
   };
 };
 
-export const buildAdminMediaScopeItems = <
-  TItem extends Pick<AdminMediaBrowseFacetItem, 'path'>
+export const buildAdminImageScopeItems = <
+  TItem extends Pick<AdminImageBrowseFacetItem, 'path'>
 >(
-  scope: AdminMediaScopeKey,
+  scope: AdminImageScopeKey,
   browseIndex: readonly TItem[],
-  scopeIndex: AdminMediaScopeIndex
+  scopeIndex: AdminImageScopeIndex
 ): TItem[] => {
   if (scope !== 'recent') return [];
 

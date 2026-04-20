@@ -1,20 +1,22 @@
 import {
-  ADMIN_MEDIA_DEFAULT_LIST_LIMIT,
-  isAdminMediaOrigin,
-  type AdminMediaOrigin
-} from './media-contract';
+  ADMIN_IMAGE_DEFAULT_LIST_LIMIT,
+  isAdminImageOrigin,
+  isAdminImageScopeKey,
+  type AdminImageOrigin,
+  type AdminImageScopeKey
+} from './image-contract';
 import {
-  normalizeAdminMediaBrowseGroup,
-  normalizeAdminMediaBrowseSubgroup
-} from './media-browse';
+  normalizeAdminImageBrowseGroup,
+  normalizeAdminImageBrowseSubgroup
+} from './image-browse';
 import { toSafeHttpUrl } from '../../utils/format';
 
-export type AdminMediaFieldContext =
+export type AdminImageFieldContext =
   | 'bits.images'
   | 'home.heroImageSrc'
   | 'page.bits.defaultAuthor.avatar';
 
-export type AdminMediaDirectory =
+export type AdminImageDirectory =
   | ''
   | 'public'
   | 'public/author'
@@ -23,17 +25,18 @@ export type AdminMediaDirectory =
   | 'src/assets'
   | 'src/content';
 
-export type AdminMediaDirectoryOption = {
-  value: AdminMediaDirectory;
+export type AdminImageDirectoryOption = {
+  value: AdminImageDirectory;
   label: string;
   description: string;
 };
 
-export type AdminMediaListRequest = {
-  field: AdminMediaFieldContext | null;
-  directory: AdminMediaDirectory;
+export type AdminImageListRequest = {
+  field: AdminImageFieldContext | null;
+  directory: AdminImageDirectory;
   owner: string;
-  origin: AdminMediaOrigin | '';
+  origin: AdminImageOrigin | '';
+  scope: AdminImageScopeKey | '';
   group: string;
   subgroup: string;
   query: string;
@@ -41,27 +44,27 @@ export type AdminMediaListRequest = {
   limit: number;
 };
 
-export type AdminMediaMetaInput =
+export type AdminImageMetaInput =
   | {
-      field: AdminMediaFieldContext;
+      field: AdminImageFieldContext;
       value: string;
       path?: string;
     }
   | {
       path: string;
-      field?: AdminMediaFieldContext;
+      field?: AdminImageFieldContext;
       value?: string;
     };
 
-type AdminMediaFieldConfig = {
-  allowedOrigins: readonly AdminMediaOrigin[];
+type AdminImageFieldConfig = {
+  allowedOrigins: readonly AdminImageOrigin[];
   preferredPrefixes: readonly string[];
-  toValue: (assetPath: string, origin: AdminMediaOrigin) => string | null;
+  toValue: (assetPath: string, origin: AdminImageOrigin) => string | null;
 };
 
 const IMAGE_LOCAL_EXT_RE = /\.(?:avif|gif|jpe?g|png|svg|webp)$/i;
 
-const FIELD_CONFIG: Record<AdminMediaFieldContext, AdminMediaFieldConfig> = {
+const FIELD_CONFIG: Record<AdminImageFieldContext, AdminImageFieldConfig> = {
   'bits.images': {
     allowedOrigins: ['public'],
     preferredPrefixes: ['public/bits/', 'public/images/', 'public/author/', 'public/'],
@@ -83,10 +86,10 @@ const FIELD_CONFIG: Record<AdminMediaFieldContext, AdminMediaFieldConfig> = {
   }
 };
 
-const ADMIN_MEDIA_FIELD_CONTEXTS = Object.freeze(Object.keys(FIELD_CONFIG) as AdminMediaFieldContext[]);
-const ADMIN_MEDIA_ALL_ORIGINS = ['public', 'src/assets', 'src/content'] as const satisfies readonly AdminMediaOrigin[];
+const ADMIN_IMAGE_FIELD_CONTEXTS = Object.freeze(Object.keys(FIELD_CONFIG) as AdminImageFieldContext[]);
+const ADMIN_IMAGE_ALL_ORIGINS = ['public', 'src/assets', 'src/content'] as const satisfies readonly AdminImageOrigin[];
 
-export const ADMIN_MEDIA_DIRECTORY_OPTIONS = [
+export const ADMIN_IMAGE_DIRECTORY_OPTIONS = [
   {
     value: '',
     label: '全部资源',
@@ -122,14 +125,14 @@ export const ADMIN_MEDIA_DIRECTORY_OPTIONS = [
     label: '文章附件',
     description: '查看文章或笔记同目录下的图片附件。'
   }
-] as const satisfies readonly AdminMediaDirectoryOption[];
+] as const satisfies readonly AdminImageDirectoryOption[];
 
-export class AdminMediaError extends Error {
+export class AdminImageError extends Error {
   status: number;
 
   constructor(message: string, status = 400) {
     super(message);
-    this.name = 'AdminMediaError';
+    this.name = 'AdminImageError';
     this.status = status;
   }
 }
@@ -145,24 +148,24 @@ const normalizePositiveInteger = (
 
 const normalizeSearchQuery = (value: string | null): string => (value ?? '').trim().toLowerCase();
 
-export const normalizeAdminMediaOwnerValue = (value: string | null | undefined): string =>
+export const normalizeAdminImageOwnerValue = (value: string | null | undefined): string =>
   (value ?? '').trim().replace(/\\/g, '/');
 
-export const isAdminMediaFieldContext = (value: string): value is AdminMediaFieldContext =>
+export const isAdminImageFieldContext = (value: string): value is AdminImageFieldContext =>
   value in FIELD_CONFIG;
 
-export const isAdminMediaDirectory = (value: string): value is AdminMediaDirectory =>
-  ADMIN_MEDIA_DIRECTORY_OPTIONS.some((option) => option.value === value);
+export const isAdminImageDirectory = (value: string): value is AdminImageDirectory =>
+  ADMIN_IMAGE_DIRECTORY_OPTIONS.some((option) => option.value === value);
 
-export const normalizeAdminMediaDirectory = (value: string | null | undefined): AdminMediaDirectory => {
+export const normalizeAdminImageDirectory = (value: string | null | undefined): AdminImageDirectory => {
   const normalized = (value ?? '').trim().replace(/\\/g, '/');
-  return isAdminMediaDirectory(normalized) ? normalized : '';
+  return isAdminImageDirectory(normalized) ? normalized : '';
 };
 
-export const getAdminMediaFieldValue = (
-  field: AdminMediaFieldContext | null,
+export const getAdminImageFieldValue = (
+  field: AdminImageFieldContext | null,
   assetPath: string,
-  origin: AdminMediaOrigin
+  origin: AdminImageOrigin
 ): string | null => {
   if (!field) return assetPath;
   const config = FIELD_CONFIG[field];
@@ -170,12 +173,12 @@ export const getAdminMediaFieldValue = (
   return config.toValue(assetPath, origin);
 };
 
-export const getAdminMediaFieldAllowedOrigins = (
-  field: AdminMediaFieldContext | null
-): readonly AdminMediaOrigin[] => (field ? FIELD_CONFIG[field].allowedOrigins : ADMIN_MEDIA_ALL_ORIGINS);
+export const getAdminImageFieldAllowedOrigins = (
+  field: AdminImageFieldContext | null
+): readonly AdminImageOrigin[] => (field ? FIELD_CONFIG[field].allowedOrigins : ADMIN_IMAGE_ALL_ORIGINS);
 
-export const getAdminMediaFieldSortRank = (
-  field: AdminMediaFieldContext | null,
+export const getAdminImageFieldSortRank = (
+  field: AdminImageFieldContext | null,
   assetPath: string
 ): number => {
   if (!field) return 999;
@@ -184,14 +187,14 @@ export const getAdminMediaFieldSortRank = (
   return index === -1 ? prefixes.length : index;
 };
 
-export const getAdminMediaCompatibleFieldValues = (
+export const getAdminImageCompatibleFieldValues = (
   assetPath: string,
-  origin: AdminMediaOrigin
+  origin: AdminImageOrigin
 ): string[] =>
   Array.from(
     new Set(
-      ADMIN_MEDIA_FIELD_CONTEXTS
-        .map((field) => getAdminMediaFieldValue(field, assetPath, origin))
+      ADMIN_IMAGE_FIELD_CONTEXTS
+        .map((field) => getAdminImageFieldValue(field, assetPath, origin))
         .filter((value): value is string => typeof value === 'string' && value.length > 0)
     )
   );
@@ -220,39 +223,42 @@ export const normalizeAdminBitsImageSource = (value: string): string | null => {
   return normalizeAdminLocalImageSource(value);
 };
 
-export const getAdminMediaListRequest = (searchParams: URLSearchParams): AdminMediaListRequest => {
+export const getAdminImageListRequest = (searchParams: URLSearchParams): AdminImageListRequest => {
   const rawField = (searchParams.get('field') ?? '').trim();
-  const field = isAdminMediaFieldContext(rawField) ? rawField : null;
+  const field = isAdminImageFieldContext(rawField) ? rawField : null;
   const rawOrigin = (searchParams.get('origin') ?? '').trim();
-  const origin = isAdminMediaOrigin(rawOrigin) && getAdminMediaFieldAllowedOrigins(field).includes(rawOrigin)
+  const origin = isAdminImageOrigin(rawOrigin) && getAdminImageFieldAllowedOrigins(field).includes(rawOrigin)
     ? rawOrigin
     : '';
+  const rawScope = (searchParams.get('scope') ?? '').trim().toLowerCase();
+  const scope = !field && isAdminImageScopeKey(rawScope) ? rawScope : '';
 
   return {
     field,
-    directory: normalizeAdminMediaDirectory(searchParams.get('dir')),
-    owner: normalizeAdminMediaOwnerValue(searchParams.get('owner')),
+    directory: normalizeAdminImageDirectory(searchParams.get('dir')),
+    owner: normalizeAdminImageOwnerValue(searchParams.get('owner')),
     origin,
-    group: normalizeAdminMediaBrowseGroup(searchParams.get('group')),
-    subgroup: normalizeAdminMediaBrowseSubgroup(searchParams.get('sub')),
+    scope,
+    group: normalizeAdminImageBrowseGroup(searchParams.get('group')),
+    subgroup: normalizeAdminImageBrowseSubgroup(searchParams.get('sub')),
     query: normalizeSearchQuery(searchParams.get('q')),
     page: normalizePositiveInteger(searchParams.get('page'), { fallback: 1 }),
     limit: normalizePositiveInteger(searchParams.get('limit'), {
-      fallback: ADMIN_MEDIA_DEFAULT_LIST_LIMIT,
+      fallback: ADMIN_IMAGE_DEFAULT_LIST_LIMIT,
       max: 60
     })
   };
 };
 
-export const getAdminMediaMetaRequest = (searchParams: URLSearchParams): AdminMediaMetaInput => {
+export const getAdminImageMetaRequest = (searchParams: URLSearchParams): AdminImageMetaInput => {
   const rawPath = (searchParams.get('path') ?? '').trim();
   if (rawPath) {
     return { path: rawPath };
   }
 
   const rawField = (searchParams.get('field') ?? '').trim();
-  if (!isAdminMediaFieldContext(rawField)) {
-    throw new AdminMediaError('field 参数非法，无法读取媒体元数据');
+  if (!isAdminImageFieldContext(rawField)) {
+    throw new AdminImageError('field 参数非法，无法读取图片元数据');
   }
 
   return {

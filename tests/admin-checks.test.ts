@@ -103,7 +103,7 @@ describe('admin-console/checks', () => {
       'utf8'
     );
     await writeFile(
-      path.join(tempRoot, 'src', 'content', 'bits', 'media.md'),
+      path.join(tempRoot, 'src', 'content', 'bits', 'images.md'),
       [
         '---',
         'date: 2026-04-06T09:30:00+08:00',
@@ -124,7 +124,7 @@ describe('admin-console/checks', () => {
         '    height: 720',
         '---',
         '',
-        'bits media',
+        'bits images',
         ''
       ].join('\n'),
       'utf8'
@@ -181,7 +181,7 @@ describe('admin-console/checks', () => {
     };
     const settingsCategory = getCategory('settings');
     const essaySlugCategory = getCategory('essay-slug');
-    const bitsMediaCategory = getCategory('bits-media');
+    const bitsImagesCategory = getCategory('bits-images');
     const tagCategory = getCategory('tag');
     const blockedCategories = result.categories.filter((category) => category.status === 'blocked');
     const allIssues = result.categories.flatMap((category) => category.issues);
@@ -192,7 +192,7 @@ describe('admin-console/checks', () => {
     expect(result.totalIssueCount).toBe(allIssues.length);
     expect(result.blockedCategoryCount).toBe(blockedCategories.length);
     expect(result.affectedPathCount).toBe(affectedPaths.size);
-    for (const category of [settingsCategory, essaySlugCategory, bitsMediaCategory, tagCategory]) {
+    for (const category of [settingsCategory, essaySlugCategory, bitsImagesCategory, tagCategory]) {
       expect(category.status).toBe('blocked');
       expect(category.issueCount).toBe(category.issues.length);
       expect(category.issues.length).toBeGreaterThan(0);
@@ -218,14 +218,14 @@ describe('admin-console/checks', () => {
         })
       ])
     );
-    expect(bitsMediaCategory.issues).toEqual(
+    expect(bitsImagesCategory.issues).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          relativePath: 'src/content/bits/media.md',
+          relativePath: 'src/content/bits/images.md',
           fieldPath: 'author.avatar'
         }),
         expect.objectContaining({
-          relativePath: 'src/content/bits/media.md',
+          relativePath: 'src/content/bits/images.md',
           fieldPath: 'images[1].src',
           message: expect.stringContaining('只允许 public/** 下的相对图片路径或 https:// 远程 URL')
         })

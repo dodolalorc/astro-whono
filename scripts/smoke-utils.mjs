@@ -119,7 +119,7 @@ export const assertAdminContentStaticShell = (
   ]);
 };
 
-export const assertAdminMediaStaticShell = (label, body, expectedPath) => {
+export const assertAdminImageStaticShell = (label, body, expectedPath) => {
   assertAdminApiStaticShell(label, body, expectedPath, [
     '"items"',
     '"mimeType"',
@@ -149,12 +149,12 @@ export const assertAdminContentStaticResponse = (
   assertAdminContentStaticShell(label, response.body, expectedPath);
 };
 
-export const assertAdminMediaStaticResponse = (label, response, expectedPath) => {
+export const assertAdminImageStaticResponse = (label, response, expectedPath) => {
   expect(
     !response.contentType.toLowerCase().includes('application/json'),
     `${label} unexpectedly returned JSON in production preview`
   );
-  assertAdminMediaStaticShell(label, response.body, expectedPath);
+  assertAdminImageStaticShell(label, response.body, expectedPath);
 };
 
 export const waitForHttpReady = async (url, options = {}) => {

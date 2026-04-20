@@ -7,43 +7,32 @@ The format is based on Keep a Changelog, and this project aims to follow Semanti
 
 ## [Unreleased]
 
+本次更新把 `/admin/` 扩展为本地站点维护后台。开发环境中可查看站点概览、编辑内容 frontmatter、管理主题配置、浏览图片资源、导入导出 settings，并运行发布前检查。生产构建继续保持只读边界，后台接口不作为公开 API 暴露。
+
+
 ### Added
-- 新增后台真实路由壳层：`/admin/` 现为后台稳定入口与概览页，`/admin/theme/` 承担 Theme Console 实际编辑工作流。
-- 新增 `AdminLayout / AdminShell / AdminNav` 共享后台壳层，以及 `theme-shared.ts` 作为 Theme Console 新共享入口。
-- 新增 `@lucide/astro` 依赖，以及 `AdminIcon`、`BrandIcon`、`UiIcon` 三个受控图标封装入口，用于收口 Admin、社交/联系与前台非品牌 UI 图标边界。
-- 新增 `/admin/data/` Data Console，以及 settings 导出包协议与对应导出接口。
-- 新增后台概览聚合数据读取层，`/admin/` 在开发态会展示内容统计与最近内容。
-- 新增 `/admin/content/` 与 `/admin/content/:collection/` 只读内容控制台，以及对应的服务端内容索引聚合层与复制路径脚本。
-- 新增 `/admin/media/` Media Console，首批提供目录浏览、搜索、分页、路径复制、字段上下文 value 辅助，以及大文件提示。
-- 新增 `/admin/checks/` 与 `src/lib/admin-console/checks.ts`，首批聚合 settings 保护态、essay slug、bits 媒体路径与 tag 路由键诊断。
-- 新增 Phase 4A 媒体共享层 `src/lib/admin-console/media-shared.ts`，以及 `GET /api/admin/media/list/`、`GET /api/admin/media/meta/` 两个 dev-only 媒体只读接口。
-- 新增后台共用 `AdminMediaPicker` dialog 与 Theme / Content 共享的 media picker 客户端控制器。
-- 新增 Media Console 显式“刷新媒体库”入口，以及次级“最近修改”快捷筛选；结果按本地文件最近修改时间派生。
-- 新增 Theme Console 的 `/admin/` Overview 公开展示开关与关闭态文案配置。
+- 新增 `/admin/` Site Overview，集中查看内容统计、归档标签、年份分布、写作活动和最近内容。
+- 新增 `/admin/content/` Content Console，可浏览 `essay / bits / memo`，并编辑 `essay / bits` 的 frontmatter；`memo` 保持只读。
+- 新增 `/admin/images/` Images Console，可浏览、搜索、分页查看本地图片资源，并复制路径或用于字段回填。
+- 新增 Theme / Content 共用图片选择器，可为 Hero 图片、Bits 默认头像和 `bits.images` 选择受控图片。
+- 新增 `/admin/data/` Data Console，支持 settings 快照导出、导入校验、差异预览和确认写入。
+- 新增 `/admin/checks/` Checks Console，集中检查 settings、slug、图片路径和 tag 路由键。
+- 新增共享后台壳层与导航，让各个 Admin 页面保持一致的入口、状态提示和只读边界。
 
 ### Changed
-- Theme Console 的未保存离开提醒从单纯 `beforeunload` 扩展为路由级 dirty guard；切换后台真实路由时会先显式确认。
-- `/admin` 边界检查与静态产物校验现同步覆盖 `/admin/`、`/admin/theme/`、`/admin/data/` 与 `/api/admin/data/settings/`，并确保后台路由继续排除在 sitemap 之外。
-- `/admin` 边界检查与静态产物校验现继续扩展到 `/admin/content/` 与 `/admin/content/:collection/`，确保内容控制台在 preview / production 下保持只读。
-- `/admin` 边界检查与静态产物校验现继续扩展到 `/admin/media/`，并保证该路由仍固定排除在 sitemap 之外。
-- Theme Console 共享规则实现已迁入 `theme-shared.ts`；`shared.ts` 现退为兼容导出层，降低后续后台能力继续堆进旧文件的风险。
-- Data Console 的导入 dry-run / revision 冲突检测 / 实际写盘继续复用 `/api/admin/settings/` 现有链路，不新增独立写盘规则。
-- `/admin/` Overview 的 Checks 卡现改为消费 `/admin/checks/` 的结构化诊断摘要，并继续保留 preview/build CLI 基线提示。
-- `bits.images[*].src` 的后台校验现与文档契约对齐，只接受仓库内相对图片路径或 `https://` 远程 URL，不再把 `http://` 误判成本地路径。
-- `bits` collection 编辑页现用图片行编辑器替代原始 JSON 文本输入；图片选择、宽高回填与最终保存继续复用既有内容写盘链路。
-- Theme Console 的 `home.heroImageSrc` 与 `page.bits.defaultAuthor.avatar` 现共享字段级媒体辅助，并在 preview / production 边界检查中纳入 `/api/admin/media/list/`、`/api/admin/media/meta/` 的静态壳断言。
-- `/api/admin/media/list/` 现支持 `dir` 目录参数，可按 `public/**`、`src/assets/**`、`src/content/**` 受控范围收窄扫描；Theme / Content 既有 picker 契约保持兼容。
-- `/admin/media/` 开发态现优先消费 SSR 注入的完整 browse 轻索引；一级分类、二级分类、搜索与分页切换在客户端本地完成，详情区仅在选中后按 `path` 请求 `/api/admin/media/meta/` 补齐尺寸、体积与 MIME。
-- 媒体共享层现对 content owner、asset list、本地 inspection meta 与 `recent` scope 索引使用短 TTL 进程内缓存，并支持通过刷新入口显式失效；整体仍保持 `list/meta` 只读 contract 不变。
-- `/admin/` Overview 现输出稳定 `data-admin-overview-mode`，preview/build 边界检查改为按 maintainer/public/hidden 模式验证页面契约。
-- `/admin/` Overview、Data、Media、Checks 以及 Theme Console 分组、Media Picker、Admin 社交行操作图标迁移到 `AdminIcon` / Lucide；公开站点非品牌 UI 图标迁移到 `UiIcon` / Lucide，社交 / 品牌 / 联系图标改走 `BrandIcon`，`Icon.astro` 仅保留 legacy 兼容入口。
-- 品牌 SVG body 现集中到 `src/lib/brand-icon-bodies.ts`；legacy `Icon.astro` 的品牌与联系类历史名称通过 `BrandIcon` 输出，避免继续维护第二份品牌 SVG。
+- `/admin/` 从 Theme Console 调整为后台总入口；Theme Console 移至 `/admin/theme/`，已有 settings 数据无需迁移。
+- 后台切换真实路由时会检查未保存更改，减少误离开导致的草稿丢失。
+- `/admin/**` 与 `/api/admin/**` 的开发、preview、production 边界统一：开发态可操作，生产相关构建保持只读或非公开 API 壳。
+- Content Console 的 `bits.images` 改为图片行编辑器，不再要求手写 JSON。
+- Images Console 的浏览、搜索和分页改为优先使用本地索引，减少重复请求和等待。
+- 引入 `@lucide/astro` 作为非品牌 UI 图标来源；品牌与联系方式图标继续使用站点内置图标，旧图标调用保持兼容。
+- 升级 Astro 至 `6.1.7`，并同步调整依赖锁定与 overrides，适配 Astro 6 下静态 API 路由在 preview / production 中的输出行为。
 
 ### Fixed
-- 修正文档中的 Data Console manifest 协议说明，明确当前固定字段为 `schemaVersion / createdAt / includedScopes / excludes / locale`。
-- 修复 Theme Console、Content Console 与 Media Console 对 `/api/admin/media/list/`、`/api/admin/media/meta/` 的尾斜杠拼接不一致问题，避免部分入口下出现 404。
-- 修复 `/admin/media/` 首屏挂载后会重复拉取同一列表，以及 browse 切换仍依赖服务端列表导致的明显卡顿；当前首屏与 browse 切换均优先走本地 bootstrap 结果。
-- 修复媒体浏览默认系统资源过滤过宽的问题；现在仅隐藏 `public/` 根目录级站点图标/预览资源，不再误伤 `src/content/**/preview-*.png` 这类真实附件。
+- 修正文档中的 Data Console manifest 协议说明，明确当前固定字段。
+- 修复 Theme Console、Content Console 与 Images Console 调用图片接口时尾斜杠不一致导致的 404。
+- 修复 `/admin/images/` 首屏和目录切换重复请求图片列表的问题，降低本地浏览卡顿。
+- 修复图片浏览默认系统资源过滤过宽的问题，避免误隐藏 `src/content/**/preview-*.png` 等真实附件。
 
 ## [0.3.1] - 2026-03-24
 

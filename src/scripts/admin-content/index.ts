@@ -1,4 +1,4 @@
-import { createAdminMediaPicker } from '../admin-shared/media-picker';
+import { createAdminImagePicker } from '../admin-shared/image-picker';
 import { initAdminContentBitsImagesEditor } from './images-editor';
 
 type AdminContentBootstrap = {
@@ -247,12 +247,12 @@ if (!adminContentRoot) {
     } else {
       let currentRevision = bootstrap.revision;
       let busy = false;
-      const mediaPicker = createAdminMediaPicker();
+      const imagePicker = createAdminImagePicker();
 
       if (bootstrap.collection === 'bits') {
         initAdminContentBitsImagesEditor({
           root: adminContentRoot,
-          picker: mediaPicker,
+          picker: imagePicker,
           setStatus
         });
       }

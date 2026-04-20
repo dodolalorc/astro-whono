@@ -1,0 +1,140 @@
+---
+import AdminIcon from './AdminIcon.astro';
+
+interface Props {
+  listEndpoint: string;
+  metaEndpoint: string;
+}
+
+const { listEndpoint, metaEndpoint } = Astro.props;
+---
+
+<dialog
+  class="admin-images-picker"
+  data-admin-images-picker
+  data-list-endpoint={listEndpoint}
+  data-meta-endpoint={metaEndpoint}
+  aria-labelledby="admin-images-picker-title"
+>
+  <div class="admin-images-picker__surface">
+    <div class="admin-images-picker__header">
+      <div class="admin-images-picker__copy">
+        <h2 id="admin-images-picker-title" class="admin-images-picker__title" data-admin-images-picker-title>
+          选择本地图片
+        </h2>
+        <p
+          id="admin-images-picker-description"
+          class="admin-images-picker__description"
+          data-admin-images-picker-description
+          hidden
+        ></p>
+      </div>
+      <button
+        class="admin-images-picker__icon-btn"
+        type="button"
+        data-admin-images-picker-close
+        aria-label="关闭"
+        title="关闭"
+      >
+        <AdminIcon name="x-mark" size={18} />
+      </button>
+    </div>
+
+    <div class="admin-images-picker__toolbar">
+      <div class="admin-images-picker__controls">
+        <div class="admin-images-picker__search-row">
+          <label class="admin-field admin-images-picker__search">
+            <span class="admin-sr-only">搜索路径或文件名</span>
+            <input
+              type="search"
+              inputmode="search"
+              autocomplete="off"
+              placeholder="搜索路径或文件名，例如 hero / avatar / bits-demo"
+              data-admin-images-picker-query
+            />
+          </label>
+          <p class="admin-images-picker__status" data-admin-images-picker-status aria-live="polite">等待加载</p>
+        </div>
+
+        <div class="admin-images-picker__filters" data-admin-images-picker-filters hidden>
+          <div class="admin-images-picker__filter-tabs" data-admin-images-picker-filter-tabs></div>
+        </div>
+      </div>
+
+      <div class="admin-images-picker__tool-actions">
+        <button
+          class="admin-images-picker__tool-btn"
+          type="button"
+          data-admin-images-picker-view="list"
+          aria-label="列表视图"
+          title="列表视图"
+        >
+          <AdminIcon name="list" size={18} />
+        </button>
+        <button
+          class="admin-images-picker__tool-btn"
+          type="button"
+          data-admin-images-picker-view="grid"
+          aria-label="网格平铺视图"
+          title="网格平铺视图"
+        >
+          <AdminIcon name="grid-tiles" size={18} />
+        </button>
+        <button
+          class="admin-images-picker__filter-toggle"
+          type="button"
+          data-admin-images-picker-filter-toggle
+          aria-expanded="false"
+          hidden
+        >
+          <AdminIcon name="funnel" size={16} />
+          <span>筛选</span>
+        </button>
+      </div>
+    </div>
+
+    <ul class="admin-images-picker__results" data-admin-images-picker-results data-view="list"></ul>
+
+    <div class="admin-images-picker__footer">
+      <div class="admin-images-picker__footer-side admin-images-picker__footer-side--start">
+        <button class="admin-btn admin-btn--ghost" type="button" data-admin-images-picker-reset hidden>恢复默认</button>
+      </div>
+      <div class="admin-images-picker__pager" role="group" aria-label="图片列表分页">
+        <button
+          class="admin-btn admin-btn--ghost admin-images-picker__pager-btn"
+          type="button"
+          data-admin-images-picker-prev
+          aria-label="上一页"
+          title="上一页"
+        >
+          <AdminIcon
+            name="chevron-down"
+            size={22}
+            strokeWidth={1.75}
+            class="admin-images-picker__pager-icon admin-images-picker__pager-icon--prev"
+          />
+        </button>
+        <span class="admin-images-picker__page" data-admin-images-picker-page aria-live="polite">1 / 1</span>
+        <button
+          class="admin-btn admin-btn--ghost admin-images-picker__pager-btn"
+          type="button"
+          data-admin-images-picker-next
+          aria-label="下一页"
+          title="下一页"
+        >
+          <AdminIcon
+            name="chevron-down"
+            size={22}
+            strokeWidth={1.75}
+            class="admin-images-picker__pager-icon admin-images-picker__pager-icon--next"
+          />
+        </button>
+      </div>
+      <div class="admin-images-picker__footer-side admin-images-picker__footer-side--end">
+        <div class="admin-images-picker__actions">
+          <button class="admin-btn" type="button" data-admin-images-picker-confirm disabled>使用所选图片</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</dialog>

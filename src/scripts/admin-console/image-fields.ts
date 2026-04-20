@@ -1,6 +1,6 @@
 import { createWithBase } from '../../utils/format';
-import { formatAdminMediaMetaSummary, type AdminMediaClientItem } from '../admin-shared/media-client';
-import type { AdminMediaPickerController, AdminMediaPickerField } from '../admin-shared/media-picker';
+import { formatAdminImageMetaSummary, type AdminImageClientItem } from '../admin-shared/image-client';
+import type { AdminImagePickerController, AdminImagePickerField } from '../admin-shared/image-picker';
 
 type StatusSetter = (
   state: string,
@@ -11,8 +11,8 @@ type StatusSetter = (
 const base = import.meta.env.BASE_URL ?? '/';
 const withBase = createWithBase(base);
 
-type ThemeMediaFieldConfig = {
-  field: AdminMediaPickerField;
+type ThemeImageFieldConfig = {
+  field: AdminImagePickerField;
   inputId: string;
   buttonSelector: string;
   pickerTitle: string;
@@ -23,22 +23,22 @@ type ThemeMediaFieldConfig = {
   pickerFallbackCurrentLabel?: string;
 };
 
-type ThemeMediaFieldState = {
+type ThemeImageFieldState = {
   enabled?: boolean;
   inactivePreviewText?: string;
   inactiveMetaText?: string;
 };
 
-type ThemeMediaPreviewState =
+type ThemeImagePreviewState =
   | { kind: 'hidden' }
   | { kind: 'image'; src: string }
   | { kind: 'placeholder'; text: string };
 
-const FIELD_CONFIGS: readonly ThemeMediaFieldConfig[] = [
+const FIELD_CONFIGS: readonly ThemeImageFieldConfig[] = [
   {
     field: 'home.heroImageSrc',
     inputId: 'home-hero-image-src',
-    buttonSelector: '[data-admin-media-open="home.heroImageSrc"]',
+    buttonSelector: '[data-admin-images-open="home.heroImageSrc"]',
     pickerTitle: '更换 Hero 图片',
     pickerDescription: '支持 src/assets/** 与 public/**，保存后会写入当前主题配置。',
     pickerResetLabel: '恢复默认',
@@ -49,7 +49,7 @@ const FIELD_CONFIGS: readonly ThemeMediaFieldConfig[] = [
   {
     field: 'page.bits.defaultAuthor.avatar',
     inputId: 'page-bits-author-avatar',
-    buttonSelector: '[data-admin-media-open="page.bits.defaultAuthor.avatar"]',
+    buttonSelector: '[data-admin-images-open="page.bits.defaultAuthor.avatar"]',
     pickerTitle: '更换 Bits 作者头像',
     pickerDescription: '仅列出可直接写入 page.bits.defaultAuthor.avatar 的本地 public/** 资源。',
     pickerResetLabel: '清空头像',
@@ -66,17 +66,17 @@ const getPreviewSrc = (value: string): string | null => {
 };
 
 const getDefaultPreviewSrc = (previewWrap: HTMLElement | null): string | null =>
-  previewWrap?.dataset.adminMediaDefaultPreviewSrc?.trim() || null;
+  previewWrap?.getAttribute('data-admin-images-default-preview-src')?.trim() || null;
 
 const setPreview = (
   previewWrap: HTMLElement | null,
   previewImg: HTMLImageElement | null,
   previewPlaceholder: HTMLElement | null,
-  state: ThemeMediaPreviewState
+  state: ThemeImagePreviewState
 ): void => {
   if (!(previewWrap instanceof HTMLElement)) return;
 
-  previewWrap.dataset.adminMediaPreviewState = state.kind;
+  previewWrap.setAttribute('data-admin-images-preview-state', state.kind);
 
   if (state.kind === 'hidden') {
     previewWrap.hidden = true;
@@ -121,25 +121,25 @@ const setMetaText = (metaEl: HTMLElement | null, text: string): void => {
   metaEl.hidden = text.trim().length === 0;
 };
 
-export const createAdminThemeMediaFields = ({
+export const createAdminThemeImageFields = ({
   root,
   picker,
   setStatus,
   getFieldState = () => ({ enabled: true })
 }: {
   root: ParentNode;
-  picker: AdminMediaPickerController | null;
+  picker: AdminImagePickerController | null;
   setStatus: StatusSetter;
-  getFieldState?: (field: AdminMediaPickerField) => ThemeMediaFieldState;
+  getFieldState?: (field: AdminImagePickerField) => ThemeImageFieldState;
 }) => {
   const bindings = FIELD_CONFIGS.map((config) => {
     const input = root.querySelector<HTMLInputElement>(`#${config.inputId}`);
     const button = root.querySelector<HTMLButtonElement>(config.buttonSelector);
-    const metaEl = root.querySelector<HTMLElement>(`[data-admin-media-meta="${config.field}"]`);
-    const previewWrap = root.querySelector<HTMLElement>(`[data-admin-media-preview="${config.field}"]`);
-    const previewImg = root.querySelector<HTMLImageElement>(`[data-admin-media-preview-img="${config.field}"]`);
+    const metaEl = root.querySelector<HTMLElement>(`[data-admin-images-meta="${config.field}"]`);
+    const previewWrap = root.querySelector<HTMLElement>(`[data-admin-images-preview="${config.field}"]`);
+    const previewImg = root.querySelector<HTMLImageElement>(`[data-admin-images-preview-img="${config.field}"]`);
     const previewPlaceholder = root.querySelector<HTMLElement>(
-      `[data-admin-media-preview-placeholder="${config.field}"]`
+      `[data-admin-images-preview-placeholder="${config.field}"]`
     );
     return {
       config,
@@ -154,7 +154,7 @@ export const createAdminThemeMediaFields = ({
 
   if (!bindings.length) return null;
 
-  const updateField = async (field: AdminMediaPickerField) => {
+  const updateField = async (field: AdminImagePickerField) => {
     const binding = bindings.find((item) => item.config.field === field);
     if (!binding || !(binding.input instanceof HTMLInputElement)) return;
 
@@ -199,7 +199,7 @@ export const createAdminThemeMediaFields = ({
     );
 
     if (!picker) {
-      setMetaText(binding.metaEl, '当前页面未挂载 media picker');
+      setMetaText(binding.metaEl, '当前页面未挂载 image picker');
       return;
     }
 
@@ -218,7 +218,7 @@ export const createAdminThemeMediaFields = ({
           { kind: 'image', src: meta.previewSrc }
         );
       }
-      setMetaText(binding.metaEl, formatAdminMediaMetaSummary(meta));
+      setMetaText(binding.metaEl, formatAdminImageMetaSummary(meta));
     } catch (error) {
       if (binding.input.value.trim() !== value) return;
       if (getFieldState(field).enabled === false) return;
@@ -239,7 +239,7 @@ export const createAdminThemeMediaFields = ({
     binding.button?.addEventListener('click', () => {
       if (getFieldState(binding.config.field).enabled === false) return;
       if (!picker) {
-        setStatus('warn', '当前页面未挂载 media picker');
+        setStatus('warn', '当前页面未挂载 image picker');
         return;
       }
 
@@ -258,7 +258,7 @@ export const createAdminThemeMediaFields = ({
           binding.input.dispatchEvent(new Event('change', { bubbles: true }));
           setStatus('ok', binding.config.pickerResetStatus);
         },
-        onSelect: (item: AdminMediaClientItem) => {
+        onSelect: (item: AdminImageClientItem) => {
           if (!(binding.input instanceof HTMLInputElement)) return;
           if (getFieldState(binding.config.field).enabled === false) return;
           binding.input.value = item.value;
@@ -285,7 +285,7 @@ export const createAdminThemeMediaFields = ({
   });
 
   return {
-    refresh: (field: AdminMediaPickerField) => {
+    refresh: (field: AdminImagePickerField) => {
       void updateField(field);
     },
     refreshAll: () => {
