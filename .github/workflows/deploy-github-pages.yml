@@ -1,0 +1,46 @@
+name: Deploy GitHub Pages
+
+on:
+  push:
+    branches: [main]
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-github-pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build site
+        run: npm run build
+
+      - name: Deploy to external GitHub Pages repository
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          external_repository: dodolalorc/dodolalorc.github.io
+          personal_token: ${{ secrets.ACTION_ACCESS_TOKEN }}
+          publish_branch: main
+          publish_dir: ./dist/
+          keep_files: false
+          commit_message: ${{ github.event.head_commit.message || format('deploy: {0}', github.sha) }}
