@@ -43,4 +43,4 @@ jobs:
           publish_branch: main
           publish_dir: ./dist/
           keep_files: false
-          commit_message: ${{ github.event.head_commit.message || format('deploy: {0}', github.sha) }}
+          commit_message: "${{ github.event.head_commit.message || format('deploy: {0}', github.sha) }}"
