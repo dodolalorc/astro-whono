@@ -5,15 +5,31 @@ import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 import { ESSAY_PUBLIC_SLUG_RE } from './utils/slug-rules';
 import { getBitsAvatarLocalFilePath, normalizeBitsAvatarPath } from './utils/format';
+import { parseDateOnlyInput } from './utils/date-only';
 
 const slugRule = z
   .string()
   .regex(ESSAY_PUBLIC_SLUG_RE, 'slug must be lowercase kebab-case');
 
-const baseFields = {
+const essayDate = z
+  .unknown()
+  .transform((value, ctx) => {
+    const date = parseDateOnlyInput(value);
+    if (!date) {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'date must be a valid YYYY-MM-DD date'
+      });
+      return z.NEVER;
+    }
+
+    return date;
+  });
+
+const essayBaseFields = {
   title: z.string(),
   description: z.string().optional(),
-  date: z.coerce.date(),
+  date: essayDate,
   tags: z.array(z.string()).default([]),
   draft: z.boolean().default(false),
   archive: z.boolean().default(true),
@@ -62,7 +78,7 @@ const bitsAuthor = z.object({
 const essay = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/essay' }),
   schema: z.object({
-    ...baseFields,
+    ...essayBaseFields,
     cover: z.string().optional(),
     badge: z.string().optional()
   })

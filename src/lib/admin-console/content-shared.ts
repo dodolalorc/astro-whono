@@ -3,10 +3,10 @@ import { existsSync } from 'node:fs';
 import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import {
-  formatISODateUtc,
   getBitsAvatarLocalFilePath,
   normalizeBitsAvatarPath
 } from '../../utils/format';
+import { DATE_ONLY_RE, parseDateOnlyUtc } from '../../utils/date-only';
 import { normalizeAdminBitsImageSource } from './image-shared';
 import {
   ESSAY_PUBLIC_SLUG_RE,
@@ -169,7 +169,6 @@ type AdminWritePlan = {
   patches: FrontmatterPatch[];
 };
 
-const DATE_ONLY_RE = /^\d{4}-\d{2}-\d{2}$/;
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
 
@@ -553,7 +552,7 @@ const buildEssayFrontmatterFromValues = (
   const date = values.date.trim();
   if (!DATE_ONLY_RE.test(date)) {
     issues.push(createIssue('date', 'essay.date 必须是 YYYY-MM-DD'));
-  } else if (formatISODateUtc(new Date(`${date}T00:00:00.000Z`)) !== date) {
+  } else if (!parseDateOnlyUtc(date)) {
     issues.push(createIssue('date', 'essay.date 不是合法日期'));
   }
 
