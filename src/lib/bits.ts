@@ -24,8 +24,8 @@ export type BitsIndexItem = {
   href: string;
   thumbnail?: {
     src: string;
-    width: number;
-    height: number;
+    width?: number;
+    height?: number;
     alt: string;
   } | null;
 };
@@ -157,8 +157,8 @@ const buildBitsIndex = async (pageSize: number) => {
       thumbnail: firstImage
         ? {
             src: withBase(firstImage.src),
-            width: firstImage.width,
-            height: firstImage.height,
+            ...(firstImage.width ? { width: firstImage.width } : {}),
+            ...(firstImage.height ? { height: firstImage.height } : {}),
             alt: firstImage.alt ?? ''
           }
         : null

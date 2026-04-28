@@ -25,7 +25,7 @@ const authorName = (bit.data.author?.name ?? defaultAuthorName).trim() || defaul
 const authorAvatarRaw = (bit.data.author?.avatar ?? settings.page.bits.defaultAuthor.avatar ?? '').trim();
 const authorAvatar = authorAvatarRaw ? withBase(authorAvatarRaw) : '';
 const avatarLetter = Array.from(authorName)[0] ?? 'W';
-type BitImage = { src: string; width: number; height: number; alt?: string };
+type BitImage = { src: string; width?: number; height?: number; alt?: string };
 const images = (bit.data.images ?? []) as BitImage[];
 const imageItems = images.map((image) => ({
   ...image,

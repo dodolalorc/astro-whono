@@ -1,4 +1,4 @@
-import { createWithBase } from '../../utils/format';
+import { getAdminImageFieldPreviewSrc } from '../../lib/admin-console/image-params';
 import { formatAdminImageMetaSummary } from '../admin-shared/image-client';
 import type { AdminImagePickerController } from '../admin-shared/image-picker';
 
@@ -36,7 +36,6 @@ type ImageRowRefs = {
 };
 
 const base = import.meta.env.BASE_URL ?? '/';
-const withBase = createWithBase(base);
 
 const getRowRefs = (row: HTMLElement): ImageRowRefs => ({
   row,
@@ -58,12 +57,8 @@ const getRowRefs = (row: HTMLElement): ImageRowRefs => ({
   heightError: row.querySelector<HTMLElement>('[data-field-error$=".height"]')
 });
 
-const getPreviewSrc = (value: string): string | null => {
-  const normalized = value.trim();
-  if (!normalized) return null;
-  if (/^https?:\/\//i.test(normalized)) return normalized;
-  return withBase(normalized);
-};
+const getPreviewSrc = (value: string): string | null =>
+  getAdminImageFieldPreviewSrc('bits.images', value, base);
 
 const setPreview = (refs: ImageRowRefs, value: string) => {
   const previewSrc = getPreviewSrc(value);

@@ -1,4 +1,7 @@
-import { createWithBase } from '../../utils/format';
+import {
+  getAdminImageFieldPreviewSrc,
+  getAdminRenderedImagePreviewSrc
+} from '../../lib/admin-console/image-params';
 import { formatAdminImageMetaSummary, type AdminImageClientItem } from '../admin-shared/image-client';
 import type { AdminImagePickerController, AdminImagePickerField } from '../admin-shared/image-picker';
 
@@ -9,7 +12,6 @@ type StatusSetter = (
 ) => void;
 
 const base = import.meta.env.BASE_URL ?? '/';
-const withBase = createWithBase(base);
 
 type ThemeImageFieldConfig = {
   field: AdminImagePickerField;
@@ -57,16 +59,14 @@ const FIELD_CONFIGS: readonly ThemeImageFieldConfig[] = [
   }
 ];
 
-const getPreviewSrc = (value: string): string | null => {
-  const normalized = value.trim();
-  if (!normalized) return null;
-  if (/^https?:\/\//i.test(normalized)) return normalized;
-  if (normalized.startsWith('src/assets/')) return null;
-  return withBase(normalized.startsWith('/') ? normalized : `/${normalized}`);
-};
+const getPreviewSrc = (field: AdminImagePickerField, value: string): string | null =>
+  getAdminImageFieldPreviewSrc(field, value, base);
 
 const getDefaultPreviewSrc = (previewWrap: HTMLElement | null): string | null =>
-  previewWrap?.getAttribute('data-admin-images-default-preview-src')?.trim() || null;
+  getAdminRenderedImagePreviewSrc(
+    previewWrap?.getAttribute('data-admin-images-default-preview-src') ?? '',
+    base
+  );
 
 const setPreview = (
   previewWrap: HTMLElement | null,
@@ -190,7 +190,7 @@ export const createAdminThemeImageFields = ({
       return;
     }
 
-    const previewSrc = getPreviewSrc(value);
+    const previewSrc = getPreviewSrc(field, value);
     setPreview(
       binding.previewWrap,
       binding.previewImg,

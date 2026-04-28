@@ -226,6 +226,38 @@ describe('admin content write api', () => {
     );
   });
 
+  it('accepts missing bits image dimensions and missing local avatar files as non-blocking content data', async () => {
+    const { readAdminContentEntryEditorPayload } = await import('../src/lib/admin-console/content-shared');
+    const { POST } = await import('../src/pages/api/admin/content/entry');
+    const current = await readAdminContentEntryEditorPayload('bits', 'demo');
+
+    const response = await POST({
+      request: createJsonRequest('http://127.0.0.1:4321/api/admin/content/entry?dryRun=1', {
+        collection: 'bits',
+        entryId: 'demo',
+        revision: current.revision,
+        frontmatter: {
+          ...current.values,
+          authorAvatar: 'author/missing.webp',
+          imagesText: JSON.stringify([
+            {
+              src: 'bits/demo.webp',
+              alt: 'demo without dimensions'
+            }
+          ])
+        }
+      }),
+      url: new URL('http://127.0.0.1:4321/api/admin/content/entry?dryRun=1')
+    } as never);
+
+    expect(response.status).toBe(200);
+    const payload = JSON.parse(await response.text());
+    expect(payload.ok).toBe(true);
+    expect(payload.result.changedFields).toEqual(
+      expect.arrayContaining(['author', 'images'])
+    );
+  });
+
   it('rejects non-https bits image URLs instead of treating them as local files', async () => {
     const { readAdminContentEntryEditorPayload } = await import('../src/lib/admin-console/content-shared');
     const { POST } = await import('../src/pages/api/admin/content/entry');

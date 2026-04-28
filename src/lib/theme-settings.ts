@@ -3,7 +3,6 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { site as legacySite } from '../../site.config.mjs';
 import {
-  getBitsAvatarLocalFilePath,
   getHeroImageLocalFilePath,
   normalizeBitsAvatarPath,
   normalizeHeroImageSrc
@@ -672,13 +671,7 @@ const asHeroImageSrc = (value: unknown): string | null | undefined => {
 };
 
 const asBitsAvatarPath = (value: unknown): string | undefined => {
-  const normalized = normalizeBitsAvatarPath(value);
-  if (normalized === undefined || !normalized) return normalized;
-
-  const localFilePath = getBitsAvatarLocalFilePath(normalized);
-  if (!localFilePath) return normalized;
-
-  return existsSync(join(process.cwd(), ...localFilePath.split('/'))) ? normalized : undefined;
+  return normalizeBitsAvatarPath(value);
 };
 
 const asHomeIntroLinkKey = (value: unknown): HomeIntroLinkKey | undefined => {

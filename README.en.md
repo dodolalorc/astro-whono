@@ -85,7 +85,7 @@ npm run check:preview-admin
 ```
 
 - `npm test` mainly covers tag utilities, shared Theme Console validation rules, and core pure-logic regressions around theme settings `revision`.
-- `npm run ci` is the default regression entry; `npm run ci:core` is only for faster local incremental checks.
+- `npm run ci` is the default regression entry; `npm run ci:core` is kept only as a maintainer compatibility alias.
 - `npm run build` still works without `SITE_URL`, but SEO-related outputs will be incomplete.
 - Before release, if you need to verify absolute-link artifacts, set a real `SITE_URL` and run `npm run check:prod-artifacts`.
 </details>
@@ -254,8 +254,8 @@ tags:                           # Optional tags (defaults to empty array)
   - reading
 images:                         # Optional: multi-image list (dimensions reduce CLS)
   - src: bits/demo-01.webp      # Supports relative path bits/... or absolute URL https://...
-    width: 800
-    height: 800
+    width: 800                  # Optional; recommended, generator / image picker can fill it
+    height: 800                 # Optional; recommended, generator / image picker can fill it
 # draft: true   # Optional draft; visible in `dev`, hidden by default in `build/preview` and production
 ```
 
@@ -264,7 +264,7 @@ images:                         # Optional: multi-image list (dimensions reduce 
 Author info (on `/bits/` only):
 
 - Default author and avatar are read from Theme Console via `page.bits.defaultAuthor`; if `src/data/settings/page.json` does not exist yet, they fall back to `site.author` / `site.authorAvatar` in `site.config.mjs`
-- `authorAvatar` should be a relative image path only (no `public/`, no leading `/`), for example: `author/avatar.webp`; the file must actually exist under `public/**`
+- `authorAvatar` should be a relative image path only (no `public/`, no leading `/`), for example: `author/avatar.webp`; it should point to an existing file under `public/**`
 - Per-bit overrides are supported via `author` in frontmatter:
 
 ```yaml
@@ -272,9 +272,10 @@ author:
   name: Alice
   avatar: author/alice.webp
 ```
-- Per-bit `author.avatar` follows the same rule as the default avatar: it must be a relative image path pointing to an existing file under `public/**`
+- Per-bit `author.avatar` follows the same rule as the default avatar: use a relative image path and preferably point it to an existing file under `public/**`
 
 - If the avatar is missing or fails to load, it automatically falls back to an initial-based avatar.
+- `bits.images[*].width / height` can be omitted and will not block builds; keeping them helps reduce image layout shift.
 
 
 ### Excerpt and Description (`description`)

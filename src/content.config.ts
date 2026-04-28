@@ -1,10 +1,8 @@
-import { existsSync } from 'node:fs';
-import { join } from 'node:path';
 import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 import { ESSAY_PUBLIC_SLUG_RE } from './utils/slug-rules';
-import { getBitsAvatarLocalFilePath, normalizeBitsAvatarPath } from './utils/format';
+import { normalizeBitsAvatarPath } from './utils/format';
 import { parseDateOnlyInput } from './utils/date-only';
 
 const slugRule = z
@@ -40,13 +38,10 @@ const essayBaseFields = {
 
 const bitsImage = z.object({
   src: z.string(),
-  width: z.number().int().positive(),
-  height: z.number().int().positive(),
+  width: z.number().int().positive().optional(),
+  height: z.number().int().positive().optional(),
   alt: z.string().optional()
 });
-
-const hasProjectFile = (relativePath: string): boolean =>
-  existsSync(join(process.cwd(), ...relativePath.split('/')));
 
 const bitsAuthorAvatar = z
   .string()
@@ -58,14 +53,6 @@ const bitsAuthorAvatar = z
         message: 'author.avatar 只允许相对图片路径（例如 author/avatar.webp），不要带 public/、不要以 / 开头，也不要使用 URL、..、?、#'
       });
       return;
-    }
-
-    const localFilePath = getBitsAvatarLocalFilePath(normalized);
-    if (localFilePath && !hasProjectFile(localFilePath)) {
-      ctx.addIssue({
-        code: 'custom',
-        message: `author.avatar 指向的本地文件不存在：${localFilePath}`
-      });
     }
   })
   .transform((value) => normalizeBitsAvatarPath(value) ?? value);

@@ -51,8 +51,8 @@ type IndexItem = {
   href?: string;
   thumbnail?: {
     src: string;
-    width: number;
-    height: number;
+    width?: number;
+    height?: number;
     alt: string;
   } | null;
 };
@@ -442,8 +442,8 @@ const renderResults = (matchedItems: IndexItem[]) => {
             <img
               src="${escapeHtml(item.thumbnail.src)}"
               alt="${escapeHtml(item.thumbnail.alt || snippet || '絮语配图')}"
-              width="${item.thumbnail.width}"
-              height="${item.thumbnail.height}"
+              ${item.thumbnail.width ? `width="${item.thumbnail.width}"` : ''}
+              ${item.thumbnail.height ? `height="${item.thumbnail.height}"` : ''}
               loading="lazy"
               decoding="async"
             />

@@ -914,11 +914,6 @@ export const validateAdminThemeSettings = (
         'page.bits.defaultAuthor.avatar',
         'Bits 默认头像只允许相对图片路径（例如 author/avatar.webp），不要带 public/、不要以 / 开头，也不要包含 URL、..、?、#'
       );
-    } else {
-      const localFilePath = getAdminBitsAvatarLocalFilePath(settings.page.bits.defaultAuthor.avatar);
-      if (localFilePath && options.localFileExists && !options.localFileExists(localFilePath)) {
-        pushIssue('page.bits.defaultAuthor.avatar', `Bits 默认头像指向的本地文件不存在：${localFilePath}`);
-      }
     }
   }
 

@@ -9,7 +9,11 @@ import {
   normalizeAdminImageBrowseGroup,
   normalizeAdminImageBrowseSubgroup
 } from './image-browse';
-import { toSafeHttpUrl } from '../../utils/format';
+import {
+  normalizeBitsAvatarPath,
+  normalizeHeroImageSrc,
+  toSafeHttpUrl
+} from '../../utils/format';
 
 export type AdminImageFieldContext =
   | 'bits.images'
@@ -63,6 +67,7 @@ type AdminImageFieldConfig = {
 };
 
 const IMAGE_LOCAL_EXT_RE = /\.(?:avif|gif|jpe?g|png|svg|webp)$/i;
+const DATA_URL_RE = /^data:/i;
 
 const FIELD_CONFIG: Record<AdminImageFieldContext, AdminImageFieldConfig> = {
   'bits.images': {
@@ -207,6 +212,7 @@ export const normalizeAdminLocalImageSource = (value: string): string | null => 
     || normalized.startsWith('//')
     || normalized.startsWith('public/')
     || /^[A-Za-z]+:\/\//.test(normalized)
+    || DATA_URL_RE.test(normalized)
     || /(^|\/)\.\.(?:\/|$)/.test(normalized)
     || normalized.includes('?')
     || normalized.includes('#')
@@ -221,6 +227,63 @@ export const normalizeAdminBitsImageSource = (value: string): string | null => {
   const safeRemoteUrl = toSafeHttpUrl(value);
   if (safeRemoteUrl && safeRemoteUrl.startsWith('https://')) return safeRemoteUrl;
   return normalizeAdminLocalImageSource(value);
+};
+
+const withAdminPreviewBase = (base: string, path: string): string => {
+  const normalizedBase = base.trim().replace(/\/+$/, '');
+  const basePath = normalizedBase && normalizedBase !== '/' ? `/${normalizedBase.replace(/^\/+/, '')}` : '';
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+  if (!basePath || normalizedPath === basePath || normalizedPath.startsWith(`${basePath}/`)) {
+    return normalizedPath;
+  }
+  return `${basePath}${normalizedPath}`;
+};
+
+const normalizeRenderedLocalImagePreviewPath = (value: string): string | null => {
+  const normalized = value.trim().replace(/\\/g, '/').replace(/^\.\/+/, '');
+  if (
+    !normalized
+    || !normalized.startsWith('/')
+    || normalized.startsWith('//')
+    || /(^|\/)\.\.(?:\/|$)/.test(normalized)
+    || normalized.includes('?')
+    || normalized.includes('#')
+  ) {
+    return null;
+  }
+
+  return IMAGE_LOCAL_EXT_RE.test(normalized) ? normalized : null;
+};
+
+export const getAdminRenderedImagePreviewSrc = (value: string, base = '/'): string | null => {
+  const safeRemoteUrl = toSafeHttpUrl(value);
+  if (safeRemoteUrl.startsWith('https://')) return safeRemoteUrl;
+
+  const localPath = normalizeRenderedLocalImagePreviewPath(value);
+  return localPath ? withAdminPreviewBase(base, localPath) : null;
+};
+
+export const getAdminImageFieldPreviewSrc = (
+  field: AdminImageFieldContext,
+  value: string,
+  base = '/'
+): string | null => {
+  if (field === 'bits.images') {
+    const normalized = normalizeAdminBitsImageSource(value);
+    if (!normalized) return null;
+    return normalized.startsWith('https://') ? normalized : withAdminPreviewBase(base, normalized);
+  }
+
+  if (field === 'page.bits.defaultAuthor.avatar') {
+    const normalized = normalizeBitsAvatarPath(value);
+    return normalized ? withAdminPreviewBase(base, normalized) : null;
+  }
+
+  const normalized = normalizeHeroImageSrc(value);
+  if (!normalized) return null;
+  if (normalized.startsWith('https://')) return normalized;
+  if (normalized.startsWith('src/assets/')) return null;
+  return withAdminPreviewBase(base, normalized);
 };
 
 export const getAdminImageListRequest = (searchParams: URLSearchParams): AdminImageListRequest => {

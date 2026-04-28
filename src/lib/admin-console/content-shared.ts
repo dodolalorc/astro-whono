@@ -2,10 +2,7 @@ import { createHash } from 'node:crypto';
 import { existsSync } from 'node:fs';
 import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
-import {
-  getBitsAvatarLocalFilePath,
-  normalizeBitsAvatarPath
-} from '../../utils/format';
+import { normalizeBitsAvatarPath } from '../../utils/format';
 import { DATE_ONLY_RE, parseDateOnlyUtc } from '../../utils/date-only';
 import { normalizeAdminBitsImageSource } from './image-shared';
 import {
@@ -134,8 +131,8 @@ type AdminEssayFrontmatter = {
 
 type AdminBitsImage = {
   src: string;
-  width: number;
-  height: number;
+  width?: number;
+  height?: number;
   alt?: string;
 };
 
@@ -183,9 +180,6 @@ const createIssue = (path: string, message: string): AdminContentValidationIssue
 const getProjectRoot = (): string => process.env.ASTRO_WHONO_INTERNAL_TEST_PROJECT_ROOT?.trim() || process.cwd();
 const getContentRoot = (): string => path.join(getProjectRoot(), 'src', 'content');
 const getCollectionRoot = (collection: AdminContentCollectionKey): string => path.join(getContentRoot(), collection);
-
-const hasProjectFile = (relativePath: string): boolean =>
-  existsSync(path.join(getProjectRoot(), ...relativePath.split('/')));
 
 const hashSourceText = (sourceText: string): string =>
   createHash('sha1').update(sourceText).digest('hex');
@@ -614,24 +608,32 @@ const parseBitsImages = (value: string): { images?: AdminBitsImage[]; issues: Ad
       issues.push(createIssue(`images[${index}].src`, `images[${index}].src 只允许 https:// 远程路径或仓库内相对图片路径`));
     }
 
-    const width = typeof item.width === 'number' ? item.width : Number.parseInt(String(item.width ?? ''), 10);
-    const height = typeof item.height === 'number' ? item.height : Number.parseInt(String(item.height ?? ''), 10);
-    if (!Number.isInteger(width) || width <= 0) {
+    const width = item.width == null || item.width === ''
+      ? undefined
+      : (typeof item.width === 'number' ? item.width : Number.parseInt(String(item.width), 10));
+    const height = item.height == null || item.height === ''
+      ? undefined
+      : (typeof item.height === 'number' ? item.height : Number.parseInt(String(item.height), 10));
+    if (width !== undefined && (!Number.isInteger(width) || width <= 0)) {
       issues.push(createIssue(`images[${index}].width`, `images[${index}].width 必须是正整数`));
     }
-    if (!Number.isInteger(height) || height <= 0) {
+    if (height !== undefined && (!Number.isInteger(height) || height <= 0)) {
       issues.push(createIssue(`images[${index}].height`, `images[${index}].height 必须是正整数`));
     }
 
-    if (!normalizedSrc || !Number.isInteger(width) || width <= 0 || !Number.isInteger(height) || height <= 0) {
+    if (
+      !normalizedSrc ||
+      (width !== undefined && (!Number.isInteger(width) || width <= 0)) ||
+      (height !== undefined && (!Number.isInteger(height) || height <= 0))
+    ) {
       return;
     }
 
     const alt = normalizeOptionalText(item.alt);
     images.push({
       src: normalizedSrc,
-      width,
-      height,
+      ...(width ? { width } : {}),
+      ...(height ? { height } : {}),
       ...(alt ? { alt } : {})
     });
   });
@@ -661,11 +663,6 @@ const buildBitsFrontmatterFromValues = (
         'author.avatar 只允许相对图片路径（例如 author/avatar.webp），不要带 public/、不要以 / 开头，也不要使用 URL、..、?、#'
       )
     );
-  } else if (authorAvatar) {
-    const localFilePath = getBitsAvatarLocalFilePath(authorAvatar);
-    if (localFilePath && !hasProjectFile(localFilePath)) {
-      issues.push(createIssue('authorAvatar', `author.avatar 指向的本地文件不存在：${localFilePath}`));
-    }
   }
 
   const imageResult = parseBitsImages(values.imagesText);

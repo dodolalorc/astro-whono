@@ -7,6 +7,10 @@ import {
   getAdminSocialOrderIssues,
   validateAdminThemeSettings
 } from '../src/lib/admin-console/shared';
+import {
+  getAdminImageFieldPreviewSrc,
+  getAdminRenderedImagePreviewSrc
+} from '../src/lib/admin-console/image-params';
 import { getEditableThemeSettingsPayload } from '../src/lib/theme-settings';
 import {
   buildSearchHaystack,
@@ -65,6 +69,41 @@ describe('admin-console/shared', () => {
     expect(normalizeBitsAvatarPath('https://example.com/avatar.webp')).toBeUndefined();
     expect(normalizeBitsAvatarPath('author/avatar.webp?v=2')).toBeUndefined();
     expect(getBitsAvatarLocalFilePath('author/avatar.webp')).toBe('public/author/avatar.webp');
+  });
+
+  it('normalizes admin image field preview sources through field contracts', () => {
+    expect(getAdminImageFieldPreviewSrc('bits.images', 'bits/demo.webp', '/blog/')).toBe('/blog/bits/demo.webp');
+    expect(getAdminImageFieldPreviewSrc('bits.images', 'https://example.com/demo.webp')).toBe(
+      'https://example.com/demo.webp'
+    );
+    expect(getAdminImageFieldPreviewSrc('bits.images', 'http://example.com/demo.webp')).toBeNull();
+    expect(getAdminImageFieldPreviewSrc('bits.images', 'data:image/png;base64,demo.png')).toBeNull();
+    expect(getAdminImageFieldPreviewSrc('bits.images', '//example.com/demo.webp')).toBeNull();
+    expect(getAdminImageFieldPreviewSrc('bits.images', '../demo.webp')).toBeNull();
+
+    expect(getAdminImageFieldPreviewSrc('home.heroImageSrc', '/images/hero.png', '/blog/')).toBe('/blog/images/hero.png');
+    expect(getAdminImageFieldPreviewSrc('home.heroImageSrc', 'src/assets/hero.png')).toBeNull();
+    expect(getAdminImageFieldPreviewSrc('home.heroImageSrc', 'https://example.com/hero.webp')).toBe(
+      'https://example.com/hero.webp'
+    );
+    expect(getAdminImageFieldPreviewSrc('home.heroImageSrc', 'http://example.com/hero.webp')).toBeNull();
+
+    expect(getAdminImageFieldPreviewSrc('page.bits.defaultAuthor.avatar', 'author/avatar.svg', '/blog/')).toBe(
+      '/blog/author/avatar.svg'
+    );
+  });
+
+  it('normalizes rendered admin image preview sources before assigning img src', () => {
+    expect(getAdminRenderedImagePreviewSrc('/_astro/hero.hash.png', '/blog/')).toBe('/blog/_astro/hero.hash.png');
+    expect(getAdminRenderedImagePreviewSrc('/blog/_astro/hero.hash.png', '/blog/')).toBe('/blog/_astro/hero.hash.png');
+    expect(getAdminRenderedImagePreviewSrc('/@fs/D:/Server-Related/dev/astro-whono/src/assets/hero.png')).toBe(
+      '/@fs/D:/Server-Related/dev/astro-whono/src/assets/hero.png'
+    );
+    expect(getAdminRenderedImagePreviewSrc('https://example.com/hero.webp')).toBe('https://example.com/hero.webp');
+    expect(getAdminRenderedImagePreviewSrc('http://example.com/hero.webp')).toBeNull();
+    expect(getAdminRenderedImagePreviewSrc('data:image/png;base64,hero.png')).toBeNull();
+    expect(getAdminRenderedImagePreviewSrc('//example.com/hero.webp')).toBeNull();
+    expect(getAdminRenderedImagePreviewSrc('/_astro/hero.svg?x=1')).toBeNull();
   });
 
   it('tokenizes search query and builds normalized haystack text', () => {
