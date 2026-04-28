@@ -32,11 +32,17 @@ The format is based on Keep a Changelog, and this project aims to follow Semanti
 
 如果你从 `0.2.0` 之后开始使用 Theme Console，并已经修改过 `src/data/settings/*.json`，建议在升级到本版本前先导出一份 settings 备份，用于保留升级前的配置快照。
 
-在 fork 项目根目录运行：
+在 fork 项目根目录运行。PowerShell 用户请保持每条命令为完整单行，不要把 `-o` 的输出路径拆到下一行。
 
-```bash
-curl -fL https://raw.githubusercontent.com/cxro/astro-whono/v0.4.0/scripts/export-astro-whono-settings.mjs -o export-astro-whono-settings.mjs
-node export-astro-whono-settings.mjs
+```powershell
+curl.exe -fL "https://raw.githubusercontent.com/cxro/astro-whono/v0.4.0/scripts/export-astro-whono-settings.mjs" -o ".\export-astro-whono-settings.mjs"
+node ".\export-astro-whono-settings.mjs"
+```
+
+如果当前项目没有 `src/data/settings/*.json`，只有旧的 `site.config.mjs`，请改用：
+
+```powershell
+node ".\export-astro-whono-settings.mjs" --include-legacy
 ```
 
 请保存生成的 `astro-whono-settings-backup-*.json`。升级到本版本后，优先在本地开发环境通过 `/admin/data/` 导入该文件并执行 dry-run；备份包中的 `compatibility.dataConsoleDryRunCandidate = eligible` 只表示可以作为 dry-run 候选，不代表一定能直接写入。
