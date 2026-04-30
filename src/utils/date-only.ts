@@ -30,6 +30,13 @@ export const parseDateOnlyUtc = (value: string): Date | null => {
   return toDateOnlyUtcText(date) === value ? date : null;
 };
 
+export const parseISO8601 = (value: string): Date | null => {
+  if (!ISO8601_RE.test(value)) return null;
+
+  const date = new Date(value);
+  return Number.isFinite(date.valueOf()) ? date : null;
+};
+
 export const parseDateOnlyInput = (value: unknown): Date | null => {
   if (typeof value === 'string') return parseDateOnlyUtc(value);
   if (value instanceof Date && isUtcDateOnlyDate(value)) return new Date(value.valueOf());
