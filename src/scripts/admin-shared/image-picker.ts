@@ -1,5 +1,8 @@
 import type { AdminImageOrigin } from '../../lib/admin-console/image-contract';
-import { getAdminImageFieldAllowedOrigins } from '../../lib/admin-console/image-params';
+import {
+  getAdminImageFieldAllowedOrigins,
+  getAdminRenderedImagePreviewSrc
+} from '../../lib/admin-console/image-params';
 import {
   queryAdminDomControls,
   reportAdminDomSetupError
@@ -44,6 +47,7 @@ const ADMIN_IMAGE_PICKER_PAGE_LIMITS = {
   list: 6,
   grid: 12
 } as const satisfies Record<AdminImagePickerViewMode, number>;
+const base = import.meta.env.BASE_URL ?? '/';
 const ADMIN_IMAGE_PICKER_SEARCH_DEBOUNCE_MS = 260;
 
 const formatAdminImageGridMetaSummary = (
@@ -362,9 +366,10 @@ export const createAdminImagePicker = (root: ParentNode = document): AdminImageP
 
       const thumb = document.createElement('span');
       thumb.className = 'admin-images-picker__thumb';
-      if (item.previewSrc) {
+      const safePreviewSrc = item.previewSrc ? getAdminRenderedImagePreviewSrc(item.previewSrc, base) : null;
+      if (safePreviewSrc) {
         const image = document.createElement('img');
-        image.src = item.previewSrc;
+        image.src = safePreviewSrc;
         image.alt = '';
         image.loading = 'lazy';
         image.decoding = 'async';

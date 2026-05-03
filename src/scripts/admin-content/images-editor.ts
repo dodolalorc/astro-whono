@@ -1,3 +1,4 @@
+import { getAdminRenderedImagePreviewSrc } from '../../lib/admin-console/image-params';
 import { formatAdminImageMetaSummary } from '../admin-shared/image-client';
 import type { AdminImagePickerController } from '../admin-shared/image-picker';
 
@@ -34,6 +35,7 @@ type ImageRowRefs = {
   heightError: HTMLElement | null;
 };
 
+const base = import.meta.env.BASE_URL ?? '/';
 const META_PREVIEW_DEBOUNCE_MS = 360;
 
 const getRowRefs = (row: HTMLElement): ImageRowRefs => ({
@@ -63,7 +65,13 @@ const setPreview = (refs: ImageRowRefs, previewSrc: string | null) => {
     refs.previewImg.removeAttribute('src');
     return;
   }
-  refs.previewImg.src = previewSrc;
+  const safePreviewSrc = getAdminRenderedImagePreviewSrc(previewSrc, base);
+  if (!safePreviewSrc) {
+    refs.previewWrap.hidden = true;
+    refs.previewImg.removeAttribute('src');
+    return;
+  }
+  refs.previewImg.src = safePreviewSrc;
   refs.previewWrap.hidden = false;
 };
 
