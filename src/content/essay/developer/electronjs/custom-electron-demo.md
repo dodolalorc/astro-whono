@@ -1,12 +1,14 @@
 ---
-title: 自定义Electron.exe的使�?subtitle: ""
+title: 自定义Electron.exe的使用
+subtitle: ""
 date: 2025-04-27T16:51:01+08:00
 lastmod: 2025-04-27T16:51:01+08:00
 draft: false
 authors: 
 description: 只是一个本地测试的小流程记录，展示了如何在Electron的源码中添加一个简单的API，并在一个小demo中调用这个API进行测试。
 categories:
-  - 在前端搬砖的日子�?series:
+  - 在前端搬砖的日子
+series:
   - Electron学习笔记
 hiddenFromHomePage: false
 hiddenFromSearch: false
