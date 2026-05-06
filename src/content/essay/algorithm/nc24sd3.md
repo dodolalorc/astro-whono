@@ -1,11 +1,35 @@
 ---
 title: "🫟2024牛客暑假多校训练营Day3||补题"
-description: "A Bridging the Gap 2"
+subtitle: ""
 date: 2024-07-23T18:37:58+08:00
-tags: ["'2024暑假集训", "算法", "牛客'"]
+lastmod: 2024-07-23T18:37:58+08:00
 draft: false
-badge: "算法"
+authors: []
+description: ""
+
+tags: [
+  '2024暑假集训','算法','牛客'
+]
+categories: [
+  '在学算法的日子里'
+]
+series: [
+  '题解记录'
+]
+hiddenFromHomePage: false
+hiddenFromSearch: false
+
+featuredImage: ""
+featuredImagePreview: ""
+
+toc:
+  enable: true
+math:
+  enable: true
+lightgallery: false
+license: ""
 ---
+
 ## A-Bridging the Gap 2
 
 ### 题意
@@ -154,6 +178,7 @@ void solve() {
     ll lv = v.size();
     ll lw = w.size();
 
+
     for (auto i : cnt) {
         if (i.second >= n + 2) {
             cout << "No\n";
@@ -297,6 +322,7 @@ void triInsert(string s) {
         p = nxt[p][c];
     }
 }
+
 
 ld f[maxn][maxn];
 void solve() {
@@ -468,3 +494,8 @@ void solve() {
     }
 }
 ```
+
+
+
+
+

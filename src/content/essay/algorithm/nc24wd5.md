@@ -1,11 +1,34 @@
 ---
-title: "🎉2024牛客寒假营5||补题"
-description: "A mutsumi的质数合数"
-date: 2024-02-21T20:07:25+08:00
-tags: ["'2024寒假训练", "算法", "牛客'"]
+title : '🎉2024牛客寒假营5||补题'
+date : 2024-02-21T20:07:25+08:00
 draft: false
-badge: "算法"
+authors: []
+description: ""
+
+tags: [
+  '2024寒假训练','算法','牛客'
+]
+categories: [
+  '在学算法的日子里'
+]
+
+series: [
+  '题解记录'
+]
+hiddenFromHomePage: false
+hiddenFromSearch: false
+
+featuredImage: ""
+featuredImagePreview: ""
+
+toc:
+  enable: true
+math:
+  enable: true
+lightgallery: false
+license: ""
 ---
+
 ## A-mutsumi的质数合数
 
 ### 题意
@@ -452,3 +475,10 @@ void solve() {
 
 }
 ```
+
+
+
+
+
+
+

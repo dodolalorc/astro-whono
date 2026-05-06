@@ -1,11 +1,37 @@
 ---
-title: "💭Codeforces Round 931(div2)"
-description: "A Too Min Too Max"
-date: 2024-03-13T12:26:22+08:00
-tags: ["\"算法", "CF\""]
+title : '💭Codeforces Round 931(div2)'
+date : 2024-03-13T12:26:22+08:00
 draft: false
-badge: "算法"
+authors: []
+description: ""
+
+tags: [
+    "算法","CF"
+]
+categories: [
+  "在学算法的日子里"
+]
+
+series: [
+  '题解记录'
+]
+
+hiddenFromHomePage: false
+hiddenFromSearch: false
+
+featuredImage: ""
+featuredImagePreview: ""
+
+toc:
+  enable: true
+math:
+  enable: true
+lightgallery: false
+license: ""
 ---
+
+
+
 # A-Too Min Too Max
 
 ## 题意
@@ -165,3 +191,4 @@ void solve() {
     cout << "! " << x << ' ' << y << endl;
 }
 ```
+

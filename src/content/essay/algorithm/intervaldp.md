@@ -1,12 +1,40 @@
 ---
-title: "刷题记录||区间动态规划"
-description: "区间动态规划一般以区间作为动态规划的阶段。"
-date: 2024-09-11T21:50:26+08:00
-tags: ["'算法", "DP'"]
-draft: false
-badge: "算法"
+title : '刷题记录||区间动态规划'
+date : 2024-09-11T21:50:26+08:00
+draft : false
+authors: []
+description: ""
+
+tags: [
+  '算法','DP'
+]
+categories: [
+  '在学算法的日子里'
+]
+
+series: [
+  '题解记录'
+]
+hiddenFromHomePage: false
+hiddenFromSearch: false
+
+featuredImage: "https://img.dodolalorc.cn/i/2024/12/10/67580ba9b1658.png"
+featuredImagePreview: "https://img.dodolalorc.cn/i/2024/12/10/67580ba9b1658.png"
+
+toc:
+  enable: true
+math:
+  enable: true
+lightgallery: false
+license: ""
+
 ---
+
+
+
 **区间动态规划一般以区间作为动态规划的阶段。**
+
+
 
 ## [P1880]石子合并
 
@@ -719,3 +747,4 @@ int main() {
     return 0;
 }
 ```
+

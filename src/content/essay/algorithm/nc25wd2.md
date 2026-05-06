@@ -1,11 +1,35 @@
 ---
-title: "🎈2025牛客暑寒假多校训练营Day2"
-description: "A 一起奏响历史之音！"
+title: 🎈2025牛客暑寒假多校训练营Day2
+subtitle: ""
 date: 2025-02-06T00:40:31+08:00
-tags: ["2025寒假训练", "算法", "牛客", "组合数学", "计算几何", "字符串", "ST表"]
+lastmod: 2025-02-06T00:40:31+08:00
 draft: false
-badge: "算法"
+authors: 
+description: ""
+tags:
+  - 2025寒假训练
+  - 算法
+  - 牛客
+  - 组合数学
+  - 计算几何
+  - 字符串
+  - ST表
+categories:
+  - 在学算法的日子里
+series:
+  - 题解记录
+hiddenFromHomePage: false
+hiddenFromSearch: false
+featuredImage: https://img.dodolalorc.cn/i/2025/02/06/67a3a57b557f6.jpg
+featuredImagePreview: https://img.dodolalorc.cn/i/2025/02/06/67a3a57b557f6.jpg
+toc:
+  enable: true
+math:
+  enable: true
+lightgallery: false
+license: ""
 ---
+
 ## A 一起奏响历史之音！
 
 ### 题意

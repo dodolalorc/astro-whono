@@ -1,11 +1,29 @@
 ---
 title: "计算几何模板"
-description: "试着用计算机来解决几何问题吧(●'◡'●)"
 date: 2024-03-09T21:54:39+08:00
-tags: ["算法", "\"计算几何", "\"算法模板"]
+lastmod: 2024-03-12T18:28:00+08:00
 draft: true
-badge: "算法"
+authors: []
+description: ""
+
+tags: ["算法", "计算几何", "算法模板"]
+categories: ["在学算法的日子里"]
+
+series: ["算法模板笔记"]
+hiddenFromHomePage: false
+hiddenFromSearch: false
+
+featuredImage: ""
+featuredImagePreview: ""
+
+toc:
+  enable: true
+math:
+  enable: true
+lightgallery: true
+license: ""
 ---
+
 > 试着用计算机来解决几何问题吧(●'◡'●)
 
 # 前置知识
@@ -632,6 +650,7 @@ struct point {
             && sgn(a.y - b.y) == 0;
     }
 
+
     point rotate(ld t)const {
         return { x * cos(t) - y * sin(t), x * sin(t) + y * cos(t) };
     }
@@ -662,6 +681,7 @@ ld dot(const point& a, const point& b) {
 ld det(const point& a, const point& b) {
     return a.x * b.y - a.y * b.x;
 }
+
 
 bool turn_left(const point& a, const point& b, const point& c) {
     return sgn(det(b - a, c - a)) > 0;
@@ -710,6 +730,7 @@ point line_intersect(const line& a, const line& b) {
     ld v = det(a.t - a.s, b.t - a.s);
     return (b.s * v + b.t * u) / (v + u);
 }
+
 
 // bool ray_intersect_judge(const line& a, const line& b) {
 //     // TODO: finish this
@@ -789,6 +810,8 @@ ld convex_perimeter(vector<point>& p) {
         res += dis(p[i], p[(i + 1) % p.size()]);
     return res;
 }
+
+
 
 void solve() {}
 

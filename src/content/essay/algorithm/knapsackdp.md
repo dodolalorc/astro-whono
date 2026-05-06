@@ -1,11 +1,34 @@
 ---
-title: "刷题记录||背包动态规划"
-description: "👾背包动态规划"
-date: 2024-03-09T21:49:34+08:00
-tags: ["'算法", "DP'"]
+title : '刷题记录||背包动态规划'
+date : 2024-03-09T21:49:34+08:00
 draft: true
-badge: "算法"
+authors: []
+description: ""
+
+tags: [
+  '算法','DP'
+]
+categories: [
+  '在学算法的日子里'
+]
+
+series: [
+  '题解记录'
+]
+hiddenFromHomePage: false
+hiddenFromSearch: false
+
+featuredImage: ""
+featuredImagePreview: ""
+
+toc:
+  enable: true
+math:
+  enable: true
+lightgallery: false
+license: ""
 ---
+
 ## 👾背包动态规划
 
 **背包动态规划是线性动态规划中特殊的一类，NOIP中考到的次数也不少。**
@@ -86,6 +109,8 @@ int main() {
     return 0;
 }
 ```
+
+
 
 ### 🍊[P1060]开心的金明
 

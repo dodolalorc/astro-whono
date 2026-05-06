@@ -1,11 +1,31 @@
 ---
-title: "🎈2025牛客暑寒假多校训练营Day4"
-description: "A"
+title: 🎈2025牛客暑寒假多校训练营Day4
+subtitle: ""
 date: 2025-03-02T18:46:04+08:00
-tags: ["2025寒假训练", "算法", "牛客"]
+lastmod: 2025-03-02T18:46:04+08:00
 draft: false
-badge: "算法"
+authors: 
+description: ""
+tags:
+  - 2025寒假训练
+  - 算法
+  - 牛客
+categories:
+  - 在学算法的日子里
+series:
+  - 题解记录
+hiddenFromHomePage: false
+hiddenFromSearch: false
+featuredImage: https://img.dodolalorc.cn/i/2025/03/02/67c461f0d8665.jpg
+featuredImagePreview: https://img.dodolalorc.cn/i/2025/03/02/67c461f0d8665.jpg
+toc:
+  enable: true
+math:
+  enable: true
+lightgallery: false
+license: ""
 ---
+
 ## A
 
 ### 题意

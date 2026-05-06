@@ -1,11 +1,39 @@
 ---
-title: "🎉2024牛客寒假营1||补题"
-description: "A DFS搜索"
-date: 2024-02-02T20:30:40+08:00
-tags: ["'2024寒假训练", "算法", "牛客'"]
+title : '🎉2024牛客寒假营1||补题'
+date : 2024-02-02T20:30:40+08:00
+lastmod : 2024-02-10T05:21:23+08:00
 draft: false
-badge: "算法"
+authors: []
+description: ""
+
+tags: [
+  '2024寒假训练','算法','牛客'
+]
+categories: [
+  '在学算法的日子里'
+]
+
+series: [
+  '题解记录'
+]
+hiddenFromHomePage: false
+hiddenFromSearch: false
+
+featuredImage: ""
+featuredImagePreview: ""
+
+toc:
+  enable: true
+math:
+  enable: true
+lightgallery: false
+license: ""
 ---
+
+
+
+
+
 ## A-DFS搜索
 
 ### 题意
@@ -232,6 +260,8 @@ void solve() {
 }
 ```
 
+
+
 ## F-鸡数题
 
 ### 题意
@@ -249,6 +279,7 @@ void solve() {
 
 $1\leq n,m\leq 10^5$
 
+
 ### 思路
 
 条件3说明，在2进制下的$2^n-1$（也就是数$(\overbrace{11\dots111}^n)_2$）每一位1都至少在$a_1~a_m$中出现一次，数组a的大小为m，联合条件4说明每个数位上的1最多只能出现1次，所以问题转化为，将n个不同位置上1分配给m个数，且每个数至少有1个1。可知$n\geq m$。
@@ -265,6 +296,7 @@ $$
 $$
 {n\brace m}=\sum_{i=0}^m \frac{(-1)^{m-i}\times i^n}{i!\times (m-i)!}
 $$
+
 
 ### 参考代码
 
@@ -298,6 +330,8 @@ void solve() {
     cout << ans << '\n';
 }
 ```
+
+
 
 ## G-why买外卖
 
@@ -343,6 +377,8 @@ void solve() {
 }
 ```
 
+
+
 ## I-It's bertrand paradox. Again!
 
 ### 题意
@@ -365,6 +401,7 @@ buaa-noob的方法：
 $n=10^5$
 
 $0< x_i,y_i< 100,0< r_i\leq100$
+
 
 ### 思路
 
@@ -432,6 +469,8 @@ void solve() {
 }
 ```
 
+
+
 ## L-要有光
 
 ### 题意
@@ -439,6 +478,8 @@ void solve() {
 ![img](https://uploadfiles.nowcoder.com/images/20240121/0_1705841503979/D2B5CA33BD970F64A6301FA75AE2EB22)
 
 如图，有一点光源在轨迹L($x=c,y=0,0\leq z\leq d$)上移动，存在一宽为$2w$，高为$h$的绿墙W，和一无限大的白墙S，求投影在地面上的阴影的面积。
+
+
 
 #### 数据范围
 
@@ -476,6 +517,7 @@ $1\leq T\leq 10^5$
 
 $6\leq n\leq 10^9$
 
+
 ### 思路
 
 判断n是否是6的倍数即可，如果正好是6的倍数，那么返回时并不产生新的位置。
@@ -489,3 +531,4 @@ void solve() {
     else cout << n / 6 << '\n';
 }
 ```
+

@@ -1,11 +1,37 @@
 ---
 title: "🫟2024牛客暑假多校训练营Day7||补题"
-description: "I Fight Against the Monster"
+subtitle: ""
 date: 2024-08-09T00:26:24+08:00
-tags: ["'2024暑假集训", "算法", "牛客'"]
+lastmod: 2024-08-09T00:26:24+08:00
 draft: false
-badge: "算法"
+authors: []
+description: ""
+
+tags: [
+  '2024暑假集训','算法','牛客'
+]
+categories: [
+  '在学算法的日子里'
+]
+
+series: [
+  '题解记录'
+]
+
+hiddenFromHomePage: false
+hiddenFromSearch: false
+
+featuredImage: "https://img.dodolalorc.cn/i/2024/12/10/67580d0599587.png"
+featuredImagePreview: "https://img.dodolalorc.cn/i/2024/12/10/67580d0599587.png"
+
+toc:
+  enable: true
+math:
+  enable: true
+lightgallery: false
+license: ""
 ---
+
 ## I-Fight Against the Monster
 
 ### 题意
@@ -235,3 +261,4 @@ int main() {
 }
 
 ```
+

@@ -1,11 +1,36 @@
 ---
 title: "🫟2024牛客暑假多校训练营Day8||补题"
-description: "A Haitang and Game"
+subtitle: ""
 date: 2024-08-09T00:26:32+08:00
-tags: ["'2024暑假集训", "算法", "牛客'"]
+lastmod: 2024-08-09T00:26:32+08:00
 draft: false
-badge: "算法"
+authors: []
+description: ""
+
+tags: [
+  '2024暑假集训','算法','牛客'
+]
+categories: [
+  '在学算法的日子里'
+]
+series: [
+  '题解记录'
+]
+
+hiddenFromHomePage: false
+hiddenFromSearch: false
+
+featuredImage: "https://img.dodolalorc.cn/i/2024/12/10/67580d3f3b117.png"
+featuredImagePreview: "https://img.dodolalorc.cn/i/2024/12/10/67580d3f3b117.png"
+
+toc:
+  enable: true
+math:
+  enable: true
+lightgallery: false
+license: ""
 ---
+
 ## A-Haitang and Game
 
 ### 题意
@@ -125,3 +150,10 @@ void solve() {
     }
 }
 ```
+
+
+
+
+
+
+

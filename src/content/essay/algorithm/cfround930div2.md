@@ -1,11 +1,30 @@
 ---
-title: "💭Codeforces Round 930(div2)"
-description: "A Shuffle Party"
+title: 💭Codeforces Round 930(div2)
 date: 2024-03-13T12:26:38+08:00
-tags: ["算法", "CF"]
 draft: false
-badge: "算法"
+authors: 
+description: ""
+tags:
+  - 算法
+  - CF
+categories:
+  - 在学算法的日子里
+series:
+  - 题解记录
+hiddenFromHomePage: false
+hiddenFromSearch: false
+featuredImage: ""
+featuredImagePreview: ""
+toc:
+  enable: true
+math:
+  enable: true
+lightgallery: false
+license: ""
 ---
+
+
+
 # A-Shuffle Party
 
 ## 题意
@@ -112,6 +131,8 @@ $t(1≤t≤1000)$
 
 $n(2≤n≤10^4)$​
 
+
+
 ## 思路
 
 先两两比较找到最大的数，再找到与最大的数异或的结果最大的另一个数。
@@ -149,3 +170,4 @@ void solve() {
     cout << "! " << pm << " " << pn << endl;
 }
 ```
+

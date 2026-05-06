@@ -1,11 +1,30 @@
 ---
-title: "💭Codeforces Round 977 (Div. 2, based on COMPFEST 16 - Final Round)"
-description: "💭Codeforces Round 977 (Div. 2, based on COMPFEST 16 - Final Round)"
+title: 💭Codeforces Round 977 (Div. 2, based on COMPFEST 16 - Final Round)
+subtitle: ""
 date: 2024-10-25T14:57:19+08:00
-tags: ["算法", "CF"]
+lastmod: 2024-10-25T14:57:19+08:00
 draft: false
-badge: "算法"
+authors: []
+description: 💭Codeforces Round 977 (Div. 2, based on COMPFEST 16 - Final Round)
+tags:
+  - 算法
+  - CF
+categories:
+  - 在学算法的日子里
+series:
+  - 题解记录
+hiddenFromHomePage: false
+hiddenFromSearch: false
+featuredImage: https://img.dodolalorc.cn/i/2024/12/10/67580a1859420.jpeg
+featuredImagePreview: https://img.dodolalorc.cn/i/2024/12/10/67580a1859420.jpeg
+toc:
+  enable: true
+math:
+  enable: true
+lightgallery: false
+license: ""
 ---
+
 # A. Meaning Mean
 
 ## 题意
@@ -215,5 +234,7 @@ void solve() {
 - $1\leq u_i\lt w_i\leq n;1\leq w_i\leq 10^9$
 
 ## 思路
+
+
 
 ## 参考代码

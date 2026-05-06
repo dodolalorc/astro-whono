@@ -1,11 +1,37 @@
 ---
 title: "🫟2024牛客暑假多校训练营Day4||补题"
-description: "A LCT"
+subtitle: ""
 date: 2024-07-31T15:55:48+08:00
-tags: ["'2024暑假集训", "算法", "牛客'"]
+lastmod: 2024-07-31T15:55:48+08:00
 draft: false
-badge: "算法"
+authors: []
+description: ""
+
+tags: [
+  '2024暑假集训','算法','牛客'
+]
+categories: [
+  '在学算法的日子里'
+]
+
+series: [
+  '题解记录'
+]
+
+hiddenFromHomePage: false
+hiddenFromSearch: false
+
+featuredImage: ""
+featuredImagePreview: ""
+
+toc:
+  enable: true
+math:
+  enable: true
+lightgallery: false
+license: ""
 ---
+
 ## A-LCT
 
 ### 题意
@@ -301,3 +327,16 @@ void solve() {
     cout << ans << "\n";
 }
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+

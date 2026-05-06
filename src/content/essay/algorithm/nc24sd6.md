@@ -1,11 +1,36 @@
 ---
 title: "🫟2024牛客暑假多校训练营Day6||补题"
-description: "A Cake"
+subtitle: ""
 date: 2024-08-05T10:15:52+08:00
-tags: ["'2024暑假集训", "算法", "牛客'"]
+lastmod: 2024-08-05T10:15:52+08:00
 draft: false
-badge: "算法"
+authors: []
+description: ""
+
+tags: [
+  '2024暑假集训','算法','牛客'
+]
+categories: [
+  '在学算法的日子里'
+]
+series: [
+  '题解记录'
+]
+
+hiddenFromHomePage: false
+hiddenFromSearch: false
+
+featuredImage: "https://img.dodolalorc.cn/i/2024/12/10/67580cc38a90f.png"
+featuredImagePreview: "https://img.dodolalorc.cn/i/2024/12/10/67580cc38a90f.png"
+
+toc:
+  enable: true
+math:
+  enable: true
+lightgallery: false
+license: ""
 ---
+
 ## A-Cake
 
 ### 题意
@@ -447,6 +472,7 @@ void solve() {
         }
     }
 
+
     map<int, vector<int>>mp;
     for (int i = 1;i <= n;i++) {
         int f = findfa(i);
@@ -493,6 +519,7 @@ void solve() {
         }
     }
 
+
     for (auto i : x) {
         cout << i << " ";
     }
@@ -517,3 +544,23 @@ int main() {
     return 0;
 }
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

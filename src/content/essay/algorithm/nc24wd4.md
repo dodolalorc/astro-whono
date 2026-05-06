@@ -1,11 +1,34 @@
 ---
-title: "🎉2024牛客寒假营4||补题"
-description: "A 柠檬可乐"
-date: 2024-02-26T19:54:28+08:00
-tags: ["'2024寒假训练", "算法", "牛客'"]
+title : '🎉2024牛客寒假营4||补题'
+date : 2024-02-26T19:54:28+08:00
 draft: false
-badge: "算法"
+authors: []
+description: ""
+
+tags: [
+  '2024寒假训练','算法','牛客'
+]
+categories: [
+  '在学算法的日子里'
+]
+
+series: [
+  '题解记录'
+]
+hiddenFromHomePage: false
+hiddenFromSearch: false
+
+featuredImage: ""
+featuredImagePreview: ""
+
+toc:
+  enable: true
+math:
+  enable: true
+lightgallery: false
+license: ""
 ---
+
 ## A-柠檬可乐
 
 ### 题意
@@ -161,3 +184,4 @@ void solve() {
     cout << res.size() << '\n';
 }
 ```
+

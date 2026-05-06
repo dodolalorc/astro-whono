@@ -1,11 +1,31 @@
 ---
-title: "🎈2025牛客暑寒假多校训练营Day1（完結）"
-description: "A 茕茕孑立之影"
+title: 🎈2025牛客暑寒假多校训练营Day1（完結）
+subtitle: ""
 date: 2025-01-23T12:58:36+08:00
-tags: ["2025寒假训练", "算法", "牛客"]
+lastmod: 2025-01-23T12:58:36+08:00
 draft: false
-badge: "算法"
+authors: 
+description: ""
+tags:
+  - 2025寒假训练
+  - 算法
+  - 牛客
+categories:
+  - 在学算法的日子里
+series:
+  - 题解记录
+hiddenFromHomePage: false
+hiddenFromSearch: false
+featuredImage: https://img.dodolalorc.cn/i/2025/02/05/67a26952e01a0.jpg
+featuredImagePreview: https://img.dodolalorc.cn/i/2025/02/05/67a26952e01a0.jpg
+toc:
+  enable: true
+math:
+  enable: true
+lightgallery: false
+license: ""
 ---
+
 ## A 茕茕孑立之影
 
 ### 题意

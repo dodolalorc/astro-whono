@@ -1,11 +1,38 @@
 ---
 title: "🫟2024牛客暑假多校训练营Day1||补题"
-description: "A Bit Common"
+subtitle: ""
 date: 2024-07-16T19:36:00+08:00
-tags: ["'2024暑假集训", "算法", "牛客'"]
+lastmod: 2024-07-16T19:36:00+08:00
 draft: false
-badge: "算法"
+authors: []
+description: ""
+tags : [
+  '2024暑假集训','算法','牛客'
+]
+categories : [
+  '在学算法的日子里'
+]
+
+series: [
+  '题解记录'
+]
+
+hiddenFromHomePage: false
+hiddenFromSearch: false
+
+featuredImage: ""
+featuredImagePreview: ""
+
+toc:
+  enable: true
+math:
+  enable: true
+lightgallery: false
+license: ""
 ---
+
+
+
 ## A-Bit Common
 
 ### 题意
@@ -20,6 +47,7 @@ badge: "算法"
 * $1\leq q\leq 10^9$
 
 ### 思路
+
 
 按位分析，对于一个长度为$n$的序列，序列中的数分为$k$个末尾是$1$的数和$n-k$个末尾是$0$的数。
 
@@ -185,6 +213,8 @@ void solve() {
     cout << (ans - res + q) % q << "\n";
 }
 ```
+
+
 
 ## C-Sum of Suffix Sums
 
@@ -448,3 +478,18 @@ int main() {
     return 0;
 }
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

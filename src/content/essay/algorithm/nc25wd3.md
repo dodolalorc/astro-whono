@@ -1,11 +1,36 @@
 ---
-title: "🎈2025牛客暑寒假多校训练营Day3（完結）"
-description: "A 智乃的博弈游戏"
+title: 🎈2025牛客暑寒假多校训练营Day3（完結）
+subtitle: ""
 date: 2025-02-16T08:53:02+08:00
-tags: ["2025寒假训练", "字典树", "数论分块", "换根dp", "随机化算法", "模拟", "ST表", "算法"]
+lastmod: 2025-02-16T08:53:02+08:00
 draft: false
-badge: "算法"
+authors: 
+description: ""
+tags:
+  - 2025寒假训练
+  - 字典树
+  - 数论分块
+  - 换根dp
+  - 随机化算法
+  - 模拟
+  - ST表
+  - 算法
+categories:
+  - 在学算法的日子里
+series:
+  - 题解记录
+hiddenFromHomePage: false
+hiddenFromSearch: false
+featuredImage: https://img.dodolalorc.cn/i/2025/02/16/67b17bacd70e1.jpg
+featuredImagePreview: https://img.dodolalorc.cn/i/2025/02/16/67b17bacd70e1.jpg
+toc:
+  enable: true
+math:
+  enable: true
+lightgallery: false
+license: ""
 ---
+
 ## A 智乃的博弈游戏
 
 ### 题意
@@ -616,11 +641,7 @@ void solve() {
 
 换根更新以$i$为根的子树的权值。
 
-:::info[Mermaid 图表已转为源码展示]
-当前主题默认未启用 Mermaid 渲染。为了保证文章能正常构建，这里先保留图表源码；后续接入 Mermaid 插件后可再恢复为图形展示。
-:::
-
-```text
+{{< mermaid >}}
 flowchart TB
 c1((p))-.连接.->a1((v))
 subgraph 子树v
@@ -631,7 +652,7 @@ subgraph 当前的树p
 c1-->c2((s1))
 c1-->c3((s2))
 end
-```
+{{< /mermaid >}}
 
 如图，当前的操作是将子树$v$的信息更新到以$p$为根的树上，记以$i$为根的子树的黑/白色节点数是$num[i][0/1]$，子树$i$中的黑/白色节点到根$i$的距离之和是$g[i][0/1]$，$f[i]$为子树$i$的权值，那么在 dfs 递归更新的时候，转移是：
 

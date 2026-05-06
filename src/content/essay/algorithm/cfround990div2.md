@@ -1,11 +1,30 @@
 ---
-title: "💭Codeforces Round 990 (Div. 2)"
-description: "tags:"
+title: 💭Codeforces Round 990 (Div. 2)
+subtitle: ""
 date: 2024-12-05T19:27:40+08:00
-tags: ["算法", "CF"]
+lastmod: 2024-12-05T19:27:40+08:00
 draft: false
-badge: "算法"
+authors: 
+description: 
+tags:
+  - 算法
+  - CF
+categories:
+  - 在学算法的日子里
+series:
+  - 题解记录
+hiddenFromHomePage: false
+hiddenFromSearch: false
+featuredImage: https://img.dodolalorc.cn/i/2024/12/10/67580e40e3ea7.png
+featuredImagePreview: https://img.dodolalorc.cn/i/2024/12/10/67580e40e3ea7.png
+toc:
+  enable: true
+math:
+  enable: true
+lightgallery: false
+license: ""
 ---
+
 ## A. Alyona and a Square Jigsaw Puzzle
 
 ### 题意

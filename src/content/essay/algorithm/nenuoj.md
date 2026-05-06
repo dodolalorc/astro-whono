@@ -1,16 +1,42 @@
 ---
-title: "NENU2023学年算法2例题"
-description: "有的题还没写完）咕咕咕））"
-date: 2023-12-19T22:02:50+08:00
-tags: ["'算法", "NENUOJ'"]
+title : 'NENU2023学年算法2例题'
+date : 2023-12-19T22:02:50+08:00
 draft: false
-badge: "算法"
+authors: []
+description: ""
+
+tags: [
+  '算法','NENUOJ'
+]
+categories: [
+  '在学算法的日子里'
+]
+
+series: [
+  '题解记录'
+]
+hiddenFromHomePage: false
+hiddenFromSearch: false
+
+featuredImage: ""
+featuredImagePreview: ""
+
+toc:
+  enable: true
+math:
+  enable: true
+lightgallery: false
+license: ""
 ---
+
 有的题还没写完）咕咕咕））
 
 # NENU OJ算法2例题
 
 这学期写算法2的思路并不都很详细，不过如果有想交流的也可以评论区或者私信，学校oj的题大多比较简单，这里的所有代码或许只保证通过学校的弱测试数据，<del>因为其他地方OJ我还没有试过</del>。
+
+
+
 
 ## **算法2递归A**
 
@@ -991,6 +1017,8 @@ int main() {
 }
 ```
 
+
+
 ### 1256: A016 数字拼凑
 
 #### 题目描述
@@ -1224,6 +1252,8 @@ course
 ```cpp
 
 ```
+
+
 
 ## **算法2查找C**
 
@@ -1698,6 +1728,10 @@ int main() {
 ```cpp
 
 ```
+
+
+
+
 
 ## **算法2动态规划D**
 
@@ -2266,6 +2300,8 @@ int main() {
 }
 ```
 
+
+
 ## **算法2搜索E**
 
 ### 1281: E001 数的划分
@@ -2631,6 +2667,8 @@ int main() {
 
 ![E0053.png](https://images.ptausercontent.com/ed36f612-9028-4e99-b3e0-72b6649aeb98.png)
 
+
+
 **输入**
 
 输入有多组网格。对每个网格，第一行是网格的行列数（rows，columns），鼠标单击的行列号（row，column），其整数范围都是1-20.接下来就是rows行，由字符‘.’和‘X’构成。
@@ -2833,6 +2871,7 @@ int main() {
     }
     return 0;
 }
+
 
 ```
 
@@ -3741,6 +3780,7 @@ int main() {
     // int t;cin >> t;
     // while (t--) 
     solve();
+
 
     return 0;
 }

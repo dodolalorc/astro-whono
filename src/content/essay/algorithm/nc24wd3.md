@@ -1,11 +1,34 @@
 ---
-title: "🎉2024牛客寒假营3||补题"
-description: "A 智乃与瞩目狸猫、幸运水母、月宫龙虾"
-date: 2024-02-13T20:21:21+08:00
-tags: ["'2024寒假训练", "算法", "牛客'"]
+title : '🎉2024牛客寒假营3||补题'
+date : 2024-02-13T20:21:21+08:00
 draft: false
-badge: "算法"
+authors: []
+description: ""
+
+tags: [
+  '2024寒假训练','算法','牛客'
+]
+categories: [
+  '在学算法的日子里'
+]
+
+series: [
+  '题解记录'
+]
+hiddenFromHomePage: false
+hiddenFromSearch: false
+
+featuredImage: ""
+featuredImagePreview: ""
+
+toc:
+  enable: true
+math:
+  enable: true
+lightgallery: false
+license: ""
 ---
+
 ## A-智乃与瞩目狸猫、幸运水母、月宫龙虾
 
 ### 题意
@@ -33,6 +56,8 @@ void solve() {
     else cout << "No\n";
 }
 ```
+
+
 
 ## B-智乃的数字手串
 
@@ -75,6 +100,8 @@ void solve() {
     else cout << "zn\n";
 }
 ```
+
+
 
 ## D-chino's bubble sort and maximum subarray sum(easy version)
 
@@ -182,6 +209,8 @@ void solve() {
 }
 ```
 
+
+
 ## H-智乃的比较函数(normal version)
 
 ### 题意
@@ -245,6 +274,8 @@ void solve() {
     else cout << "No\n";
 }
 ```
+
+
 
 ## L&M-智乃的36倍数(easy/hard version)
 
@@ -344,3 +375,8 @@ void solve() {
     cout << ans << '\n';
 }
 ```
+
+
+
+
+

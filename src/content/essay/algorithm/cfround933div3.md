@@ -1,11 +1,37 @@
 ---
-title: "💭Codeforces Round 933(div3)"
-description: "A Rudolf and the Ticket"
-date: 2024-03-13T12:25:46+08:00
-tags: ["\"算法", "CF\""]
+title : '💭Codeforces Round 933(div3)'
+date : 2024-03-13T12:25:46+08:00
 draft: false
-badge: "算法"
+authors: []
+description: ""
+
+tags: [
+    "算法","CF"
+]
+categories: [
+  "在学算法的日子里"
+]
+
+series: [
+  '题解记录'
+]
+
+hiddenFromHomePage: false
+hiddenFromSearch: false
+
+featuredImage: ""
+featuredImagePreview: ""
+
+toc:
+  enable: true
+math:
+  enable: true
+lightgallery: false
+license: ""
 ---
+
+
+
 # A-Rudolf and the Ticket
 
 ## 题意
@@ -294,3 +320,4 @@ void solve() {
     cout << ans << endl;
 }
 ```
+

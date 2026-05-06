@@ -1,11 +1,28 @@
 ---
-title: "💭Codeforces Round 929(div3)"
-description: "A Turtle Puzzle: Rearrange and Negate"
+title: 💭Codeforces Round 929(div3)
 date: 2024-02-29T14:56:16+08:00
-tags: ["算法", "CF"]
 draft: false
-badge: "算法"
+authors: 
+description: ""
+tags:
+  - 算法
+  - CF
+categories:
+  - 在学算法的日子里
+series:
+  - 题解记录
+hiddenFromHomePage: false
+hiddenFromSearch: false
+featuredImage: ""
+featuredImagePreview: ""
+toc:
+  enable: true
+math:
+  enable: true
+lightgallery: false
+license: ""
 ---
+
 # A-Turtle Puzzle: Rearrange and Negate
 
 ## 题意
@@ -258,3 +275,4 @@ void solve() {
     cout << '\n';
 }
 ```
+

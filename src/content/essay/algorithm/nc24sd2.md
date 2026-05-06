@@ -1,11 +1,36 @@
 ---
 title: "🫟2024牛客暑假多校训练营Day2||补题"
-description: "A Floor Tiles"
+subtitle: ""
 date: 2024-07-19T19:06:03+08:00
-tags: ["'2024暑假集训", "算法", "牛客'"]
+lastmod: 2024-07-19T19:06:03+08:00
 draft: false
-badge: "算法"
+authors: []
+description: ""
+tags : [
+  '2024暑假集训','算法','牛客'
+]
+categories : [
+  '在学算法的日子里'
+]
+
+series: [
+  '题解记录'
+]
+
+hiddenFromHomePage: false
+hiddenFromSearch: false
+
+featuredImage: ""
+featuredImagePreview: ""
+
+toc:
+  enable: true
+math:
+  enable: true
+lightgallery: false
+license: ""
 ---
+
 ## A-Floor Tiles
 
 ### 题意
@@ -97,6 +122,8 @@ void solve() {
     }
 }
 ```
+
+
 
 ## B-MST
 
@@ -287,6 +314,8 @@ int main() {
 }
 ```
 
+
+
 ## E-GCD VS XOR
 
 有人卡签到。。。TAT
@@ -413,6 +442,8 @@ g(k-1) + i &
 $$
 直到$k=r_i$，得到$f(i)=g(r_i)$。
 
+
+
 ### 代码
 
 ```cpp
@@ -460,3 +491,10 @@ void solve() {
     cout << f[0] << endl;
 }
 ```
+
+
+
+
+
+
+

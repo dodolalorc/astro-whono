@@ -1,11 +1,29 @@
 ---
-title: "🧪CS-APP Datalab"
-description: "记录CS-APP Datalab实验过程"
+title: 🧪CS-APP Datalab
+subtitle: 实验记录
 date: 2024-07-04T20:49:31+08:00
-tags: ["CSAPP"]
+lastmod: 2024-07-04T20:49:31+08:00
 draft: false
-badge: "实验"
+authors: 
+description: 记录CS-APP Datalab实验过程
+tags:
+  - CSAPP
+categories:
+  - 在学习计算机系统的日子里
+series:
+  - CS:APP实验记录
+hiddenFromHomePage: false
+hiddenFromSearch: false
+featuredImage: ""
+featuredImagePreview: ""
+toc:
+  enable: true
+math:
+  enable: true
+lightgallery: false
+license: ""
 ---
+
 ## 0. before start
 
 实验需要的材料在这里：[CSAPP Datalab](https://csapp.cs.cmu.edu/3e/labs.html)
@@ -126,9 +144,9 @@ int isTmax(int x) {
 }
 ```
 
-:::tip[提示]
-注意返回值是`int`型的，所以需要使用`!!`将结果转换为0或1。
-:::
+> [!tip]+ 提示
+> 注意返回值是`int`型的，所以需要使用`!!`将结果转换为0或1。
+
 
 ## 4. allOddBits
 
@@ -236,6 +254,8 @@ int conditional(int x, int y, int z) {
 }
 ```
 
+
+
 ## 8. isLessOrEqual
 
 判断是否符合$x\leq y$的关系。
@@ -261,6 +281,8 @@ int isLessOrEqual(int x, int y) {
 }
 ```
 
+
+
 ## 9. logicalNeg
 
 实现逻辑取反，$x$非0返回0，$x$为0返回1。
@@ -284,6 +306,8 @@ int logicalNeg(int x) {
   return (((~x + 1) | x) >> 31) + 1;
 }
 ```
+
+
 
 ## 10. howManyBits
 
@@ -347,6 +371,8 @@ int howManyBits(int x) {
   return b16 + b8 + b4 + b2 + b1 + x + 1;
 }
 ```
+
+
 
 ## 11. floatScale2
 
@@ -440,6 +466,8 @@ int floatFloat2Int(unsigned uf) {
   else return res;
 }
 ```
+
+
 
 ## 13. floatPower2
 

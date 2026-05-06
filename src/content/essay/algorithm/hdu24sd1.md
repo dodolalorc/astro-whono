@@ -1,11 +1,36 @@
 ---
 title: "2024杭电钉耙编程联赛Day1||补题"
-description: "1001 循环位移"
+subtitle: ""
 date: 2024-07-19T19:08:39+08:00
-tags: ["'算法", "杭电", "2024暑假集训"]
+lastmod: 2024-07-19T19:08:39+08:00
 draft: false
-badge: "算法"
+authors: []
+description: ""
+
+tags : [
+  '算法','杭电','2024暑假集训',
+]
+categories: [
+  '在学算法的日子里'
+]
+series: [
+  '题解记录'
+]
+
+hiddenFromHomePage: false
+hiddenFromSearch: false
+
+featuredImage: ""
+featuredImagePreview: ""
+
+toc:
+  enable: true
+math:
+  enable: true
+lightgallery: false
+license: ""
 ---
+
 ## 1001-循环位移
 
 $(709/3775)$
@@ -269,6 +294,7 @@ void solve() {
         }
     }
 
+
     for (int k = 1;k <= n;k++) {
         ll ans = 0, Cnk = C(n, k);
         ll iCnk = inv(Cnk);
@@ -293,3 +319,22 @@ int main() {
     return 0;
 }
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

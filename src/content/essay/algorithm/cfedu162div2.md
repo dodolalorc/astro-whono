@@ -1,11 +1,35 @@
 ---
-title: "💭Educational Codeforces Round 162(div2)"
-description: "A Moving Chips"
-date: 2024-02-29T14:57:07+08:00
-tags: ["\"算法\""]
+title : '💭Educational Codeforces Round 162(div2)'
+date : 2024-02-29T14:57:07+08:00
 draft: false
-badge: "算法"
+authors: []
+description: ""
+
+tags: [
+    "算法"
+]
+categories: [
+  "在学算法的日子里"
+]
+
+series: [
+  '题解记录'
+]
+
+hiddenFromHomePage: false
+hiddenFromSearch: false
+
+featuredImage: ""
+featuredImagePreview: ""
+
+toc:
+  enable: true
+math:
+  enable: true
+lightgallery: false
+license: ""
 ---
+
 # A-Moving Chips
 
 ## 题意
@@ -181,3 +205,4 @@ void solve() {
     }
 }
 ```
+
