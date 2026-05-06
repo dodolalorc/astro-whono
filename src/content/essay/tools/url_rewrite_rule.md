@@ -9,7 +9,6 @@ tags:
 date: 2025-07-14
 lastmod: 2025-07-14
 draft: false
-cover: 
 subtitle: ""
 authors: 
 categories: 
