@@ -7,6 +7,8 @@ draft: true
 authors: 
 description: "TODO 图纸生成 可编辑 记录我的豆数"
 tags: 
+  - 拼豆
+  - 像素画
 categories: 
 series: 
 hiddenFromHomePage: false
