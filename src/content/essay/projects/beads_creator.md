@@ -10,7 +10,9 @@ tags:
   - 拼豆
   - 像素画
 categories: 
+  - 玩具
 series: 
+  - TODO
 hiddenFromHomePage: false
 hiddenFromSearch: false
 featuredImage: https://img.dodolalorc.cn/i/2025/08/02/688d2027acdbe.png
