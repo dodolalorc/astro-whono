@@ -3,7 +3,7 @@ title : '🎉2024牛客寒假营4||补题'
 date : 2024-02-26T19:54:28+08:00
 draft: false
 authors: []
-description: "A-柠檬可乐 题意 输入$a,b,k$，判断$a\ge k\"
+description: "2024牛客寒假营4||补题的题解记录"
 
 tags: [
   '2024寒假训练','算法','牛客'
