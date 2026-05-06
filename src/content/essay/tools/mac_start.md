@@ -1,6 +1,6 @@
----
+﻿---
 title: 🍎 我的 mac 开荒手册
-description: ""
+description: "HomeBrew HomeBrew 是一款包管理工具，支持"
 tags:
   - Mac
   - Git

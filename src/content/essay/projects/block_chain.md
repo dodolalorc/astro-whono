@@ -1,11 +1,11 @@
----
+﻿---
 title: 🦀Rust编程区块链项目 BlockChain in Rust
 subtitle: ""
 date: 2025-03-03T15:20:51+08:00
 lastmod: 2025-03-03T15:20:51+08:00
 draft: false
 authors: 
-description: 
+description: "[!info]- GitHub仓库地址 GitHub 仓库地"
 tags:
   - Rust
   - 区块链

@@ -1,9 +1,9 @@
----
+﻿---
 title : 'NENU2023学年算法2例题'
 date : 2023-12-19T22:02:50+08:00
 draft: false
 authors: []
-description: ""
+description: "有的题还没写完）咕咕咕）） NENU OJ算法2例题 这学期"
 
 tags: [
   '算法','NENUOJ'

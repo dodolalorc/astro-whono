@@ -1,10 +1,10 @@
----
+﻿---
 title : '🎉2024牛客寒假营2||补题'
 date : 2024-02-09T14:46:52+08:00
 lastmod : 2024-02-11T21:21:23+08:00
 draft: false
 authors: []
-description: ""
+description: "A-Tokitsukaze and Bracelet 题意"
 
 tags: [
   '2024寒假训练','算法','牛客'

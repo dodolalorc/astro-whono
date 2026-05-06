@@ -1,9 +1,9 @@
----
+﻿---
 title : '刷题记录||背包动态规划'
 date : 2024-03-09T21:49:34+08:00
 draft: true
 authors: []
-description: ""
+description: "👾背包动态规划 背包动态规划是线性动态规划中特殊的一类，N"
 
 tags: [
   '算法','DP'

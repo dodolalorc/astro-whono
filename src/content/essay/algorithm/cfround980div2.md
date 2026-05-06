@@ -1,11 +1,11 @@
----
+﻿---
 title: 💭Codeforces Round 980 (Div. 2)
 subtitle: ""
 date: 2024-11-26T14:28:27+08:00
 lastmod: 2024-11-26T14:28:27+08:00
 draft: false
 authors: 
-description: ""
+description: "A. Profitable Interest Rate 题意"
 tags:
   - 算法
   - CF

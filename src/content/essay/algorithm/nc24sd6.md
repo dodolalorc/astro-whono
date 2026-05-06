@@ -1,11 +1,11 @@
----
+﻿---
 title: "🫟2024牛客暑假多校训练营Day6||补题"
 subtitle: ""
 date: 2024-08-05T10:15:52+08:00
 lastmod: 2024-08-05T10:15:52+08:00
 draft: false
 authors: []
-description: ""
+description: "A-Cake 题意 Oscar 和 Grammy 玩游戏，第"
 
 tags: [
   '2024暑假集训','算法','牛客'

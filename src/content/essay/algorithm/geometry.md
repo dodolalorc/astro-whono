@@ -1,10 +1,10 @@
----
+﻿---
 title: "计算几何模板"
 date: 2024-03-09T21:54:39+08:00
 lastmod: 2024-03-12T18:28:00+08:00
 draft: true
 authors: []
-description: ""
+description: "试着用计算机来解决几何问题吧(●'◡'●) 前置知识 几何基"
 
 tags: ["算法", "计算几何", "算法模板"]
 categories: ["在学算法的日子里"]

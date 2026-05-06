@@ -1,9 +1,9 @@
----
+﻿---
 title : '刷题记录||区间动态规划'
 date : 2024-09-11T21:50:26+08:00
 draft : false
 authors: []
-description: ""
+description: "区间动态规划一般以区间作为动态规划的阶段。 [P1880]石"
 
 tags: [
   '算法','DP'

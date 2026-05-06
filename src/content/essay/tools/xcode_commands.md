@@ -1,11 +1,11 @@
----
+﻿---
 title: 💻常用 xcode 使用命令
 subtitle: 筑波常用 xcode 命令的笔记记录
 date: 2025-08-02T00:20:02+08:00
 lastmod: 2025-08-02T00:20:02+08:00
 draft: false
 authors: 
-description: ""
+description: "[!abstract]+ Xcode 介绍 Xcode 是苹"
 tags:
   - xcode
 categories: 

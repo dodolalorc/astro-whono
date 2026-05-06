@@ -1,11 +1,11 @@
----
+﻿---
 title: 2023杭州ICPC区域赛
 subtitle: ""
 date: 2024-11-23T18:51:44+08:00
 lastmod: 2024-11-23T18:51:44+08:00
 draft: false
 authors: 
-description: ""
+description: "G. Snake Move 题意 $n\times m$的网"
 tags:
   - 算法
 categories:

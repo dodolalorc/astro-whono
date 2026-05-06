@@ -1,11 +1,11 @@
----
+﻿---
 title: 🎈2025牛客暑寒假多校训练营Day4
 subtitle: ""
 date: 2025-03-02T18:46:04+08:00
 lastmod: 2025-03-02T18:46:04+08:00
 draft: false
 authors: 
-description: ""
+description: "A 题意 数据范围 思路 代码 B Tokitsukaze"
 tags:
   - 2025寒假训练
   - 算法

@@ -1,11 +1,11 @@
----
+﻿---
 title: "🫟2024牛客暑假多校训练营Day7||补题"
 subtitle: ""
 date: 2024-08-09T00:26:24+08:00
 lastmod: 2024-08-09T00:26:24+08:00
 draft: false
 authors: []
-description: ""
+description: "I-Fight Against the Monster 题意"
 
 tags: [
   '2024暑假集训','算法','牛客'

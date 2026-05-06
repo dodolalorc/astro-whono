@@ -1,11 +1,11 @@
----
+﻿---
 title: MutationObserver学习+实践
 subtitle: ""
 date: 2024-07-04T16:31:24+08:00
 lastmod: 2024-07-04T16:31:24+08:00
 draft: false
 authors: []
-description: ""
+description: "一篇学习 MutationObserver 的文章 背景 今"
 tags:
   - JavaScript
 categories:

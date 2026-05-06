@@ -1,9 +1,9 @@
----
+﻿---
 title : '刷题记录||线性动态规划'
 date : 2024-03-09T21:47:13+08:00
 draft: false
 authors: []
-description: ""
+description: "线性动态规划 线性动态规划，即具有线性阶段划分的动态规划。"
 
 tags: [
   '算法','DP'

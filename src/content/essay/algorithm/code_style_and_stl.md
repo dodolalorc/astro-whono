@@ -1,11 +1,11 @@
----
+﻿---
 title: 【todo】｜算法比赛中好用的代码风格及STL使用
 subtitle: 实际上是自己觉得好用的
 date: 2025-09-17T12:01:03+08:00
 lastmod: 2025-09-17T12:01:03+08:00
 draft: true
 authors: []
-description: ""
+description: "TODO"
 tags:
   - 算法
   - Cpp

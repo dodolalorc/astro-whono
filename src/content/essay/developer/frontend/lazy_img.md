@@ -1,11 +1,11 @@
----
+﻿---
 title: 📷 图片懒加载原理和实现
 subtitle: ""
 date: 2025-09-17T12:17:25+08:00
 lastmod: 2025-09-17T12:17:25+08:00
 draft: false
 authors: []
-description: ""
+description: "原理和介绍 图片懒加载是一种优化网页性能的技术，也叫延迟加载"
 tags:
   - 前端八股文
   - Web前端

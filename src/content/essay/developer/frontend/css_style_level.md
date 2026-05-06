@@ -1,11 +1,11 @@
----
+﻿---
 title: CSS 选择器优先级和覆盖样式
 subtitle: ""
 date: 2025-10-03T02:34:28+08:00
 lastmod: 2025-10-03T02:34:28+08:00
 draft: false
 authors: []
-description: ""
+description: "CSS 选择器优先级计算规则 CSS 选择器优先级通过权重系"
 tags:
   - 前端八股文
   - Web前端

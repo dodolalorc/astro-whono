@@ -1,9 +1,9 @@
----
+﻿---
 title: "线段树讲义||寒假"
 date: 2024-03-13T13:29:07+08:00
 draft: false
 authors: []
-description: ""
+description: "线段树介绍 线段树是一棵二叉树，每个节点维护一个区间内$[l"
 
 tags: ["算法", "线段树", "数据结构", "算法模板"]
 categories: ["在学算法的日子里"]

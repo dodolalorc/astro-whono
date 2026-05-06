@@ -1,11 +1,11 @@
----
+﻿---
 title: 🎈2025牛客暑寒假多校训练营Day3（完結）
 subtitle: ""
 date: 2025-02-16T08:53:02+08:00
 lastmod: 2025-02-16T08:53:02+08:00
 draft: false
 authors: 
-description: ""
+description: "A 智乃的博弈游戏 题意 有一堆$n$个石子，每次可以拿走$"
 tags:
   - 2025寒假训练
   - 字典树

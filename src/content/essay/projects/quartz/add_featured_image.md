@@ -1,11 +1,11 @@
----
+﻿---
 title: 在 quartz 主题中给博客添加封面首图
 subtitle: ""
 date: 2025-07-28T01:35:30+08:00
 lastmod: 2025-07-28T01:35:30+08:00
 draft: false
 authors: 
-description: ""
+description: "上一个主题可以在博客首部设置一张自定义的图片，也一直觉得这样"
 tags:
   - 博客主题
   - tsx

@@ -1,9 +1,9 @@
----
+﻿---
 title : '💭Codeforces Round 931(div2)'
 date : 2024-03-13T12:26:22+08:00
 draft: false
 authors: []
-description: ""
+description: "A-Too Min Too Max 题意 对一个数组，找到索"
 
 tags: [
     "算法","CF"

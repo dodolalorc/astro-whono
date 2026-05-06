@@ -1,11 +1,11 @@
----
+﻿---
 title: Margin 折叠
 subtitle: ""
 date: 2025-10-03T04:31:02+08:00
 lastmod: 2025-10-03T04:31:02+08:00
 draft: false
 authors: []
-description: ""
+description: "一句话概括 当两个或多个垂直相邻的块级元素的 margin"
 tags:
   - 前端八股文
   - Web前端

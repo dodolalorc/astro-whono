@@ -1,11 +1,11 @@
----
+﻿---
 title: Vue 中的响应式原理 | 对比 Vue 的 Proxy 和 React 的 setState
 subtitle: ""
 date: 2025-10-02T17:16:24+08:00
 lastmod: 2025-10-02T17:16:24+08:00
 draft: false
 authors: []
-description: ""
+description: "Vue 2 和 Vue 3 的响应式系统存在一些区别，本篇主"
 tags:
   - 前端八股文
   - Web前端

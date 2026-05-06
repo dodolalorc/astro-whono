@@ -1,10 +1,10 @@
----
+﻿---
 title: '线段树专题练习'
 date: 2024-08-16T22:43:59+08:00
 lastmod: 2024-08-16T22:43:59+08:00
 draft: false
 authors: []
-description: ""
+description: "[!abstract]+ 反思中 痛定思痛练习线段树QAQ。"
 tags: [
     '算法','线段树','数据结构','算法模板'
 ]

@@ -1,11 +1,11 @@
----
+﻿---
 title: JavaScript 垃圾回收机制简述
 subtitle: ""
 date: 2025-10-08T22:52:14+08:00
 lastmod: 2025-10-08T22:52:14+08:00
 draft: false
 authors: []
-description: ""
+description: "JavaScript 是一种 具有自动垃圾回收 的语言。这意"
 tags:
   - 前端八股文
   - JavaScript

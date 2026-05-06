@@ -1,11 +1,11 @@
----
+﻿---
 title: JavaScript 链式调用设计模式 | Vue举例
 subtitle: ""
 date: 2025-03-17T09:26:02+08:00
 lastmod: 2025-03-17T09:26:02+08:00
 draft: false
 authors:
-description:
+description: "Vue :从 createApp 开始的链式调用 代码示例"
 tags:
   - 链式调用
   - JavaScript

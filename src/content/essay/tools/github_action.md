@@ -1,11 +1,11 @@
----
+﻿---
 title: 🙆‍♀️Github Action实践
 subtitle: ""
 date: 2024-07-05T23:11:39+08:00
 lastmod: 2024-09-22T22:11:39+08:00
 draft: false
 authors: 
-description: ""
+description: "前言 本篇记录利用 github action 实现自动化构"
 tags:
   - Github
   - Action

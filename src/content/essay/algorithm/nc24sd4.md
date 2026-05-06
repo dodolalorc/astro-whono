@@ -1,11 +1,11 @@
----
+﻿---
 title: "🫟2024牛客暑假多校训练营Day4||补题"
 subtitle: ""
 date: 2024-07-31T15:55:48+08:00
 lastmod: 2024-07-31T15:55:48+08:00
 draft: false
 authors: []
-description: ""
+description: "A-LCT 题意 给定一棵有根树，每次询问前$i$条边组成的"
 
 tags: [
   '2024暑假集训','算法','牛客'

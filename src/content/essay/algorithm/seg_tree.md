@@ -1,9 +1,9 @@
----
+﻿---
 title : '线段树模板'
 date : 2024-01-06T21:53:21+08:00
 draft: false
 authors: []
-description: ""
+description: "线段树(segment tree) 线段树主要用于维护区间信"
 
 tags: [
   '算法','线段树','数据结构','算法模板'

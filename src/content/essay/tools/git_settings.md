@@ -1,11 +1,11 @@
----
+﻿---
 title: 🔑Git环境配置和SSH公钥设置
 subtitle: ""
 date: 2025-08-02T01:31:10+08:00
 lastmod: 2025-08-02T01:31:10+08:00
 draft: false
 authors: 
-description: ""
+description: "一般远程仓库都支持使用 ssh 访问和读写数据，提供 ssh"
 tags:
   - Git
   - SSH

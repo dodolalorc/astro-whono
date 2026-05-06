@@ -1,9 +1,9 @@
----
+﻿---
 title : '💭Codeforces Round 933(div3)'
 date : 2024-03-13T12:25:46+08:00
 draft: false
 authors: []
-description: ""
+description: "A-Rudolf and the Ticket 题意 左边口"
 
 tags: [
     "算法","CF"

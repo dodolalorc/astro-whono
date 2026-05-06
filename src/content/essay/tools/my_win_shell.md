@@ -1,11 +1,11 @@
----
+﻿---
 title: 我的 oh-my-posh 上都有哪些配置
 subtitle: ""
 date: 2025-08-23T02:05:47+08:00
 lastmod: 2025-08-23T02:05:47+08:00
 draft: false
 authors:
-description: ""
+description: "What 在 Windows 上使用的是 WSL2(fish"
 tags:
   - oh-my-posh
   - windows

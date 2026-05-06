@@ -1,11 +1,11 @@
----
+﻿---
 title: CSS 中的两种盒子模型
 subtitle: ""
 date: 2025-10-03T02:54:15+08:00
 lastmod: 2025-10-03T02:54:15+08:00
 draft: false
 authors: []
-description: ""
+description: "一个元素的“最终宽度”是由多个属性共同作用的结果，而一切都始"
 tags:
   - CSS
   - 前端八股文

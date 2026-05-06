@@ -1,11 +1,11 @@
----
+﻿---
 title: "🫟2024牛客暑假多校训练营Day2||补题"
 subtitle: ""
 date: 2024-07-19T19:06:03+08:00
 lastmod: 2024-07-19T19:06:03+08:00
 draft: false
 authors: []
-description: ""
+description: "A-Floor Tiles 题意 存在 A型 、 B型 两种"
 tags : [
   '2024暑假集训','算法','牛客'
 ]

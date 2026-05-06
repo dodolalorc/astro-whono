@@ -1,11 +1,11 @@
----
+﻿---
 title: 为最近笔记添加排序和筛选
 subtitle: ""
 date: 2025-08-02T03:55:35+08:00
 lastmod: 2025-08-02T03:55:35+08:00
 draft: false
 authors: 
-description: ""
+description: "有时候会更新一些目录页说明，更新说明时会出现博客左上角的“最"
 tags:
   - "#tsx"
   - "#博客主题"

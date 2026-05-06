@@ -1,11 +1,11 @@
----
+﻿---
 title: 📒在服务器上部署一个小网站记录
 subtitle: ""
 date: 2025-09-08T04:23:50+08:00
 lastmod: 2025-09-08T04:23:50+08:00
 draft: true
 authors: []
-description: ""
+description: "[!info]- 环境 服务器：腾讯云服务器"
 tags:
   - Linux
   - SSL证书

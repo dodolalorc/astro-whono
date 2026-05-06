@@ -1,11 +1,11 @@
----
+﻿---
 title: DNS 查询简述
 subtitle: ""
 date: 2025-10-09T02:24:48+08:00
 lastmod: 2025-10-09T02:24:48+08:00
 draft: false
 authors: []
-description: ""
+description: "[!abstract]+ 简单比喻：电话簿查询 想象一下你要"
 tags:
   - DNS
 categories: []

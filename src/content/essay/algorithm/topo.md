@@ -1,9 +1,9 @@
----
+﻿---
 title : '拓扑排序'
 date : 2024-01-05T14:20:41+08:00
 draft : false
 authors: []
-description: ""
+description: "拓扑排序 前提：拓扑排序是对 有向无环图 来说的，无向图、有"
 tags : [
     '图论','拓扑排序'
 ]

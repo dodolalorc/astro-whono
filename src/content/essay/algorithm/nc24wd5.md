@@ -1,9 +1,9 @@
----
+﻿---
 title : '🎉2024牛客寒假营5||补题'
 date : 2024-02-21T20:07:25+08:00
 draft: false
 authors: []
-description: ""
+description: "A-mutsumi的质数合数 题意 一个由$n$个正整数组成"
 
 tags: [
   '2024寒假训练','算法','牛客'

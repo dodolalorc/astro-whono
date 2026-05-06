@@ -1,11 +1,11 @@
----
+﻿---
 title: 🎈2025牛客暑寒假多校训练营Day1（完結）
 subtitle: ""
 date: 2025-01-23T12:58:36+08:00
 lastmod: 2025-01-23T12:58:36+08:00
 draft: false
 authors: 
-description: ""
+description: "A 茕茕孑立之影 题意 找一个不超过$1e18$的数$x$，"
 tags:
   - 2025寒假训练
   - 算法

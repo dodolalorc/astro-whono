@@ -1,11 +1,11 @@
----
+﻿---
 title: "2024杭电钉耙编程联赛Day1||补题"
 subtitle: ""
 date: 2024-07-19T19:08:39+08:00
 lastmod: 2024-07-19T19:08:39+08:00
 draft: false
 authors: []
-description: ""
+description: "1001-循环位移 $(709/3775)$ 题意 将字符串"
 
 tags : [
   '算法','杭电','2024暑假集训',

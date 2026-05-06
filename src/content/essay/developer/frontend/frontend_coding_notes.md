@@ -1,11 +1,11 @@
----
+﻿---
 title: 八股文短代码 Coding 篇
 subtitle: ""
 date: 2025-03-13T14:08:19+08:00
 lastmod: 2025-03-13T14:08:19+08:00
 draft: false
 authors:
-description: ""
+description: "代码：千分位逗号 代码：手写深浅拷贝 浅拷贝只会复制对象的顶"
 tags:
   - 前端八股文
   - JavaScript

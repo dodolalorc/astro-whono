@@ -1,11 +1,11 @@
----
+﻿---
 title: JavaScript 模块打包器 Rollup
 subtitle: ""
 date: 2025-10-09T01:36:48+08:00
 lastmod: 2025-10-09T01:36:48+08:00
 draft: false
 authors: []
-description: ""
+description: "Rollup 是一个 JavaScript 模块打包器 。它"
 tags:
   - 前端八股文
   - JavaScript

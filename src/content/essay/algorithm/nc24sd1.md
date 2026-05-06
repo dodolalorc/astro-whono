@@ -1,11 +1,11 @@
----
+﻿---
 title: "🫟2024牛客暑假多校训练营Day1||补题"
 subtitle: ""
 date: 2024-07-16T19:36:00+08:00
 lastmod: 2024-07-16T19:36:00+08:00
 draft: false
 authors: []
-description: ""
+description: "A-Bit Common 题意 计算满足长度为$n$，每个元"
 tags : [
   '2024暑假集训','算法','牛客'
 ]

@@ -1,11 +1,11 @@
----
+﻿---
 title: "🫟2024牛客暑假多校训练营Day3||补题"
 subtitle: ""
 date: 2024-07-23T18:37:58+08:00
 lastmod: 2024-07-23T18:37:58+08:00
 draft: false
 authors: []
-description: ""
+description: "A-Bridging the Gap 2 题意 在河岸的一侧"
 
 tags: [
   '2024暑假集训','算法','牛客'

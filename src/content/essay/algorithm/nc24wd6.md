@@ -1,9 +1,9 @@
----
+﻿---
 title : '🎉2024牛客寒假营6||补题'
 date : 2024-02-26T19:54:36+08:00
 draft: false
 authors: []
-description: ""
+description: "A-宇宙的终结 题意 在$[l,r]$中寻找某个恰好是三个不"
 
 tags: [
   '2024寒假训练','算法','牛客'

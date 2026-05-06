@@ -1,11 +1,11 @@
----
+﻿---
 title: 大文件上传和下载问题
 subtitle: ""
 date: 2025-03-17T13:17:45+08:00
 lastmod: 2025-03-17T13:17:45+08:00
 draft: false
 authors: 
-description: ""
+description: "[!abstract]+ 问题预设 网络断开之后，之前上传的"
 tags:
   - JavaScript
   - 前端八股文

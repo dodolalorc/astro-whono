@@ -1,10 +1,10 @@
----
+﻿---
 title : '🎉2024牛客寒假营1||补题'
 date : 2024-02-02T20:30:40+08:00
 lastmod : 2024-02-10T05:21:23+08:00
 draft: false
 authors: []
-description: ""
+description: "A-DFS搜索 题意 给一个字符串，判断其中是否包含 dfs"
 
 tags: [
   '2024寒假训练','算法','牛客'

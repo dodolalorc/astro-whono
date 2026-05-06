@@ -1,11 +1,11 @@
----
+﻿---
 title: 🎈2025牛客暑寒假多校训练营Day2
 subtitle: ""
 date: 2025-02-06T00:40:31+08:00
 lastmod: 2025-02-06T00:40:31+08:00
 draft: false
 authors: 
-description: ""
+description: "A 一起奏响历史之音！ 题意 中国传统五声调中包含 1、2、"
 tags:
   - 2025寒假训练
   - 算法

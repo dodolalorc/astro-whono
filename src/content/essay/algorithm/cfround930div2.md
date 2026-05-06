@@ -1,9 +1,9 @@
----
+﻿---
 title: 💭Codeforces Round 930(div2)
 date: 2024-03-13T12:26:38+08:00
 draft: false
 authors: 
-description: ""
+description: "A-Shuffle Party 题意 对一个数组，起初是$a"
 tags:
   - 算法
   - CF

@@ -1,4 +1,4 @@
----
+﻿---
 title : '图论基础||存储图||DFS、BFS(图论)'
 date : 2024-01-06T14:15:17+08:00
 draft : false
@@ -24,6 +24,7 @@ math:
   enable: true
 lightgallery: false
 license: ""
+description: "1.1图的定义 上课讲过一大堆这里不再赘述，直接学习代码实现"
 ---
 
 

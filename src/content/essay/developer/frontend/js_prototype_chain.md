@@ -1,11 +1,11 @@
----
+﻿---
 title: JavaScript 原型链简述
 subtitle: ""
 date: 2025-10-08T22:49:23+08:00
 lastmod: 2025-10-08T22:49:23+08:00
 draft: false
 authors: []
-description: ""
+description: "JavaScript 是一种面向对象语言，是一种基于原型的语"
 tags:
   - 前端八股文
   - JavaScript

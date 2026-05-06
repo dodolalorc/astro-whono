@@ -1,9 +1,9 @@
----
+﻿---
 title: 💭Codeforces Round 927(div3)
 date: 2024-02-29T14:47:05+08:00
 draft: false
 authors: 
-description: ""
+description: "A-Thorns and Coins 题意 长度为$n$的单"
 tags:
   - 算法
   - CF

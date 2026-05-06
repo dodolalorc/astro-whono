@@ -1,11 +1,11 @@
----
+﻿---
 title: 关键渲染路径（CRP）的详细步骤
 subtitle: ""
 date: 2025-10-09T02:17:10+08:00
 lastmod: 2025-10-09T02:17:10+08:00
 draft: false
 authors: []
-description: ""
+description: "关键渲染路径 指的是浏览器将 HTML、CSS 和 Java"
 tags:
   - 前端八股文
   - Web前端

@@ -1,11 +1,11 @@
----
+﻿---
 title: "2024吉林省赛补题记录"
 subtitle: ""
 date: 2024-07-05T14:30:27+08:00
 lastmod: 2024-07-05T14:30:27+08:00
 draft: false
 authors: []
-description: ""
+description: "GYM地址：2024吉林省赛 题目顺序按照从易到难排序。 I"
 
 tags: [
     "算法"

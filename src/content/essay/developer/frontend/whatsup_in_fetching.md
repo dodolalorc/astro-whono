@@ -1,11 +1,11 @@
----
+﻿---
 title: 从输入 URL 到页面加载完成发生了什么
 subtitle: ""
 date: 2025-10-09T02:10:40+08:00
 lastmod: 2025-10-09T02:10:40+08:00
 draft: false
 authors: []
-description: ""
+description: "当用户在浏览器地址栏输入 URL 并按下回车，一场跨越网络和"
 tags:
   - 前端八股文
   - TCP

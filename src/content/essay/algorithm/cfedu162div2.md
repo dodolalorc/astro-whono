@@ -1,9 +1,9 @@
----
+﻿---
 title : '💭Educational Codeforces Round 162(div2)'
 date : 2024-02-29T14:57:07+08:00
 draft: false
 authors: []
-description: ""
+description: "A-Moving Chips 题意 每个单元格为空闲或有一个"
 
 tags: [
     "算法"

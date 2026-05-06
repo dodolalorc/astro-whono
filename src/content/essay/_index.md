@@ -1,11 +1,11 @@
----
+﻿---
 title: 👋Hi from dodola!
 subtitle: ""
 date: 2025-07-15T00:03:14+08:00
 lastmod: 2025-07-15T00:03:14+08:00
 draft: false
 authors: 
-description: ""
+description: "🎐 个人信息： 昵称 ：哆哆啦(dodola)，缩写 dd"
 tags:
   - "#intro"
 categories: 

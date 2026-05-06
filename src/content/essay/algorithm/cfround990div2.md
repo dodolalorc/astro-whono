@@ -1,11 +1,11 @@
----
+﻿---
 title: 💭Codeforces Round 990 (Div. 2)
 subtitle: ""
 date: 2024-12-05T19:27:40+08:00
 lastmod: 2024-12-05T19:27:40+08:00
 draft: false
 authors: 
-description: 
+description: "A. Alyona and a Square Jigsaw"
 tags:
   - 算法
   - CF

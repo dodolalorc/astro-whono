@@ -1,9 +1,9 @@
----
+﻿---
 title : '字符串匹配问题||前缀函数+KMP+字符串哈希'
 date : 2024-01-05T14:11:58+08:00
 draft : false
 authors: []
-description: ""
+description: "字符串匹配算法 暴力做法(BF) 简称BF(Brute Fo"
 tags : [
     'KMP','字符串','算法','哈希'
 ]

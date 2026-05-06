@@ -1,11 +1,11 @@
----
+﻿---
 title: 八股文常识篇
 subtitle: ""
 date: 2025-10-02T22:32:50+08:00
 lastmod: 2025-10-02T22:32:50+08:00
 draft: false
 authors: []
-description: ""
+description: "JavaScript 事件循环(Event Loop)理解"
 tags:
   - 前端八股文
   - Web前端

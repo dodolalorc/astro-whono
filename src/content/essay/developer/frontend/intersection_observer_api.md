@@ -1,11 +1,11 @@
----
+﻿---
 title: Intersection Observer API 监听是否进入了可视区域
 subtitle: 高效地监听一个元素是否进入了可视区域
 date: 2025-09-17T17:53:56+08:00
 lastmod: 2025-09-17T17:53:56+08:00
 draft: false
 authors: []
-description: ""
+description: "API 介绍 Intersection Observer A"
 tags: []
 categories: []
 series: []

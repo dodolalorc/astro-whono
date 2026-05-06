@@ -1,11 +1,11 @@
----
+﻿---
 title: 🧩带图标的 Blog 跳转链接
 subtitle: ""
 date: 2025-08-21T01:31:51+08:00
 lastmod: 2025-08-21T01:31:51+08:00
 draft: false
 authors: 
-description: ""
+description: "将在线链接升级成可以预览网页图标的样子 quartz 主题中"
 tags:
   - quartz主题
   - favicon
