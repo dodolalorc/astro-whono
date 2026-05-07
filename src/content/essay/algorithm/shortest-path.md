@@ -9,10 +9,6 @@ categories : ['在学算法的日子里']
 series: ['算法模板笔记']
 hiddenFromHomePage: false
 hiddenFromSearch: false
-
-featuredImage: ""
-featuredImagePreview: ""
-
 toc:
   enable: true
 math:

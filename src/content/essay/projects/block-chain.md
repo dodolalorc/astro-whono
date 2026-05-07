@@ -15,8 +15,6 @@ series:
   - Rust 学习中
 hiddenFromHomePage: false
 hiddenFromSearch: false
-featuredImage: https://img.dodolalorc.cn/i/2025/03/03/67c559ab9df13.jpg
-featuredImagePreview: https://img.dodolalorc.cn/i/2025/03/03/67c559ab9df13.jpg
 toc:
   enable: true
 math:

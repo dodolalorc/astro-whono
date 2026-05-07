@@ -14,8 +14,6 @@ categories:
 series:
 hiddenFromHomePage: false
 hiddenFromSearch: false
-featuredImage: https://img.dodolalorc.cn/i/2025/08/02/688d1fcb646d1.png
-featuredImagePreview: https://img.dodolalorc.cn/i/2025/08/02/688d1fcb646d1.png
 toc:
   enable: true
 math:

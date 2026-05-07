@@ -15,8 +15,6 @@ series:
   - 题解记录
 hiddenFromHomePage: false
 hiddenFromSearch: false
-featuredImage: https://img.dodolalorc.cn/i/2025/03/03/67c55994b7733.jpg
-featuredImagePreview: https://img.dodolalorc.cn/i/2025/03/03/67c55994b7733.jpg
 toc:
   enable: true
 math:

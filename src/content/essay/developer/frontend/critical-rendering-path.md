@@ -17,8 +17,6 @@ series:
   - 前端八股文基础
 hiddenFromHomePage: false
 hiddenFromSearch: false
-featuredImage: https://img.dodolalorc.cn/i/2025/10/09/68e6ae83c5df1.png
-featuredImagePreview: https://img.dodolalorc.cn/i/2025/10/09/68e6ae83c5df1.png
 toc:
   enable: true
 math:

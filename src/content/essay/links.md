@@ -12,8 +12,6 @@ categories:
 series: 
 hiddenFromHomePage: false
 hiddenFromSearch: false
-featuredImage: ""
-featuredImagePreview: ""
 toc:
   enable: false
 math:

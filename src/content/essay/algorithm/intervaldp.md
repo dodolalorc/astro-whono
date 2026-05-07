@@ -17,10 +17,6 @@ series: [
 ]
 hiddenFromHomePage: false
 hiddenFromSearch: false
-
-featuredImage: "https://img.dodolalorc.cn/i/2024/12/10/67580ba9b1658.png"
-featuredImagePreview: "https://img.dodolalorc.cn/i/2024/12/10/67580ba9b1658.png"
-
 toc:
   enable: true
 math:

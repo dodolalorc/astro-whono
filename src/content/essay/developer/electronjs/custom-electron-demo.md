@@ -12,8 +12,6 @@ series:
   - Electron学习笔记
 hiddenFromHomePage: false
 hiddenFromSearch: false
-featuredImage: https://img.dodolalorc.cn/i/2025/04/26/680c601796399.png
-featuredImagePreview: https://img.dodolalorc.cn/i/2025/04/26/680c601796399.png
 toc:
   enable: true
 math:

@@ -17,10 +17,6 @@ series: [
 ]
 hiddenFromHomePage: true
 hiddenFromSearch: false
-
-featuredImage: ""
-featuredImagePreview: ""
-
 toc:
   enable: true
 math:

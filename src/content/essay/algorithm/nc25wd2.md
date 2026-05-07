@@ -20,8 +20,6 @@ series:
   - 题解记录
 hiddenFromHomePage: false
 hiddenFromSearch: false
-featuredImage: https://img.dodolalorc.cn/i/2025/02/06/67a3a57b557f6.jpg
-featuredImagePreview: https://img.dodolalorc.cn/i/2025/02/06/67a3a57b557f6.jpg
 toc:
   enable: true
 math:
