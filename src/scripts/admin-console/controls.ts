@@ -35,6 +35,7 @@ export type AdminThemeControls = RequiredElements<{
   saveBtn: HTMLButtonElement | null;
   bootstrapEl: HTMLElement | null;
   articleMetaPreviewValueEl: HTMLElement | null;
+  fontPreviewValueEl: HTMLElement | null;
   footerPreviewValueEl: HTMLElement | null;
   socialCustomList: HTMLElement | null;
   socialCustomHead: HTMLElement | null;
@@ -87,6 +88,9 @@ export type AdminThemeControls = RequiredElements<{
   inputHeroImageSrc: HTMLInputElement | null;
   inputHeroImageAlt: HTMLInputElement | null;
   inputCodeLineNumbers: HTMLInputElement | null;
+  inputUiFontSerif: HTMLInputElement | null;
+  inputUiFontAccent: HTMLInputElement | null;
+  inputUiFontMono: HTMLInputElement | null;
   inputReadingEntry: HTMLInputElement | null;
   inputSidebarActionsShowRssLink: HTMLInputElement | null;
   inputSidebarActionsShowThemeToggle: HTMLInputElement | null;
@@ -117,6 +121,7 @@ export const queryAdminThemeControls = (): AdminThemeControls | null => {
     saveBtn: byId<HTMLButtonElement>('admin-save'),
     bootstrapEl: byId<HTMLElement>('admin-bootstrap'),
     articleMetaPreviewValueEl: byId<HTMLElement>('article-meta-preview-value'),
+    fontPreviewValueEl: byId<HTMLElement>('ui-font-preview-value'),
     footerPreviewValueEl: byId<HTMLElement>('site-footer-preview-value'),
     socialCustomList: byId<HTMLElement>('site-social-custom-list'),
     socialCustomHead: byId<HTMLElement>('site-social-custom-head'),
@@ -169,6 +174,9 @@ export const queryAdminThemeControls = (): AdminThemeControls | null => {
     inputHeroImageSrc: byId<HTMLInputElement>('home-hero-image-src'),
     inputHeroImageAlt: byId<HTMLInputElement>('home-hero-image-alt'),
     inputCodeLineNumbers: byId<HTMLInputElement>('ui-code-line-numbers'),
+    inputUiFontSerif: byId<HTMLInputElement>('ui-font-serif'),
+    inputUiFontAccent: byId<HTMLInputElement>('ui-font-accent'),
+    inputUiFontMono: byId<HTMLInputElement>('ui-font-mono'),
     inputReadingEntry: byId<HTMLInputElement>('ui-reading-entry'),
     inputSidebarActionsShowRssLink: byId<HTMLInputElement>('ui-sidebar-actions-show-rss-link'),
     inputSidebarActionsShowThemeToggle: byId<HTMLInputElement>('ui-sidebar-actions-show-theme-toggle'),

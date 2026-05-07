@@ -53,6 +53,9 @@ export const bindAdminThemeFieldEvents = ({
     inputHomeIntroMoreLinkPrimary,
     inputHomeIntroMoreLinkSecondaryEnabled,
     inputHomeIntroMoreLinkSecondary,
+    inputUiFontSerif,
+    inputUiFontAccent,
+    inputUiFontMono,
     inputHomeShowHero
   } = controls;
   const {
@@ -63,7 +66,8 @@ export const bindAdminThemeFieldEvents = ({
     syncHomeIntroLinkControls,
     syncHeroControls,
     refreshFooterPreview,
-    syncFooterYearControls
+    syncFooterYearControls,
+    refreshFontPreview
   } = formCodec;
 
   form.addEventListener('input', (event) => {
@@ -91,6 +95,9 @@ export const bindAdminThemeFieldEvents = ({
   inputArticleMetaShowTags.addEventListener('change', refreshArticleMetaPreview);
   inputArticleMetaShowWordCount.addEventListener('change', refreshArticleMetaPreview);
   inputArticleMetaShowReadingTime.addEventListener('change', refreshArticleMetaPreview);
+  inputUiFontSerif.addEventListener('input', refreshFontPreview);
+  inputUiFontAccent.addEventListener('input', refreshFontPreview);
+  inputUiFontMono.addEventListener('input', refreshFontPreview);
   inputHomeIntroMore.addEventListener('input', refreshHomeIntroPreview);
   inputHomeShowIntroMore.addEventListener('change', refreshHomeIntroPreview);
   inputHomeIntroMoreLinkPrimary.addEventListener('change', () => {

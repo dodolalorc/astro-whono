@@ -171,6 +171,7 @@ describe('admin-console/shared', () => {
     const canonical = getEditableThemeSettingsPayload().settings;
     const legacySnapshot = structuredClone(canonical) as Record<string, any>;
     delete legacySnapshot.site.adminOverview;
+    delete legacySnapshot.ui.fonts;
     legacySnapshot.ui.sidebarActions = {
       showThemeToggle: canonical.ui.sidebarActions.showThemeToggle
     };
@@ -182,6 +183,10 @@ describe('admin-console/shared', () => {
 
     const mismatchPaths = createAdminThemeSettingsCanonicalMismatchIssues(compatible, canonical).map((issue) => issue.path);
     expect(mismatchPaths).not.toContain('site.adminOverview');
+    expect(mismatchPaths).not.toContain('ui.fonts');
+    expect(mismatchPaths).not.toContain('ui.fonts.serif');
+    expect(mismatchPaths).not.toContain('ui.fonts.accent');
+    expect(mismatchPaths).not.toContain('ui.fonts.mono');
     expect(mismatchPaths).not.toContain('ui.sidebarActions');
     expect(mismatchPaths).not.toContain('ui.sidebarActions.showRssLink');
     expect(mismatchPaths).not.toContain('ui.sidebarActions.showAdminEntry');

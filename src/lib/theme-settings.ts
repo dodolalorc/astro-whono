@@ -27,6 +27,10 @@ import {
   ADMIN_SOCIAL_ORDER_MAX,
   ADMIN_SOCIAL_ORDER_MIN,
   ADMIN_SOCIAL_PRESET_IDS,
+  ADMIN_FONT_STACK_MAX_LENGTH,
+  ADMIN_UI_FONT_ACCENT_DEFAULT,
+  ADMIN_UI_FONT_MONO_DEFAULT,
+  ADMIN_UI_FONT_SERIF_DEFAULT,
   canonicalizeAdminThemeSettings,
   createAdminWritableThemeSettingsGroups,
   fillAdminThemeSettingsGroupCompatibilityDefaults,
@@ -149,7 +153,7 @@ export interface PageHeadingSettings {
   subtitle: string | null;
 }
 
-export interface MemoPageSettings extends PageHeadingSettings {}
+export interface MemoPageSettings extends PageHeadingSettings { }
 
 export interface BitsDefaultAuthorSettings {
   name: string;
@@ -185,6 +189,11 @@ export interface SidebarActionsSettings {
 }
 
 export interface UiSettings {
+  fonts: {
+    serif: string;
+    accent: string;
+    mono: string;
+  };
   codeBlock: {
     showLineNumbers: boolean;
   };
@@ -254,6 +263,9 @@ export interface ThemeSettingsSources {
     aboutSubtitle: SettingSource;
   };
   ui: {
+    fontsSerif: SettingSource;
+    fontsAccent: SettingSource;
+    fontsMono: SettingSource;
     codeBlockShowLineNumbers: SettingSource;
     readingModeShowEntry: SettingSource;
     sidebarActionsShowRssLink: SettingSource;
@@ -325,9 +337,9 @@ export interface ThemeSettingsEditableErrorState {
 
 export type ThemeSettingsEditableState =
   | {
-      ok: true;
-      payload: ThemeSettingsEditablePayload;
-    }
+    ok: true;
+    payload: ThemeSettingsEditablePayload;
+  }
   | ThemeSettingsEditableErrorState;
 
 const DEFAULT_SETTINGS_DIR = join(process.cwd(), 'src', 'data', 'settings');
@@ -491,6 +503,11 @@ const DEFAULT_PAGE: PageSettings = {
 };
 
 const DEFAULT_UI: UiSettings = {
+  fonts: {
+    serif: ADMIN_UI_FONT_SERIF_DEFAULT,
+    accent: ADMIN_UI_FONT_ACCENT_DEFAULT,
+    mono: ADMIN_UI_FONT_MONO_DEFAULT
+  },
   codeBlock: {
     showLineNumbers: true
   },
@@ -524,10 +541,10 @@ const PRESET_SOCIAL_ITEMS: readonly {
   label: string;
   iconKey: SiteSocialIconKey;
 }[] = [
-  { id: 'github', label: 'GitHub', iconKey: 'github' },
-  { id: 'x', label: 'X', iconKey: 'x' },
-  { id: 'email', label: 'Email', iconKey: 'email' }
-];
+    { id: 'github', label: 'GitHub', iconKey: 'github' },
+    { id: 'x', label: 'X', iconKey: 'x' },
+    { id: 'email', label: 'Email', iconKey: 'email' }
+  ];
 
 const SIDEBAR_HREFS: Record<SidebarNavId, string> = {
   essay: '/essay/',
@@ -1310,6 +1327,23 @@ export const getThemeSettings = (): ThemeSettingsResolved => {
   const uiSidebarActions = isRecord(uiJson?.sidebarActions) ? uiJson.sidebarActions : undefined;
   const uiArticleMeta = isRecord(uiJson?.articleMeta) ? uiJson.articleMeta : undefined;
   const uiLayout = isRecord(uiJson?.layout) ? uiJson.layout : undefined;
+  const uiFonts = isRecord(uiJson?.fonts) ? uiJson.fonts : undefined;
+
+  const fontSerif = resolveValue(
+    asTrimmedSingleLineString(uiFonts?.serif, ADMIN_FONT_STACK_MAX_LENGTH),
+    undefined,
+    DEFAULT_UI.fonts.serif
+  );
+  const fontAccent = resolveValue(
+    asTrimmedSingleLineString(uiFonts?.accent, ADMIN_FONT_STACK_MAX_LENGTH),
+    undefined,
+    DEFAULT_UI.fonts.accent
+  );
+  const fontMono = resolveValue(
+    asTrimmedSingleLineString(uiFonts?.mono, ADMIN_FONT_STACK_MAX_LENGTH),
+    undefined,
+    DEFAULT_UI.fonts.mono
+  );
 
   const showLineNumbers = resolveValue(
     asBoolean(uiCodeBlock?.showLineNumbers),
@@ -1454,6 +1488,11 @@ export const getThemeSettings = (): ThemeSettingsResolved => {
         }
       },
       ui: {
+        fonts: {
+          serif: fontSerif.value,
+          accent: fontAccent.value,
+          mono: fontMono.value
+        },
         codeBlock: {
           showLineNumbers: showLineNumbers.value
         },
@@ -1525,6 +1564,9 @@ export const getThemeSettings = (): ThemeSettingsResolved => {
         aboutSubtitle: aboutSubtitle.source
       },
       ui: {
+        fontsSerif: fontSerif.source,
+        fontsAccent: fontAccent.source,
+        fontsMono: fontMono.source,
         codeBlockShowLineNumbers: showLineNumbers.source,
         readingModeShowEntry: showReadingEntry.source,
         sidebarActionsShowRssLink: showRssLink.source,
@@ -1611,6 +1653,7 @@ const buildEditableThemeSettingsSnapshot = (
       about: { ...resolved.settings.page.about }
     },
     ui: {
+      fonts: { ...resolved.settings.ui.fonts },
       codeBlock: { ...resolved.settings.ui.codeBlock },
       readingMode: { ...resolved.settings.ui.readingMode },
       sidebarActions: { ...resolved.settings.ui.sidebarActions },

@@ -1,6 +1,71 @@
 ---
-import AdminIcon from './AdminIcon.astro';
+import AdminIcon from "./AdminIcon.astro";
+import { ADMIN_FONT_STACK_MAX_LENGTH } from "../../lib/admin-console/theme-shared";
 ---
+
+<fieldset class="admin-group">
+  <legend class="admin-group__legend">
+    <AdminIcon name="admin-code" class="admin-group__legend-icon" size={14} />
+    <span class="admin-group__legend-copy">
+      <span class="admin-group__legend-zh">字体设置</span>
+      <span class="admin-group__legend-en">Fonts</span>
+    </span>
+  </legend>
+  <div class="admin-stack">
+    <label class="admin-field">
+      <span class="admin-label">
+        <span class="admin-label__main">正文字体栈（serif）</span>
+        <span class="admin-label__hint">用于 body / prose 正文</span>
+      </span>
+      <input
+        id="ui-font-serif"
+        class="admin-field__control"
+        type="text"
+        maxlength={ADMIN_FONT_STACK_MAX_LENGTH}
+        autocomplete="off"
+        spellcheck="false"
+        placeholder='"Noto Serif SC", ui-serif, Georgia, serif'
+      />
+    </label>
+    <label class="admin-field">
+      <span class="admin-label">
+        <span class="admin-label__main">强调字体栈（accent）</span>
+        <span class="admin-label__hint">用于引言、元信息、装饰文案</span>
+      </span>
+      <input
+        id="ui-font-accent"
+        class="admin-field__control"
+        type="text"
+        maxlength={ADMIN_FONT_STACK_MAX_LENGTH}
+        autocomplete="off"
+        spellcheck="false"
+        placeholder='"LXGW WenKai Lite", "Kaiti SC", serif'
+      />
+    </label>
+    <label class="admin-field">
+      <span class="admin-label">
+        <span class="admin-label__main">代码字体栈（mono）</span>
+        <span class="admin-label__hint">用于代码块与内联 code</span>
+      </span>
+      <input
+        id="ui-font-mono"
+        class="admin-field__control"
+        type="text"
+        maxlength={ADMIN_FONT_STACK_MAX_LENGTH}
+        autocomplete="off"
+        spellcheck="false"
+        placeholder='"Sarasa Mono SC", ui-monospace, monospace'
+      />
+    </label>
+    <p class="admin-help admin-help--font-preview">
+      字体摘要：<code
+        id="ui-font-preview-value"
+        class="admin-help__preview-value"
+        >serif: Noto Serif SC · accent: LXGW WenKai Lite · mono: Sarasa Mono SC</code
+      >
+    </p>
+  </div>
+</fieldset>
 
 <fieldset class="admin-group">
   <legend class="admin-group__legend">

@@ -35,6 +35,11 @@ export const ADMIN_HERO_IMAGE_ALT_MAX_LENGTH = 120;
 
 export const ADMIN_ARTICLE_META_DATE_LABEL_DEFAULT = '发布于：';
 export const ADMIN_ARTICLE_META_DATE_LABEL_MAX_LENGTH = 20;
+export const ADMIN_FONT_STACK_MAX_LENGTH = 260;
+export const ADMIN_UI_FONT_SERIF_DEFAULT = '"Noto Serif SC", ui-serif, Georgia, "Times New Roman", "Songti SC", serif';
+export const ADMIN_UI_FONT_ACCENT_DEFAULT = '"LXGW WenKai Lite", "Kaiti SC", "STKaiti", serif';
+export const ADMIN_UI_FONT_MONO_DEFAULT =
+  '"Sarasa Mono SC", "Noto Sans Mono CJK SC", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace';
 
 export const ADMIN_SIDEBAR_DIVIDER_VARIANTS = [
   'default',
@@ -387,6 +392,7 @@ export const canonicalizeAdminThemeSettings = (
   const rawUiArticleMeta: LooseRecord = isRecord(ui.articleMeta) ? ui.articleMeta : {};
   const rawUiSidebarActions: LooseRecord = isRecord(ui.sidebarActions) ? ui.sidebarActions : {};
   const rawUiLayout: LooseRecord = isRecord(ui.layout) ? ui.layout : {};
+  const rawUiFonts: LooseRecord = isRecord(ui.fonts) ? ui.fonts : {};
   const rawHeroPresetId = normalizeTrimmed(home.heroPresetId);
   const heroPresetId = isAdminHeroPresetId(rawHeroPresetId) ? rawHeroPresetId : 'default';
   const rawSidebarDivider = normalizeTrimmed(rawUiLayout.sidebarDivider);
@@ -529,6 +535,11 @@ export const canonicalizeAdminThemeSettings = (
       }
     },
     ui: {
+      fonts: {
+        serif: normalizeSingleLine(rawUiFonts.serif, ADMIN_UI_FONT_SERIF_DEFAULT),
+        accent: normalizeSingleLine(rawUiFonts.accent, ADMIN_UI_FONT_ACCENT_DEFAULT),
+        mono: normalizeSingleLine(rawUiFonts.mono, ADMIN_UI_FONT_MONO_DEFAULT)
+      },
       codeBlock: {
         showLineNumbers: Boolean(isRecord(ui.codeBlock) ? ui.codeBlock.showLineNumbers : false)
       },
@@ -608,6 +619,7 @@ export const createAdminWritableThemeSettingsGroups = (
     about: { ...settings.page.about }
   },
   ui: {
+    fonts: { ...settings.ui.fonts },
     codeBlock: { ...settings.ui.codeBlock },
     readingMode: { ...settings.ui.readingMode },
     sidebarActions: { ...settings.ui.sidebarActions },
@@ -921,6 +933,26 @@ export const validateAdminThemeSettings = (
     pushIssue('ui.articleMeta.showDate', '文章元信息里的“显示发布日期”必须是布尔值');
   }
 
+  const fontConfigRows: Array<[string | undefined, string, string]> = [
+    [settings.ui?.fonts?.serif, 'ui.fonts.serif', '正文字体栈'],
+    [settings.ui?.fonts?.accent, 'ui.fonts.accent', '强调字体栈'],
+    [settings.ui?.fonts?.mono, 'ui.fonts.mono', '代码字体栈']
+  ];
+
+  fontConfigRows.forEach(([value, path, label]) => {
+    if (typeof value !== 'string' || !value.trim()) {
+      pushIssue(path, `${label}必须是非空字符串`);
+      return;
+    }
+    if (value.includes('\n') || value.includes('\r')) {
+      pushIssue(path, `${label}只允许单行文本`);
+      return;
+    }
+    if (value.length > ADMIN_FONT_STACK_MAX_LENGTH) {
+      pushIssue(path, `${label}不能超过 ${ADMIN_FONT_STACK_MAX_LENGTH} 个字符`);
+    }
+  });
+
   if (typeof settings.ui?.articleMeta?.dateLabel !== 'string') {
     pushIssue('ui.articleMeta.dateLabel', '文章元信息里的“日期前缀”必须是字符串');
   } else if (
@@ -974,11 +1006,11 @@ export const validateAdminThemeSettings = (
     nav.flatMap((item) =>
       ADMIN_NAV_IDS.includes(item.id)
         ? [
-            {
-              key: item.id as SidebarNavId,
-              order: item.order
-            }
-          ]
+          {
+            key: item.id as SidebarNavId,
+            order: item.order
+          }
+        ]
         : []
     )
   ).forEach((issue) => {
@@ -1163,12 +1195,22 @@ const fillAdminThemeSettingsUiCompatibilityDefaults = (
   canonicalUi: LooseRecord
 ): LooseRecord => {
   const canonicalSidebarActions = canonicalUi.sidebarActions;
-  if (!isRecord(canonicalSidebarActions)) return rawUi;
+  const canonicalFonts = canonicalUi.fonts;
+  if (!isRecord(canonicalSidebarActions) || !isRecord(canonicalFonts)) return rawUi;
 
   const rawSidebarActions = rawUi.sidebarActions;
+  const rawFonts = rawUi.fonts;
+  if (rawFonts !== undefined && !isRecord(rawFonts)) return rawUi;
+
   if (rawSidebarActions === undefined) {
     return {
       ...rawUi,
+      fonts: {
+        serif: canonicalFonts.serif,
+        accent: canonicalFonts.accent,
+        mono: canonicalFonts.mono,
+        ...(isRecord(rawFonts) ? rawFonts : {})
+      },
       sidebarActions: canonicalSidebarActions
     };
   }
@@ -1177,6 +1219,12 @@ const fillAdminThemeSettingsUiCompatibilityDefaults = (
 
   return {
     ...rawUi,
+    fonts: {
+      serif: canonicalFonts.serif,
+      accent: canonicalFonts.accent,
+      mono: canonicalFonts.mono,
+      ...(isRecord(rawFonts) ? rawFonts : {})
+    },
     sidebarActions: {
       showRssLink: canonicalSidebarActions.showRssLink,
       showThemeToggle: canonicalSidebarActions.showThemeToggle,
@@ -1207,19 +1255,19 @@ export const fillAdminThemeSettingsCompatibilityDefaults = (
     ...settings,
     ...(isRecord(settings.site)
       ? {
-          site: fillAdminThemeSettingsSiteCompatibilityDefaults(
-            settings.site,
-            canonicalSettings.site as unknown as LooseRecord
-          )
-        }
+        site: fillAdminThemeSettingsSiteCompatibilityDefaults(
+          settings.site,
+          canonicalSettings.site as unknown as LooseRecord
+        )
+      }
       : {}),
     ...(isRecord(settings.ui)
       ? {
-          ui: fillAdminThemeSettingsUiCompatibilityDefaults(
-            settings.ui,
-            canonicalSettings.ui as unknown as LooseRecord
-          )
-        }
+        ui: fillAdminThemeSettingsUiCompatibilityDefaults(
+          settings.ui,
+          canonicalSettings.ui as unknown as LooseRecord
+        )
+      }
       : {})
   };
 };

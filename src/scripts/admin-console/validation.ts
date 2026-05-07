@@ -38,6 +38,9 @@ type ValidationContext = {
   inputHomeShowHero: HTMLInputElement;
   inputHeroImageSrc: HTMLInputElement;
   inputHeroImageAlt: HTMLInputElement;
+  inputUiFontSerif: HTMLInputElement;
+  inputUiFontAccent: HTMLInputElement;
+  inputUiFontMono: HTMLInputElement;
   inputPageEssayTitle: HTMLInputElement;
   inputPageArchiveTitle: HTMLInputElement;
   inputPageBitsTitle: HTMLInputElement;
@@ -102,6 +105,9 @@ export const createValidation = ({
   inputHomeShowHero,
   inputHeroImageSrc,
   inputHeroImageAlt,
+  inputUiFontSerif,
+  inputUiFontAccent,
+  inputUiFontMono,
   inputPageEssayTitle,
   inputPageArchiveTitle,
   inputPageBitsTitle,
@@ -215,6 +221,12 @@ export const createValidation = ({
         return () => inputHeroImageSrc;
       case 'home.heroImageAlt':
         return () => inputHeroImageAlt;
+      case 'ui.fonts.serif':
+        return () => inputUiFontSerif;
+      case 'ui.fonts.accent':
+        return () => inputUiFontAccent;
+      case 'ui.fonts.mono':
+        return () => inputUiFontMono;
       case 'page.bits.defaultAuthor.name':
         return () => inputPageBitsAuthorName;
       case 'page.bits.defaultAuthor.avatar':

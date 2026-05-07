@@ -1,4 +1,9 @@
 {
+  "fonts": {
+    "serif": "\"Noto Serif SC\", ui-serif, Georgia, \"Times New Roman\", \"Songti SC\", serif",
+    "accent": "\"LXGW WenKai Lite\", \"Kaiti SC\", \"STKaiti\", serif",
+    "mono": "\"Sarasa Mono SC\", \"Noto Sans Mono CJK SC\", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", \"Courier New\", monospace"
+  },
   "codeBlock": {
     "showLineNumbers": true
   },

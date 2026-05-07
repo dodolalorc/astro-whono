@@ -9,6 +9,9 @@ import type {
 import { normalizeHeroImageSrc as normalizeHeroImageSrcValue } from '@/utils/format';
 import {
   ADMIN_ARTICLE_META_DATE_LABEL_DEFAULT,
+  ADMIN_UI_FONT_ACCENT_DEFAULT,
+  ADMIN_UI_FONT_MONO_DEFAULT,
+  ADMIN_UI_FONT_SERIF_DEFAULT,
   ADMIN_HERO_IMAGE_ALT_DEFAULT,
   ADMIN_HOME_INTRO_LINK_DEFAULT,
   ADMIN_HOME_INTRO_LINK_LIMIT,
@@ -43,6 +46,7 @@ type FormCodecContext = {
   normalizeSocialOrders: () => void;
   getPresetSocialOrder: () => SocialPresetOrder;
   articleMetaPreviewValueEl: HTMLElement;
+  fontPreviewValueEl: HTMLElement;
   footerPreviewValueEl: HTMLElement;
   homeIntroMorePreviewEl: HTMLElement;
   homeIntroMoreLinkSecondaryGroupEl: HTMLElement;
@@ -90,6 +94,9 @@ type FormCodecContext = {
   inputHeroImageSrc: HTMLInputElement;
   inputHeroImageAlt: HTMLInputElement;
   inputCodeLineNumbers: HTMLInputElement;
+  inputUiFontSerif: HTMLInputElement;
+  inputUiFontAccent: HTMLInputElement;
+  inputUiFontMono: HTMLInputElement;
   inputReadingEntry: HTMLInputElement;
   inputSidebarActionsShowRssLink: HTMLInputElement;
   inputSidebarActionsShowThemeToggle: HTMLInputElement;
@@ -150,6 +157,7 @@ export const createFormCodec = ({
   normalizeSocialOrders,
   getPresetSocialOrder,
   articleMetaPreviewValueEl,
+  fontPreviewValueEl,
   footerPreviewValueEl,
   homeIntroMorePreviewEl,
   homeIntroMoreLinkSecondaryGroupEl,
@@ -197,6 +205,9 @@ export const createFormCodec = ({
   inputHeroImageSrc,
   inputHeroImageAlt,
   inputCodeLineNumbers,
+  inputUiFontSerif,
+  inputUiFontAccent,
+  inputUiFontMono,
   inputReadingEntry,
   inputSidebarActionsShowRssLink,
   inputSidebarActionsShowThemeToggle,
@@ -209,6 +220,11 @@ export const createFormCodec = ({
   const defaultHomeIntroLinks = [...ADMIN_HOME_INTRO_LINK_DEFAULT] as HomeIntroLinkKey[];
   const defaultPrimaryHomeIntroLink: HomeIntroLinkKey = ADMIN_HOME_INTRO_LINK_DEFAULT[0];
   const defaultSecondaryHomeIntroLink: HomeIntroLinkKey = ADMIN_HOME_INTRO_LINK_DEFAULT[1];
+  let preservedUiFonts: EditableSettings['ui']['fonts'] = {
+    serif: ADMIN_UI_FONT_SERIF_DEFAULT,
+    accent: ADMIN_UI_FONT_ACCENT_DEFAULT,
+    mono: ADMIN_UI_FONT_MONO_DEFAULT
+  };
 
   const getFallbackSecondaryIntroLink = (primary: HomeIntroLinkKey): HomeIntroLinkKey =>
     defaultHomeIntroLinks.find((link) => link !== primary)
@@ -319,6 +335,25 @@ export const createFormCodec = ({
 
   const refreshArticleMetaPreview = (): void => {
     articleMetaPreviewValueEl.textContent = getArticleMetaPreviewText();
+  };
+
+  const summarizeFontStack = (rawStack: string, fallbackLabel: string): string => {
+    const normalized = normalizeSingleLine(rawStack).trim();
+    if (!normalized) return fallbackLabel;
+    const firstToken = normalized.split(',')[0] ?? '';
+    const cleaned = firstToken.trim().replace(/^['\"]+|['\"]+$/g, '');
+    return cleaned || fallbackLabel;
+  };
+
+  const getFontPreviewText = (): string => {
+    const serif = summarizeFontStack(inputUiFontSerif.value, 'serif');
+    const accent = summarizeFontStack(inputUiFontAccent.value, 'accent');
+    const mono = summarizeFontStack(inputUiFontMono.value, 'mono');
+    return `serif: ${serif} · accent: ${accent} · mono: ${mono}`;
+  };
+
+  const refreshFontPreview = (): void => {
+    fontPreviewValueEl.textContent = getFontPreviewText();
   };
 
   const syncHomeIntroLinkControls = (): void => {
@@ -491,6 +526,11 @@ export const createFormCodec = ({
         }
       },
       ui: {
+        fonts: {
+          serif: normalizeSingleLine(inputUiFontSerif.value, preservedUiFonts.serif),
+          accent: normalizeSingleLine(inputUiFontAccent.value, preservedUiFonts.accent),
+          mono: normalizeSingleLine(inputUiFontMono.value, preservedUiFonts.mono)
+        },
         codeBlock: {
           showLineNumbers: Boolean(inputCodeLineNumbers.checked)
         },
@@ -572,6 +612,15 @@ export const createFormCodec = ({
     inputHeroImageAlt.value = settings.home.heroImageAlt || ADMIN_HERO_IMAGE_ALT_DEFAULT;
     syncHeroControls();
     syncFooterYearControls();
+    preservedUiFonts = {
+      serif: normalizeSingleLine(settings.ui?.fonts?.serif, ADMIN_UI_FONT_SERIF_DEFAULT),
+      accent: normalizeSingleLine(settings.ui?.fonts?.accent, ADMIN_UI_FONT_ACCENT_DEFAULT),
+      mono: normalizeSingleLine(settings.ui?.fonts?.mono, ADMIN_UI_FONT_MONO_DEFAULT)
+    };
+    inputUiFontSerif.value = preservedUiFonts.serif;
+    inputUiFontAccent.value = preservedUiFonts.accent;
+    inputUiFontMono.value = preservedUiFonts.mono;
+    refreshFontPreview();
     inputCodeLineNumbers.checked = Boolean(settings.ui?.codeBlock?.showLineNumbers);
     inputReadingEntry.checked = Boolean(settings.ui?.readingMode?.showEntry);
     inputSidebarActionsShowRssLink.checked = settings.ui?.sidebarActions?.showRssLink !== false;
@@ -609,6 +658,7 @@ export const createFormCodec = ({
     applySettings,
     collectHomeIntroLinks,
     refreshArticleMetaPreview,
+    refreshFontPreview,
     refreshHomeIntroPreview,
     syncAdminOverviewControls,
     syncSidebarActionControls,
