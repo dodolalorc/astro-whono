@@ -35,6 +35,9 @@ jobs:
       - name: Build site
         run: npm run build
 
+      - name: Add CNAME
+        run: echo "dodolalorc.cn" > dist/CNAME
+
       - name: Deploy to external GitHub Pages repository
         uses: peaceiris/actions-gh-pages@v4
         with:
