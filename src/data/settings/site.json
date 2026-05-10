@@ -1,25 +1,42 @@
 {
   "title": "Astro Themes by Whono",
-  "description": "一个 Astro 主题的展示站：轻量、可维护、可复用。",
+  "description": "一个普通互联网女工的20~30岁的学习记录",
   "defaultLocale": "zh-CN",
   "footer": {
     "startYear": 2025,
     "showCurrentYear": true,
-    "copyright": "Whono · Theme Demo · by cxro"
+    "copyright": "Dodola · by dodolalorc"
   },
   "adminOverview": {
-    "publicVisible": true,
+    "publicVisible": false,
     "hiddenMessage": "作者暂未公开此页面。"
   },
   "socialLinks": {
-    "github": "https://github.com/cxro/astro-whono",
-    "x": "https://twitter.com/yourname",
-    "email": "Whono@linux.do",
+    "github": "https://github.com/dodolalorc",
+    "x": null,
+    "email": "dodolalorc@gmail.com",
     "presetOrder": {
       "github": 1,
-      "x": 2,
-      "email": 3
+      "x": 5,
+      "email": 2
     },
-    "custom": []
+    "custom": [
+      {
+        "id": "custom-bilibili",
+        "label": "Bilibili",
+        "href": "https://space.bilibili.com/219659631",
+        "iconKey": "bilibili",
+        "visible": true,
+        "order": 3
+      },
+      {
+        "id": "custom-website",
+        "label": "dodola小站",
+        "href": "https://dodolalorc.cn/",
+        "iconKey": "website",
+        "visible": true,
+        "order": 4
+      }
+    ]
   }
 }
