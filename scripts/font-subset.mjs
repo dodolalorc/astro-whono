@@ -77,14 +77,6 @@ if (!existsSync(CHARSET_PATH)) {
 
 ensurePyftsubsetAvailable();
 
-if (!existsSync(WENKAI_INPUT)) {
-  failMissingSource({
-    name: 'LXGW WenKai Lite',
-    filename: path.basename(WENKAI_INPUT),
-    expectedPath: WENKAI_INPUT
-  });
-}
-
 runSubset('wenkai-latin', [
   WENKAI_INPUT,
   `--output-file=${WENKAI_OUTPUTS.latin}`,
