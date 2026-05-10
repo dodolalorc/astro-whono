@@ -1,11 +1,12 @@
 ---
-import type { SidebarNavId } from '../../lib/theme-settings';
-import AdminDiagnosticPanel from './AdminDiagnosticPanel.astro';
-import AdminHomeSection from './AdminHomeSection.astro';
-import AdminPageSection from './AdminPageSection.astro';
-import AdminSidebarSection from './AdminSidebarSection.astro';
-import AdminSiteSection from './AdminSiteSection.astro';
-import AdminUiSection from './AdminUiSection.astro';
+import type { SidebarNavId } from "../../lib/theme-settings";
+import AdminDiagnosticPanel from "./AdminDiagnosticPanel.astro";
+import AdminFriendLinksSection from "./AdminFriendLinksSection.astro";
+import AdminHomeSection from "./AdminHomeSection.astro";
+import AdminPageSection from "./AdminPageSection.astro";
+import AdminSidebarSection from "./AdminSidebarSection.astro";
+import AdminSiteSection from "./AdminSiteSection.astro";
+import AdminUiSection from "./AdminUiSection.astro";
 
 interface Props {
   bootstrapText: string;
@@ -18,6 +19,7 @@ interface Props {
   pageSubtitleMaxLength: number;
   pageTitleMaxLength: number;
   settingsEndpoint: string;
+  friendLinkLimit: number;
   socialCustomLimit: number;
 }
 
@@ -32,11 +34,16 @@ const {
   pageSubtitleMaxLength,
   pageTitleMaxLength,
   settingsEndpoint,
-  socialCustomLimit
+  friendLinkLimit,
+  socialCustomLimit,
 } = Astro.props;
 ---
 
-<section class="admin-theme-console" data-admin-root data-settings-endpoint={settingsEndpoint}>
+<section
+  class="admin-theme-console"
+  data-admin-root
+  data-settings-endpoint={settingsEndpoint}
+>
   <AdminDiagnosticPanel
     bannerId="admin-error-banner"
     titleId="admin-error-title"
@@ -45,8 +52,8 @@ const {
     title="操作未完成"
     label="配置异常"
     retryAction={{
-      id: 'admin-error-retry',
-      label: '重新检测'
+      id: "admin-error-retry",
+      label: "重新检测",
     }}
     tabindex={-1}
   />
@@ -62,6 +69,8 @@ const {
 
     <AdminHomeSection homeIntroMaxLength={homeIntroMaxLength} />
 
+    <AdminFriendLinksSection friendLinkLimit={friendLinkLimit} />
+
     <AdminPageSection
       pageTitleMaxLength={pageTitleMaxLength}
       pageSubtitleMaxLength={pageSubtitleMaxLength}
@@ -72,20 +81,47 @@ const {
     <AdminUiSection />
   </form>
 
-  <div id="admin-actions-sentinel" class="admin-actions__sentinel" aria-hidden="true"></div>
-  <div id="admin-actions" class="admin-actions" data-dirty="false" data-sticky="false">
+  <div
+    id="admin-actions-sentinel"
+    class="admin-actions__sentinel"
+    aria-hidden="true"
+  >
+  </div>
+  <div
+    id="admin-actions"
+    class="admin-actions"
+    data-dirty="false"
+    data-sticky="false"
+  >
     <div class="admin-actions__meta">
-      <p id="admin-dirty-banner" class="admin-banner admin-banner--dirty" hidden>
+      <p
+        id="admin-dirty-banner"
+        class="admin-banner admin-banner--dirty"
+        hidden
+      >
         * 你有未保存更改，离开页面会触发提醒。
       </p>
-      <p id="admin-status-inline" class="admin-status admin-status--inline" data-state="idle" aria-hidden="true">
+      <p
+        id="admin-status-inline"
+        class="admin-status admin-status--inline"
+        data-state="idle"
+        aria-hidden="true"
+      >
         等待加载
       </p>
     </div>
     <div class="admin-actions__buttons">
-      <button id="admin-validate" class="admin-btn admin-btn--secondary" type="button">检查配置</button>
-      <button id="admin-reset" class="admin-btn admin-btn--ghost" type="button">重置更改</button>
-      <button id="admin-save" class="admin-btn admin-btn--primary" type="button">保存</button>
+      <button
+        id="admin-validate"
+        class="admin-btn admin-btn--secondary"
+        type="button">检查配置</button
+      >
+      <button id="admin-reset" class="admin-btn admin-btn--ghost" type="button"
+        >重置更改</button
+      >
+      <button id="admin-save" class="admin-btn admin-btn--primary" type="button"
+        >保存</button
+      >
     </div>
   </div>
 

@@ -26,6 +26,7 @@ import {
 
 export type EditableSettings = ThemeSettingsEditablePayload['settings'];
 export type EditableCustomSocialItem = EditableSettings['site']['socialLinks']['custom'][number];
+export type EditableFriendLinkItem = EditableSettings['site']['friendLinks'][number];
 export type EditableNavItem = EditableSettings['shell']['nav'][number];
 export type SocialPresetOrder = Record<SiteSocialPresetId, number>;
 
@@ -36,11 +37,14 @@ type FormCodecContext = {
   query: Query;
   getNavRows: () => HTMLElement[];
   getCustomRows: () => HTMLElement[];
+  getFriendRows: () => HTMLElement[];
   getCustomRowLabelInput: (row: Element | null) => HTMLInputElement | null;
   defaultCustomSocialIconKey: SiteSocialIconKey;
   normalizeCustomSocialLabel: (value: unknown, iconKey: SiteSocialIconKey) => string;
   replaceCustomRows: (items: EditableCustomSocialItem[]) => void;
+  replaceFriendRows: (items: EditableFriendLinkItem[]) => void;
   normalizeSocialOrders: () => void;
+  normalizeFriendOrders: () => void;
   getPresetSocialOrder: () => SocialPresetOrder;
   articleMetaPreviewValueEl: HTMLElement;
   footerPreviewValueEl: HTMLElement;
@@ -143,11 +147,14 @@ export const createFormCodec = ({
   query,
   getNavRows,
   getCustomRows,
+  getFriendRows,
   getCustomRowLabelInput,
   defaultCustomSocialIconKey,
   normalizeCustomSocialLabel,
   replaceCustomRows,
+  replaceFriendRows,
   normalizeSocialOrders,
+  normalizeFriendOrders,
   getPresetSocialOrder,
   articleMetaPreviewValueEl,
   footerPreviewValueEl,
@@ -422,6 +429,23 @@ export const createFormCodec = ({
       };
     });
 
+    const friendLinks = getFriendRows().map((row, index): EditableFriendLinkItem => {
+      const orderInput = query<HTMLInputElement>(row, '[data-friend-link-field="order"]');
+      const nameInput = query<HTMLInputElement>(row, '[data-friend-link-field="name"]');
+      const urlInput = query<HTMLInputElement>(row, '[data-friend-link-field="url"]');
+      const avatarInput = query<HTMLInputElement>(row, '[data-friend-link-field="avatar"]');
+      const bioInput = query<HTMLInputElement>(row, '[data-friend-link-field="bio"]');
+      const visibleInput = query<HTMLInputElement>(row, '[data-friend-link-field="visible"]');
+      return {
+        order: parseOrder(orderInput?.value || '', index + 1),
+        name: nameInput?.value.trim() || '',
+        url: urlInput?.value.trim() || '',
+        avatar: normalizeOptionalSingleLine(avatarInput?.value || ''),
+        bio: normalizeSingleLine(bioInput?.value || ''),
+        visible: Boolean(visibleInput?.checked)
+      };
+    });
+
     const showHero = Boolean(inputHomeShowHero.checked);
 
     return {
@@ -447,7 +471,8 @@ export const createFormCodec = ({
           email: normalizeEmail(inputSiteSocialEmail.value.trim()) || null,
           presetOrder: getPresetSocialOrder(),
           custom
-        }
+        },
+        friendLinks
       },
       shell: {
         brandTitle: inputShellBrandTitle.value.trim(),
@@ -541,6 +566,8 @@ export const createFormCodec = ({
     inputSiteSocialEmail.value = settings.site.socialLinks?.email || '';
     replaceCustomRows(settings.site.socialLinks?.custom || []);
     normalizeSocialOrders();
+    replaceFriendRows(settings.site.friendLinks || []);
+    normalizeFriendOrders();
     inputShellBrandTitle.value = settings.shell.brandTitle || '';
     inputShellQuote.value = settings.shell.quote || '';
     inputHomeShowIntroLead.checked = settings.home.showIntroLead !== false;

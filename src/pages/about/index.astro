@@ -1,11 +1,17 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import BrandIcon from '../../components/BrandIcon.astro';
-import '../../styles/about.css';
-import { getThemeSettings, type SiteSocialIconKey } from '../../lib/theme-settings';
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import BrandIcon from "../../components/BrandIcon.astro";
+import FriendLinkCard from "../../components/FriendLinkCard.astro";
+import "../../styles/about.css";
+import {
+  getThemeSettings,
+  type SiteSocialIconKey,
+} from "../../lib/theme-settings";
 const { settings } = getThemeSettings();
-const resolvedSocialItems = settings.site.socialLinks.resolvedSocialItems.filter((item) => item.visible);
-const aboutTitle = settings.page.about.title || '关于';
+const resolvedSocialItems =
+  settings.site.socialLinks.resolvedSocialItems.filter((item) => item.visible);
+const friendLinks = settings.site.friendLinks.filter((item) => item.visible);
+const aboutTitle = settings.page.about.title || "关于";
 const aboutSubtitle = settings.page.about.subtitle;
 
 type SocialActionItem = {
@@ -26,7 +32,7 @@ type ContactItem = {
 const formatExternalLabel = (href: string): string => {
   try {
     const parsed = new URL(href);
-    const path = parsed.pathname.replace(/^\/+|\/+$/g, '');
+    const path = parsed.pathname.replace(/^\/+|\/+$/g, "");
     return path || parsed.hostname;
   } catch {
     return href;
@@ -39,8 +45,8 @@ const socialItems: SocialActionItem[] = [
     href: item.href,
     label: item.label,
     title: item.label,
-    icon: item.iconKey
-  }))
+    icon: item.iconKey,
+  })),
 ];
 
 const contactItems: ContactItem[] = [
@@ -48,8 +54,11 @@ const contactItems: ContactItem[] = [
     key: item.id,
     href: item.href,
     icon: item.iconKey,
-    text: item.id === 'email' ? item.href.replace(/^mailto:/i, '') : formatExternalLabel(item.href)
-  }))
+    text:
+      item.id === "email"
+        ? item.href.replace(/^mailto:/i, "")
+        : formatExternalLabel(item.href),
+  })),
 ];
 ---
 
@@ -57,13 +66,22 @@ const contactItems: ContactItem[] = [
   <div class="page-header page-header--about">
     <div class="page-heading">
       <h1 class="page-title">{aboutTitle}</h1>
-      {aboutSubtitle ? <span class="page-subtitle">{aboutSubtitle}</span> : null}
+      {
+        aboutSubtitle ? (
+          <span class="page-subtitle">{aboutSubtitle}</span>
+        ) : null
+      }
     </div>
     {
       socialItems.length ? (
         <div class="page-actions">
           {socialItems.map((item) => (
-            <a class="icon-link" href={item.href} aria-label={item.title} title={item.title}>
+            <a
+              class="icon-link"
+              href={item.href}
+              aria-label={item.title}
+              title={item.title}
+            >
               <BrandIcon name={item.icon} class="icon" />
             </a>
           ))}
@@ -72,11 +90,35 @@ const contactItems: ContactItem[] = [
     }
   </div>
   <p class="about-intro-line">
-    Whono是一个基于 Astro 的极简双栏写作主题：干净、快速、为阅读而设计。<br />
-    内容以 Markdown 写作，支持暗色模式、代码高亮、RSS 与沉浸式阅读，适合作为个人写作与轻量内容发布的起点。<br />
-    主题已开源维护，如果你有改进建议或想一起完善，欢迎创建 <a href="https://github.com/cxro/astro-whono/issues">Issue</a> 交流。
+    Hello 大家好，这里是哆哆啦(dodola)！
+    <br /><br />
+    最近正在经历学生->成熟的<del>牛马</del
+    >程序员的过渡期，内容更新可能不太规律，但会尽量保持输出，并且会调整内容的比重，比如之前更新的很多内容都是我在打ACM竞赛时的题解和总结，未来可能会更多地分享一些简单的技术文章、读书笔记、以及一些生活中的小想法。
+    <br /><br />
+    目前本站的主要内容是观察这个intjer的20~30岁，未来是什么样呢0v0，我会变成什么样的人呢？下一个人生节点出现在哪里呢？我会活出什么样的人生呢？分からないよ~
+    <br /><br />
+    最后，经常刷新的地理ip是深圳~欢迎和我交流任何内容！欢迎互换友链uu~
   </p>
-  <h2 class="section-title about-section-title">栏目指引</h2>
+  <h2 class="section-title about-section-title">友链++</h2>
+  <div class="site-friends">
+    {
+      friendLinks.length ? (
+        friendLinks.map((item) => (
+          <FriendLinkCard
+            name={item.name}
+            url={item.url}
+            avatar={item.avatar}
+            bio={item.bio}
+          />
+        ))
+      ) : (
+        <p class="site-friends-empty">
+          友链施工中，欢迎通过下方联系方式交换友链。
+        </p>
+      )
+    }
+  </div>
+  <!-- <h2 class="section-title about-section-title">栏目指引</h2>
   <div class="site-guide">
     <article class="site-guide-item">
       <div class="site-guide-head">
@@ -90,7 +132,7 @@ const contactItems: ContactItem[] = [
         <h3 class="site-guide-title">絮语</h3>
         <span class="site-guide-link">/bits/</span>
       </div>
-      <p class="site-guide-desc">短内容动态流，碎片想法（支持多图）。</p>
+      <p class="site-guide-desc">短内容动态流，碎片想法。</p>
     </article>
     <article class="site-guide-item">
       <div class="site-guide-head">
@@ -106,9 +148,9 @@ const contactItems: ContactItem[] = [
       </div>
       <p class="site-guide-desc">按年份分组的归档目录。</p>
     </article>
-  </div>
+  </div> -->
 
-  <h2 class="section-title about-section-title">技术栈</h2>
+  <!-- <h2 class="section-title about-section-title">技术栈</h2>
   <div class="tech-stack">
     <section class="tech-group">
       <div class="tech-group-title">构建与渲染</div>
@@ -145,25 +187,52 @@ const contactItems: ContactItem[] = [
       </ul>
     </section>
     
-  </div>
+  </div> -->
 
   <h2 class="section-title about-section-title">常见问题</h2>
   <section class="qa-list" aria-label="常见问题">
     <details class="qa-item">
-      <summary class="qa-question"><span class="qa-icon" aria-hidden="true">Q</span>为什么我部署后会看到 SITE_URL is not set 警告？</summary>
-      <p class="qa-answer">因为没配置生产域名。未设置时会用占位域名，<code>canonical</code>/<code>og:url</code>/<code>sitemap</code>/<code>robots</code> 会不完整。部署平台里环境变量中添加 <code>SITE_URL=https://你的域名</code>，重新构建即可。</p>
+      <summary class="qa-question"
+        ><span class="qa-icon" aria-hidden="true">Q</span
+        >如何添加友链？</summary
+      >
+      <p class="qa-answer">
+        友链列表已支持在后台配置。如果你想交换友链，可以直接联系我（通过社交链接或邮箱），提供站点名称、URL、头像和简介，我会在确认后添加到友链列表中。
+      </p>
     </details>
     <details class="qa-item">
-      <summary class="qa-question"><span class="qa-icon" aria-hidden="true">Q</span>为什么有的文章没出现在归档里？</summary>
-      <p class="qa-answer">归档会过滤掉 <code>archive: false</code> 的文章。它们仍然是“已发布可访问”的，但不会出现在归档列表与归档 RSS 中（用于少数不想被目录收录的内容）。</p>
+      <summary class="qa-question"
+        ><span class="qa-icon" aria-hidden="true">Q</span
+        >为什么有的文章没出现在归档里？</summary
+      >
+      <p class="qa-answer">
+        归档会过滤掉 <code>archive: false</code> 的文章。它们仍然是“已发布可访问”的，但不会出现在归档列表与归档
+        RSS 中（用于少数不想被目录收录的内容）。
+      </p>
     </details>
     <details class="qa-item">
-      <summary class="qa-question"><span class="qa-icon" aria-hidden="true">Q</span>为什么我在 /essay/ 点开文章会跳到 /archive/.../？</summary>
-      <p class="qa-answer">项目把文章详情统一在 <code>/archive/{'{'}slug{'}'}/</code>，<code>/essay/</code> 主要作为文章流列表入口，这样可以避免重复详情路由，便于长期维护。</p>
+      <summary class="qa-question"
+        ><span class="qa-icon" aria-hidden="true">Q</span>为什么我在 /essay/
+        点开文章会跳到 /archive/.../？</summary
+      >
+      <p class="qa-answer">
+        项目把文章详情统一在 <code>/archive/{"{"}slug{"}"}/</code>，<code
+          >/essay/</code
+        > 主要作为文章流列表入口，这样可以避免重复详情路由，便于长期维护。
+      </p>
     </details>
     <details class="qa-item">
-      <summary class="qa-question"><span class="qa-icon" aria-hidden="true">Q</span>如何反馈问题或参与改进？</summary>
-      <p class="qa-answer">直接在仓库创建 <a href="https://github.com/cxro/astro-whono/issues">Issue</a>，或提交 <a href="https://github.com/cxro/astro-whono/pulls">Pull Request</a>。</p>
+      <summary class="qa-question"
+        ><span class="qa-icon" aria-hidden="true">Q</span
+        >如何反馈问题或参与改进？</summary
+      >
+      <p class="qa-answer">
+        直接在仓库创建 <a href="https://github.com/cxro/astro-whono/issues"
+          >Issue</a
+        >，或提交 <a href="https://github.com/cxro/astro-whono/pulls"
+          >Pull Request</a
+        >。
+      </p>
     </details>
   </section>
 
@@ -172,7 +241,9 @@ const contactItems: ContactItem[] = [
       <>
         <h2 class="section-title about-section-title">联系与订阅</h2>
         <section class="contact-block" aria-label="联系方式">
-          <p class="contact-note">如果你有问题、建议，或想订阅更新，可以通过以下方式联系。</p>
+          <p class="contact-note">
+            如果你有问题、建议，或想订阅更新，可以通过以下方式联系。
+          </p>
           <ul class="contact-list">
             {contactItems.map((item) => (
               <li>
@@ -187,5 +258,4 @@ const contactItems: ContactItem[] = [
       </>
     ) : null
   }
-
 </BaseLayout>

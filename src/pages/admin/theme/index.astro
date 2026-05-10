@@ -1,13 +1,14 @@
 ---
-import AdminLayout from '../../../components/admin/AdminLayout.astro';
-import AdminReadonlyNotice from '../../../components/admin/AdminReadonlyNotice.astro';
-import AdminShell from '../../../components/admin/AdminShell.astro';
-import { createWithBase } from '../../../utils/format';
+import AdminLayout from "../../../components/admin/AdminLayout.astro";
+import AdminReadonlyNotice from "../../../components/admin/AdminReadonlyNotice.astro";
+import AdminShell from "../../../components/admin/AdminShell.astro";
+import { createWithBase } from "../../../utils/format";
 
 const isDev = import.meta.env.DEV;
-const base = import.meta.env.BASE_URL ?? '/';
+const base = import.meta.env.BASE_URL ?? "/";
 const withBase = createWithBase(base);
-const { default: adminShellStylesHref } = await import('../../../styles/components/admin-shell.css?url');
+const { default: adminShellStylesHref } =
+  await import("../../../styles/components/admin-shell.css?url");
 
 const loadThemeDevState = async () => {
   const [
@@ -15,43 +16,41 @@ const loadThemeDevState = async () => {
     { getEditableThemeSettingsState },
     {
       ADMIN_FOOTER_START_YEAR_MIN,
+      ADMIN_FRIEND_LINK_LIMIT,
       ADMIN_HOME_INTRO_MAX_LENGTH,
       ADMIN_NAV_IDS,
       ADMIN_NAV_ORNAMENT_DEFAULT,
       ADMIN_PAGE_SUBTITLE_MAX_LENGTH,
       ADMIN_PAGE_TITLE_MAX_LENGTH,
       ADMIN_SOCIAL_CUSTOM_LIMIT,
-      getAdminFooterStartYearMax
+      getAdminFooterStartYearMax,
     },
-    {
-      ADMIN_IMAGE_LIST_API_PATH,
-      ADMIN_IMAGE_META_API_PATH
-    },
+    { ADMIN_IMAGE_LIST_API_PATH, ADMIN_IMAGE_META_API_PATH },
     { default: AdminThemeDevConsole },
     { default: AdminImagePicker },
     { default: adminConsoleScriptHref },
     { default: adminThemeStylesHref },
-    { default: adminImageSharedStylesHref }
+    { default: adminImageSharedStylesHref },
   ] = await Promise.all([
-    import('astro:content'),
-    import('../../../lib/theme-settings'),
-    import('../../../lib/admin-console/theme-shared'),
-    import('../../../lib/admin-console/image-shared'),
-    import('../../../components/admin/AdminThemeDevConsole.astro'),
-    import('../../../components/admin/AdminImagePicker.astro'),
-    import('../../../scripts/admin-console/index.ts?url'),
-    import('../../../styles/components/admin-theme.css?url'),
-    import('../../../styles/components/admin-images-shared.css?url')
+    import("astro:content"),
+    import("../../../lib/theme-settings"),
+    import("../../../lib/admin-console/theme-shared"),
+    import("../../../lib/admin-console/image-shared"),
+    import("../../../components/admin/AdminThemeDevConsole.astro"),
+    import("../../../components/admin/AdminImagePicker.astro"),
+    import("../../../scripts/admin-console/index.ts?url"),
+    import("../../../styles/components/admin-theme.css?url"),
+    import("../../../styles/components/admin-images-shared.css?url"),
   ]);
 
-  const settingsEndpoint = withBase('/api/admin/settings/');
+  const settingsEndpoint = withBase("/api/admin/settings/");
   const navIdOrder = ADMIN_NAV_IDS;
   const navLabelFallback = {
-    essay: '随笔',
-    bits: '絮语',
-    memo: '小记',
-    archive: '归档',
-    about: '关于'
+    essay: "随笔",
+    bits: "絮语",
+    memo: "小记",
+    archive: "归档",
+    about: "关于",
   } as const;
   const footerStartYearMin = ADMIN_FOOTER_START_YEAR_MIN;
   const footerStartYearMax = getAdminFooterStartYearMax();
@@ -59,16 +58,25 @@ const loadThemeDevState = async () => {
   const pageTitleMaxLength = ADMIN_PAGE_TITLE_MAX_LENGTH;
   const pageSubtitleMaxLength = ADMIN_PAGE_SUBTITLE_MAX_LENGTH;
   const socialCustomLimit = ADMIN_SOCIAL_CUSTOM_LIMIT;
-  const memoEntry = await getEntry('memo', 'index');
-  const memoTitlePlaceholder = typeof memoEntry?.data.title === 'string' ? memoEntry.data.title.trim() : '';
+  const friendLinkLimit = ADMIN_FRIEND_LINK_LIMIT;
+  const memoEntry = await getEntry("memo", "index");
+  const memoTitlePlaceholder =
+    typeof memoEntry?.data.title === "string"
+      ? memoEntry.data.title.trim()
+      : "";
   const memoSubtitlePlaceholder =
-    typeof memoEntry?.data.subtitle === 'string' ? memoEntry.data.subtitle.trim() : '';
+    typeof memoEntry?.data.subtitle === "string"
+      ? memoEntry.data.subtitle.trim()
+      : "";
 
   const initialState = getEditableThemeSettingsState();
   const bootstrapState = initialState.ok
     ? (() => {
         const initialNavMap = new Map(
-          initialState.payload.settings.shell.nav.map((item) => [item.id, item])
+          initialState.payload.settings.shell.nav.map((item) => [
+            item.id,
+            item,
+          ]),
         );
 
         return {
@@ -87,13 +95,13 @@ const loadThemeDevState = async () => {
                     label: navLabelFallback[id],
                     ornament: ADMIN_NAV_ORNAMENT_DEFAULT,
                     visible: true,
-                    order: index + 1
+                    order: index + 1,
                   };
-                })
-              }
+                }),
+              },
             },
-            sources: initialState.payload.sources
-          }
+            sources: initialState.payload.sources,
+          },
         };
       })()
     : initialState;
@@ -104,7 +112,11 @@ const loadThemeDevState = async () => {
     adminConsoleScriptHref,
     adminImageListEndpoint: withBase(ADMIN_IMAGE_LIST_API_PATH),
     adminImageMetaEndpoint: withBase(ADMIN_IMAGE_META_API_PATH),
-    stylesHref: [adminShellStylesHref, adminThemeStylesHref, adminImageSharedStylesHref],
+    stylesHref: [
+      adminShellStylesHref,
+      adminThemeStylesHref,
+      adminImageSharedStylesHref,
+    ],
     bootstrapText: JSON.stringify(bootstrapState),
     footerStartYearMin,
     footerStartYearMax,
@@ -115,7 +127,8 @@ const loadThemeDevState = async () => {
     pageSubtitleMaxLength,
     pageTitleMaxLength,
     settingsEndpoint,
-    socialCustomLimit
+    friendLinkLimit,
+    socialCustomLimit,
   };
 };
 
@@ -124,19 +137,32 @@ const AdminThemeDevConsole = adminDevState?.AdminThemeDevConsole;
 const AdminImagePicker = adminDevState?.AdminImagePicker;
 ---
 
-<AdminLayout title="Theme Console" stylesHref={adminDevState?.stylesHref ?? adminShellStylesHref}>
+<AdminLayout
+  title="Theme Console"
+  stylesHref={adminDevState?.stylesHref ?? adminShellStylesHref}
+>
   <AdminShell
     currentRoute="theme"
     title="Theme Console"
     subtitle="主题设置"
     showNav={isDev}
   >
-    {isDev ? (
-      <div slot="status" class="admin-status-slot">
-        <p id="admin-status-live" class="admin-sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
-        <p id="admin-status" class="admin-status" data-state="idle">等待加载</p>
-      </div>
-    ) : null}
+    {
+      isDev ? (
+        <div slot="status" class="admin-status-slot">
+          <p
+            id="admin-status-live"
+            class="admin-sr-only"
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
+          />
+          <p id="admin-status" class="admin-status" data-state="idle">
+            等待加载
+          </p>
+        </div>
+      ) : null
+    }
     {
       isDev && adminDevState && AdminThemeDevConsole ? (
         <AdminThemeDevConsole
@@ -150,11 +176,13 @@ const AdminImagePicker = adminDevState?.AdminImagePicker;
           pageSubtitleMaxLength={adminDevState.pageSubtitleMaxLength}
           pageTitleMaxLength={adminDevState.pageTitleMaxLength}
           settingsEndpoint={adminDevState.settingsEndpoint}
+          friendLinkLimit={adminDevState.friendLinkLimit}
           socialCustomLimit={adminDevState.socialCustomLimit}
         />
       ) : (
         <AdminReadonlyNotice>
-          若需修改主题配置，请在本地运行 <code translate="no">npm run dev</code> 后从此入口进入。
+          若需修改主题配置，请在本地运行 <code translate="no">npm run dev</code>{" "}
+          后从此入口进入。
         </AdminReadonlyNotice>
       )
     }
@@ -170,7 +198,11 @@ const AdminImagePicker = adminDevState?.AdminImagePicker;
 
   {
     isDev && adminDevState?.adminConsoleScriptHref ? (
-      <script is:inline type="module" src={adminDevState.adminConsoleScriptHref}></script>
+      <script
+        is:inline
+        type="module"
+        src={adminDevState.adminConsoleScriptHref}
+      />
     ) : null
   }
 </AdminLayout>

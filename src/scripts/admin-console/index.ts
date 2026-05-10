@@ -7,6 +7,7 @@ import { createAdminImagePicker } from '../admin-shared/image-picker';
 import {
   bindAdminThemeActionEvents,
   bindAdminThemeFieldEvents,
+  bindAdminThemeFriendLinkEvents,
   bindAdminThemeNavigationGuard,
   bindAdminThemeSocialEvents
 } from './bindings';
@@ -18,6 +19,7 @@ import {
 import { createAdminThemeController } from './controller';
 import { createFormCodec } from './form-codec';
 import { createAdminThemeImageFields } from './image-fields';
+import { createFriendLinks } from './friend-links';
 import { createSocialLinks } from './social-links';
 import { createAdminConsoleUiState } from './ui-state';
 import { createValidation } from './validation';
@@ -49,16 +51,29 @@ if (!root) {
       inputSiteSocialEmailOrder: controls.inputSiteSocialEmailOrder
     });
 
+    const friendLinks = createFriendLinks({
+      query,
+      queryAll,
+      friendLinksList: controls.friendLinksList,
+      friendLinksHead: controls.friendLinksHead,
+      friendLinksCountEl: controls.friendLinksCountEl,
+      friendLinksAddBtn: controls.friendLinksAddBtn,
+      friendLinksTemplate: controls.friendLinksTemplate
+    });
+
     const formCodec = createFormCodec({
       footerStartYearMax,
       query,
       getNavRows,
       getCustomRows: socialLinks.getCustomRows,
+      getFriendRows: friendLinks.getFriendRows,
       getCustomRowLabelInput: socialLinks.getCustomRowLabelInput,
       defaultCustomSocialIconKey: socialLinks.defaultCustomSocialIconKey,
       normalizeCustomSocialLabel: socialLinks.normalizeCustomSocialLabel,
       replaceCustomRows: socialLinks.replaceCustomRows,
+      replaceFriendRows: friendLinks.replaceFriendRows,
       normalizeSocialOrders: socialLinks.normalizeSocialOrders,
+      normalizeFriendOrders: friendLinks.normalizeFriendOrders,
       getPresetSocialOrder: socialLinks.getPresetSocialOrder,
       articleMetaPreviewValueEl: controls.articleMetaPreviewValueEl,
       footerPreviewValueEl: controls.footerPreviewValueEl,
@@ -136,6 +151,7 @@ if (!root) {
       queryAll,
       footerStartYearMax,
       socialCustomAddBtn: controls.socialCustomAddBtn,
+      friendLinksAddBtn: controls.friendLinksAddBtn,
       inputSiteTitle: controls.inputSiteTitle,
       inputSiteDescription: controls.inputSiteDescription,
       inputSiteDefaultLocale: controls.inputSiteDefaultLocale,
@@ -181,6 +197,8 @@ if (!root) {
       getPresetFieldTarget: socialLinks.getPresetFieldTarget,
       getCustomFieldTarget: socialLinks.getCustomFieldTarget,
       getCustomVisibilityTarget: socialLinks.getCustomVisibilityTarget,
+      getFriendFieldTarget: friendLinks.getFriendFieldTarget,
+      getFriendVisibilityTarget: friendLinks.getFriendVisibilityTarget,
       getNavFieldTarget,
       getFirstNavLabelTarget
     });
@@ -257,6 +275,13 @@ if (!root) {
       controls,
       query,
       socialLinks,
+      uiState,
+      refreshDirty: controller.refreshDirty
+    });
+    bindAdminThemeFriendLinkEvents({
+      controls,
+      query,
+      friendLinks,
       uiState,
       refreshDirty: controller.refreshDirty
     });

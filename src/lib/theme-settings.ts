@@ -113,6 +113,15 @@ export interface SiteSocialLinks {
   resolvedSocialItems: ResolvedSocialItem[];
 }
 
+export interface SiteFriendLinkItem {
+  name: string;
+  url: string;
+  avatar: string | null;
+  bio: string;
+  visible: boolean;
+  order: number;
+}
+
 export interface SiteAdminOverviewSettings {
   publicVisible: boolean;
   hiddenMessage: string;
@@ -125,6 +134,7 @@ export interface SiteSettings {
   footer: SiteFooterSettings;
   adminOverview: SiteAdminOverviewSettings;
   socialLinks: SiteSocialLinks;
+  friendLinks: SiteFriendLinkItem[];
 }
 
 export interface ShellSettings {
@@ -149,7 +159,7 @@ export interface PageHeadingSettings {
   subtitle: string | null;
 }
 
-export interface MemoPageSettings extends PageHeadingSettings {}
+export interface MemoPageSettings extends PageHeadingSettings { }
 
 export interface BitsDefaultAuthorSettings {
   name: string;
@@ -223,6 +233,7 @@ export interface ThemeSettingsSources {
     socialLinksXOrder: SettingSource;
     socialLinksEmailOrder: SettingSource;
     socialLinksCustom: SettingSource;
+    friendLinks: SettingSource;
   };
   shell: {
     brandTitle: SettingSource;
@@ -325,9 +336,9 @@ export interface ThemeSettingsEditableErrorState {
 
 export type ThemeSettingsEditableState =
   | {
-      ok: true;
-      payload: ThemeSettingsEditablePayload;
-    }
+    ok: true;
+    payload: ThemeSettingsEditablePayload;
+  }
   | ThemeSettingsEditableErrorState;
 
 const DEFAULT_SETTINGS_DIR = join(process.cwd(), 'src', 'data', 'settings');
@@ -409,6 +420,9 @@ const clonePresetSocialOrder = (value: Readonly<SiteSocialPresetOrder>): SiteSoc
 const cloneResolvedSocialItems = (items: readonly ResolvedSocialItem[]): ResolvedSocialItem[] =>
   items.map((item) => ({ ...item }));
 
+const cloneFriendLinkItems = (items: readonly SiteFriendLinkItem[]): SiteFriendLinkItem[] =>
+  items.map((item) => ({ ...item }));
+
 const cloneHomeIntroLinks = (items: readonly HomeIntroLinkKey[]): HomeIntroLinkKey[] => [...items];
 
 const cloneThemeSettingsSources = (sources: ThemeSettingsSources): ThemeSettingsSources => ({
@@ -443,7 +457,8 @@ const DEFAULT_SITE: SiteSettings = {
     presetOrder: clonePresetSocialOrder(DEFAULT_PRESET_SOCIAL_ORDER),
     custom: [],
     resolvedSocialItems: []
-  }
+  },
+  friendLinks: []
 };
 
 const DEFAULT_SHELL: ShellSettings = {
@@ -519,15 +534,18 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const GITHUB_HOSTS = ['github.com'];
 const X_HOSTS = ['x.com', 'twitter.com'];
 const SOCIAL_CUSTOM_LIMIT = 8;
+const FRIEND_LINK_LIMIT = 48;
+const FRIEND_LINK_ORDER_MIN = 1;
+const FRIEND_LINK_ORDER_MAX = 999;
 const PRESET_SOCIAL_ITEMS: readonly {
   id: SiteSocialPresetId;
   label: string;
   iconKey: SiteSocialIconKey;
 }[] = [
-  { id: 'github', label: 'GitHub', iconKey: 'github' },
-  { id: 'x', label: 'X', iconKey: 'x' },
-  { id: 'email', label: 'Email', iconKey: 'email' }
-];
+    { id: 'github', label: 'GitHub', iconKey: 'github' },
+    { id: 'x', label: 'X', iconKey: 'x' },
+    { id: 'email', label: 'Email', iconKey: 'email' }
+  ];
 
 const SIDEBAR_HREFS: Record<SidebarNavId, string> = {
   essay: '/essay/',
@@ -1052,6 +1070,40 @@ const parseHomeIntroLinks = (value: unknown): HomeIntroLinkKey[] | undefined => 
   return normalized.length ? normalized : undefined;
 };
 
+const parseFriendLinkItems = (value: unknown): SiteFriendLinkItem[] | undefined => {
+  if (!Array.isArray(value)) return undefined;
+
+  const normalized: SiteFriendLinkItem[] = [];
+
+  for (const [index, row] of value.entries()) {
+    if (!isRecord(row)) continue;
+
+    const name = asNonEmptyString(row.name);
+    const url = asHttpsUrl(row.url);
+    if (!name || !url) continue;
+
+    const bio = asSingleLineString(row.bio) ?? '';
+    const avatar = asNullableSingleLineString(row.avatar);
+    const rawOrder = asInteger(row.order);
+
+    normalized.push({
+      name,
+      url,
+      avatar: avatar === undefined ? null : avatar,
+      bio,
+      visible: asBoolean(row.visible) ?? true,
+      order:
+        rawOrder !== undefined && rawOrder >= FRIEND_LINK_ORDER_MIN && rawOrder <= FRIEND_LINK_ORDER_MAX
+          ? rawOrder
+          : index + 1
+    });
+
+    if (normalized.length >= FRIEND_LINK_LIMIT) break;
+  }
+
+  return normalized;
+};
+
 const buildResolvedSocialItems = (
   socialLinks: Pick<SiteSocialLinks, 'github' | 'x' | 'email' | 'presetOrder'>,
   customItems: readonly SiteSocialCustomItem[]
@@ -1185,6 +1237,11 @@ export const getThemeSettings = (): ThemeSettingsResolved => {
     parseSocialCustomItems(siteSocialLinksJson?.custom),
     undefined,
     DEFAULT_SITE.socialLinks.custom
+  );
+  const friendLinks = resolveValue(
+    parseFriendLinkItems(siteJson?.friendLinks),
+    undefined,
+    DEFAULT_SITE.friendLinks
   );
 
   const brandTitle = resolveValue(
@@ -1387,6 +1444,10 @@ export const getThemeSettings = (): ThemeSettingsResolved => {
     },
     customSocialItems
   );
+  const normalizedFriendLinks = cloneFriendLinkItems(friendLinks.value).sort((a, b) => {
+    if (a.order !== b.order) return a.order - b.order;
+    return a.name.localeCompare(b.name);
+  });
 
   const resolved: ThemeSettingsResolved = {
     settings: {
@@ -1410,7 +1471,8 @@ export const getThemeSettings = (): ThemeSettingsResolved => {
           presetOrder: clonePresetSocialOrder(presetSocialOrder),
           custom: cloneSocialCustomItems(customSocialItems),
           resolvedSocialItems: cloneResolvedSocialItems(resolvedSocialItems)
-        }
+        },
+        friendLinks: cloneFriendLinkItems(normalizedFriendLinks)
       },
       shell: {
         brandTitle: brandTitle.value,
@@ -1493,7 +1555,8 @@ export const getThemeSettings = (): ThemeSettingsResolved => {
         socialLinksGithubOrder: socialLinksGithubOrder.source,
         socialLinksXOrder: socialLinksXOrder.source,
         socialLinksEmailOrder: socialLinksEmailOrder.source,
-        socialLinksCustom: socialLinksCustom.source
+        socialLinksCustom: socialLinksCustom.source,
+        friendLinks: friendLinks.source
       },
       shell: {
         brandTitle: brandTitle.source,
@@ -1586,7 +1649,8 @@ const buildEditableThemeSettingsSnapshot = (
         email: resolved.settings.site.socialLinks.email,
         presetOrder: clonePresetSocialOrder(resolved.settings.site.socialLinks.presetOrder),
         custom: cloneSocialCustomItems(resolved.settings.site.socialLinks.custom)
-      }
+      },
+      friendLinks: cloneFriendLinkItems(resolved.settings.site.friendLinks)
     },
     shell: {
       brandTitle: resolved.settings.shell.brandTitle,

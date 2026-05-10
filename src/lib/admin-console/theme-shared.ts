@@ -27,6 +27,11 @@ export {
 export const ADMIN_NAV_IDS = ['essay', 'bits', 'memo', 'archive', 'about'] as const satisfies readonly SidebarNavId[];
 export const ADMIN_PAGE_IDS = ['essay', 'archive', 'bits', 'memo', 'about'] as const satisfies readonly PageId[];
 export const ADMIN_SOCIAL_CUSTOM_LIMIT = 8;
+export const ADMIN_FRIEND_LINK_LIMIT = 48;
+export const ADMIN_FRIEND_LINK_ORDER_MIN = 1;
+export const ADMIN_FRIEND_LINK_ORDER_MAX = 999;
+export const ADMIN_FRIEND_LINK_NAME_MAX_LENGTH = 60;
+export const ADMIN_FRIEND_LINK_BIO_MAX_LENGTH = 160;
 
 export const ADMIN_HERO_PRESETS = ['default', 'none'] as const satisfies readonly HeroPresetId[];
 export const ADMIN_HERO_PRESET_SET: ReadonlySet<HeroPresetId> = new Set(ADMIN_HERO_PRESETS);
@@ -256,6 +261,11 @@ export const isAdminAllowedHttpsUrl = (value: string, allowedHosts?: readonly st
   }
 };
 
+const isAdminAllowedFriendAvatar = (value: string): boolean => {
+  if (isAdminAllowedHttpsUrl(value)) return true;
+  return value.startsWith('/') && !value.includes('?') && !value.includes('#');
+};
+
 export type AdminThemeSettingsValidationIssue = {
   path: string;
   message: string;
@@ -335,6 +345,11 @@ const cloneCustomItems = (
 ): EditableThemeSettings['site']['socialLinks']['custom'] =>
   items.map((item) => ({ ...item }));
 
+const cloneFriendLinks = (
+  items: ReadonlyArray<EditableThemeSettings['site']['friendLinks'][number]>
+): EditableThemeSettings['site']['friendLinks'] =>
+  items.map((item) => ({ ...item }));
+
 const cloneNavItems = (
   items: ReadonlyArray<EditableThemeSettings['shell']['nav'][number]>
 ): EditableThemeSettings['shell']['nav'] =>
@@ -381,6 +396,7 @@ export const canonicalizeAdminThemeSettings = (
   const adminOverview = isRecord(site.adminOverview) ? site.adminOverview : {};
   const socialLinks = isRecord(site.socialLinks) ? site.socialLinks : {};
   const customItems = Array.isArray(socialLinks.custom) ? socialLinks.custom : [];
+  const rawFriendLinks = Array.isArray(site.friendLinks) ? site.friendLinks : [];
   const bitsPage = isRecord(page.bits) ? page.bits : {};
   const bitsDefaultAuthor = isRecord(bitsPage.defaultAuthor) ? bitsPage.defaultAuthor : {};
   const rawPresetOrder = isRecord(socialLinks.presetOrder) ? socialLinks.presetOrder : {};
@@ -413,6 +429,24 @@ export const canonicalizeAdminThemeSettings = (
       return a.__index - b.__index;
     })
     .map(({ __index: _ignored, ...item }) => item);
+
+  const normalizedFriendLinks: EditableThemeSettings['site']['friendLinks'] = rawFriendLinks
+    .map((item, index) => {
+      const record = isRecord(item) ? item : {};
+      return {
+        name: normalizeSingleLine(record.name),
+        url: normalizeTrimmed(record.url),
+        avatar: normalizeTrimmed(record.avatar) || null,
+        bio: normalizeSingleLine(record.bio),
+        visible: typeof record.visible === 'boolean' ? record.visible : true,
+        order: parseOrder(record.order as string | number | null | undefined, index + 1)
+      };
+    })
+    .sort((a, b) => {
+      if (a.order !== b.order) return a.order - b.order;
+      return a.name.localeCompare(b.name);
+    })
+    .slice(0, ADMIN_FRIEND_LINK_LIMIT);
 
   const normalizedNav = (Array.isArray(shell.nav) ? shell.nav : [])
     .map((item) => {
@@ -485,7 +519,8 @@ export const canonicalizeAdminThemeSettings = (
           )
         },
         custom: normalizedCustom
-      }
+      },
+      friendLinks: normalizedFriendLinks
     },
     shell: {
       brandTitle: normalizeTrimmed(shell.brandTitle),
@@ -583,7 +618,8 @@ export const createAdminWritableThemeSettingsGroups = (
         ...settings.site.socialLinks.presetOrder
       },
       custom: cloneCustomItems(settings.site.socialLinks.custom)
-    }
+    },
+    friendLinks: cloneFriendLinks(settings.site.friendLinks)
   },
   shell: {
     brandTitle: settings.shell.brandTitle,
@@ -786,6 +822,62 @@ export const validateAdminThemeSettings = (
     }
   });
 
+  const friendLinks = Array.isArray(settings.site.friendLinks) ? settings.site.friendLinks : [];
+  if (friendLinks.length > ADMIN_FRIEND_LINK_LIMIT) {
+    pushIssue('site.friendLinks', `友链最多只能添加 ${ADMIN_FRIEND_LINK_LIMIT} 条`);
+  }
+
+  const seenFriendOrders = new Map<number, number>();
+  friendLinks.forEach((item) => {
+    if (!Number.isInteger(item.order)) return;
+    seenFriendOrders.set(item.order, (seenFriendOrders.get(item.order) ?? 0) + 1);
+  });
+
+  friendLinks.forEach((item, index) => {
+    const basePath = `site.friendLinks[${index}]`;
+
+    if (!item.name) {
+      pushIssue(`${basePath}.name`, `友链 #${index + 1} 的名称不能为空`);
+    } else if (item.name.includes('\n') || item.name.includes('\r')) {
+      pushIssue(`${basePath}.name`, `友链 #${index + 1} 的名称只允许单行文本`);
+    } else if (item.name.length > ADMIN_FRIEND_LINK_NAME_MAX_LENGTH) {
+      pushIssue(`${basePath}.name`, `友链 #${index + 1} 的名称不能超过 ${ADMIN_FRIEND_LINK_NAME_MAX_LENGTH} 个字符`);
+    }
+
+    if (!item.url || !isAdminAllowedHttpsUrl(item.url)) {
+      pushIssue(`${basePath}.url`, `友链 #${index + 1} 的链接必须是合法 https:// 地址`);
+    }
+
+    if (item.avatar !== null && item.avatar !== '') {
+      if (typeof item.avatar !== 'string') {
+        pushIssue(`${basePath}.avatar`, `友链 #${index + 1} 的头像地址必须是字符串或留空`);
+      } else if (!isAdminAllowedFriendAvatar(item.avatar)) {
+        pushIssue(`${basePath}.avatar`, `友链 #${index + 1} 的头像地址必须是 https:// 地址或 / 开头的站内路径`);
+      }
+    }
+
+    if (typeof item.bio !== 'string') {
+      pushIssue(`${basePath}.bio`, `友链 #${index + 1} 的简介必须是字符串`);
+    } else if (item.bio.includes('\n') || item.bio.includes('\r')) {
+      pushIssue(`${basePath}.bio`, `友链 #${index + 1} 的简介只允许单行文本`);
+    } else if (item.bio.length > ADMIN_FRIEND_LINK_BIO_MAX_LENGTH) {
+      pushIssue(`${basePath}.bio`, `友链 #${index + 1} 的简介不能超过 ${ADMIN_FRIEND_LINK_BIO_MAX_LENGTH} 个字符`);
+    }
+
+    if (!Number.isInteger(item.order) || item.order < ADMIN_FRIEND_LINK_ORDER_MIN || item.order > ADMIN_FRIEND_LINK_ORDER_MAX) {
+      pushIssue(
+        `${basePath}.order`,
+        `友链 #${index + 1} 的排序必须为 ${ADMIN_FRIEND_LINK_ORDER_MIN}-${ADMIN_FRIEND_LINK_ORDER_MAX} 的整数`
+      );
+    } else if ((seenFriendOrders.get(item.order) ?? 0) > 1) {
+      pushIssue(`${basePath}.order`, `友链排序不能重复：${item.order}`);
+    }
+
+    if (typeof item.visible !== 'boolean') {
+      pushIssue(`${basePath}.visible`, `友链 #${index + 1} 的 visible 必须是布尔值`);
+    }
+  });
+
   if (!settings.shell.brandTitle) pushIssue('shell.brandTitle', '侧栏站点名不能为空');
   if (!settings.shell.quote) pushIssue('shell.quote', '侧栏引用文案不能为空');
 
@@ -974,11 +1066,11 @@ export const validateAdminThemeSettings = (
     nav.flatMap((item) =>
       ADMIN_NAV_IDS.includes(item.id)
         ? [
-            {
-              key: item.id as SidebarNavId,
-              order: item.order
-            }
-          ]
+          {
+            key: item.id as SidebarNavId,
+            order: item.order
+          }
+        ]
         : []
     )
   ).forEach((issue) => {
@@ -1136,20 +1228,26 @@ const fillAdminThemeSettingsSiteCompatibilityDefaults = (
   canonicalSite: LooseRecord
 ): LooseRecord => {
   const canonicalAdminOverview = canonicalSite.adminOverview;
-  if (!isRecord(canonicalAdminOverview)) return rawSite;
+  const nextSite: LooseRecord = { ...rawSite };
 
-  const rawAdminOverview = rawSite.adminOverview;
+  if (Array.isArray(canonicalSite.friendLinks) && nextSite.friendLinks === undefined) {
+    nextSite.friendLinks = canonicalSite.friendLinks;
+  }
+
+  if (!isRecord(canonicalAdminOverview)) return nextSite;
+
+  const rawAdminOverview = nextSite.adminOverview;
   if (rawAdminOverview === undefined) {
     return {
-      ...rawSite,
+      ...nextSite,
       adminOverview: canonicalAdminOverview
     };
   }
 
-  if (!isRecord(rawAdminOverview)) return rawSite;
+  if (!isRecord(rawAdminOverview)) return nextSite;
 
   return {
-    ...rawSite,
+    ...nextSite,
     adminOverview: {
       publicVisible: canonicalAdminOverview.publicVisible,
       hiddenMessage: canonicalAdminOverview.hiddenMessage,
@@ -1207,19 +1305,19 @@ export const fillAdminThemeSettingsCompatibilityDefaults = (
     ...settings,
     ...(isRecord(settings.site)
       ? {
-          site: fillAdminThemeSettingsSiteCompatibilityDefaults(
-            settings.site,
-            canonicalSettings.site as unknown as LooseRecord
-          )
-        }
+        site: fillAdminThemeSettingsSiteCompatibilityDefaults(
+          settings.site,
+          canonicalSettings.site as unknown as LooseRecord
+        )
+      }
       : {}),
     ...(isRecord(settings.ui)
       ? {
-          ui: fillAdminThemeSettingsUiCompatibilityDefaults(
-            settings.ui,
-            canonicalSettings.ui as unknown as LooseRecord
-          )
-        }
+        ui: fillAdminThemeSettingsUiCompatibilityDefaults(
+          settings.ui,
+          canonicalSettings.ui as unknown as LooseRecord
+        )
+      }
       : {})
   };
 };

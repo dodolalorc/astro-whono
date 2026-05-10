@@ -1,15 +1,17 @@
-import { ADMIN_SOCIAL_CUSTOM_LIMIT } from '@/lib/admin-console/theme-shared';
+import { ADMIN_FRIEND_LINK_LIMIT, ADMIN_SOCIAL_CUSTOM_LIMIT } from '@/lib/admin-console/theme-shared';
 import type { AdminThemeControls } from './controls';
 import type { AdminThemeController } from './controller';
 import type { createFormCodec } from './form-codec';
 import type { createAdminThemeImageFields } from './image-fields';
 import { shouldGuardAdminNavigation } from './navigation-guard';
 import type { createSocialLinks } from './social-links';
+import type { createFriendLinks } from './friend-links';
 import type { createAdminConsoleUiState } from './ui-state';
 
 type AdminThemeFormCodec = ReturnType<typeof createFormCodec>;
 type AdminThemeImageFields = ReturnType<typeof createAdminThemeImageFields>;
 type AdminThemeSocialLinks = ReturnType<typeof createSocialLinks>;
+type AdminThemeFriendLinks = ReturnType<typeof createFriendLinks>;
 type AdminThemeUiState = ReturnType<typeof createAdminConsoleUiState>;
 type QueryFn = <T extends Element>(parent: ParentNode, selector: string) => T | null;
 
@@ -342,6 +344,97 @@ export const bindAdminThemeActionEvents = ({
 
   saveBtn.addEventListener('click', () => {
     void controller.saveSettings();
+  });
+};
+
+export const bindAdminThemeFriendLinkEvents = ({
+  controls,
+  query,
+  friendLinks,
+  uiState,
+  refreshDirty
+}: {
+  controls: AdminThemeControls;
+  query: QueryFn;
+  friendLinks: AdminThemeFriendLinks;
+  uiState: AdminThemeUiState;
+  refreshDirty: () => void;
+}): void => {
+  const {
+    friendLinksAddBtn,
+    friendLinksList
+  } = controls;
+  const {
+    getFriendRows,
+    getNextFriendOrder,
+    createFriendRow,
+    updateFriendRowsUi,
+    normalizeFriendOrders,
+    syncFriendRow
+  } = friendLinks;
+
+  friendLinksAddBtn.addEventListener('click', () => {
+    if (getFriendRows().length >= ADMIN_FRIEND_LINK_LIMIT) {
+      uiState.setStatus('warn', '友链数量已达到上限');
+      return;
+    }
+    const row = createFriendRow(
+      {
+        name: '',
+        url: '',
+        avatar: null,
+        bio: '',
+        visible: true,
+        order: getNextFriendOrder()
+      },
+      getFriendRows().length
+    );
+    if (!row) return;
+    friendLinksList.appendChild(row);
+    updateFriendRowsUi();
+    refreshDirty();
+    query<HTMLInputElement>(row, '[data-friend-link-field="name"]')?.focus();
+  });
+
+  friendLinksList.addEventListener('change', (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    const row = target.closest('[data-friend-link-row]');
+    if (!(row instanceof HTMLElement)) return;
+
+    if (target.matches('[data-friend-link-field="order"]')) {
+      normalizeFriendOrders();
+    }
+
+    syncFriendRow(row);
+  });
+
+  friendLinksList.addEventListener('click', (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    const actionBtn = target.closest('[data-friend-link-action]');
+    if (!(actionBtn instanceof HTMLButtonElement)) return;
+    const row = actionBtn.closest('[data-friend-link-row]');
+    if (!(row instanceof HTMLElement)) return;
+    const action = actionBtn.getAttribute('data-friend-link-action');
+
+    if (action === 'remove') {
+      row.remove();
+      getFriendRows().forEach((item) => syncFriendRow(item));
+      normalizeFriendOrders();
+      updateFriendRowsUi();
+      refreshDirty();
+      return;
+    }
+
+    if (action === 'toggle-visible') {
+      const visibleInput = query<HTMLInputElement>(row, '[data-friend-link-field="visible"]');
+      if (!(visibleInput instanceof HTMLInputElement)) return;
+      visibleInput.checked = !visibleInput.checked;
+      syncFriendRow(row);
+      normalizeFriendOrders();
+      refreshDirty();
+    }
   });
 };
 

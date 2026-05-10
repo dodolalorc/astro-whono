@@ -38,5 +38,111 @@
         "order": 4
       }
     ]
-  }
+  },
+  "friendLinks": [
+    {
+      "name": "dodola",
+      "url": "https://dodolalorc.cn/",
+      "avatar": "https://dodolalorc.cn/author/avatar.jpg",
+      "bio": "要是人生能像星露谷就好了。✨",
+      "visible": true,
+      "order": 1
+    },
+    {
+      "name": "思想犯",
+      "url": "https://virgiling.github.io/",
+      "avatar": null,
+      "bio": "一个活的相对失败的 CSer 😢",
+      "visible": true,
+      "order": 2
+    },
+    {
+      "name": "Windlinxy",
+      "url": "https://windlinxy.github.io/",
+      "avatar": null,
+      "bio": "测试岗牛马的失败生活 🐴",
+      "visible": true,
+      "order": 3
+    },
+    {
+      "name": "YorkWu's Blog",
+      "url": "https://wyy.ink/",
+      "avatar": "https://wyy.ink/img/%E5%A4%B4%E5%83%8F.jpg",
+      "bio": "ddl:一个很强的学长QwQ！！👍",
+      "visible": true,
+      "order": 4
+    },
+    {
+      "name": "无双",
+      "url": "https://blog.wushuang233.com/",
+      "avatar": "https://blog.wushuang233.com/usr/themes/handsome/assets/img/avatar.jpg",
+      "bio": "ddl:是很强的陈老师！👨‍🏫",
+      "visible": true,
+      "order": 5
+    },
+    {
+      "name": "Roses",
+      "url": "https://rossqaq.github.io/",
+      "avatar": null,
+      "bio": "NENU 唯一懂 C++ 的人 💻",
+      "visible": true,
+      "order": 6
+    },
+    {
+      "name": "Steve Paul",
+      "url": "https://gsteve-paul.github.io/",
+      "avatar": null,
+      "bio": "唯一史诗神 👑",
+      "visible": true,
+      "order": 7
+    },
+    {
+      "name": "Ling_1",
+      "url": "https://ling101w.github.io/",
+      "avatar": "https://ling101w.github.io/me.jpg",
+      "bio": "参见网安爷✌️",
+      "visible": true,
+      "order": 8
+    },
+    {
+      "name": "一清三白",
+      "url": "https://sanbaiblog.cn/",
+      "avatar": "https://s21.ax1x.com/2025/01/05/pE9CfDU.jpg",
+      "bio": "克己慎独 守心明性",
+      "visible": true,
+      "order": 9
+    },
+    {
+      "name": "artemis",
+      "url": "https://1artemise.github.io/",
+      "avatar": "https://blog.jadew.top/images/%E8%83%8C%E6%99%AF.jpg",
+      "bio": "101的学妹✌️",
+      "visible": true,
+      "order": 10
+    },
+    {
+      "name": "Echo 的小窝",
+      "url": "https://www.liveout.cn/",
+      "avatar": "https://liveout.cn/usr/uploads/pic/icon1.jpg",
+      "bio": "漂泊于互联网中的小窝 🏠",
+      "visible": true,
+      "order": 11
+    },
+    {
+      "name": "松種小窝",
+      "url": "https://pineseed.cn/",
+      "avatar": "https://pineseed.cn/wp-content/uploads/2024/08/picture.jpg",
+      "bio": "花开又花落，时节暗中迁 🌸",
+      "visible": true,
+      "order": 12
+    },
+    {
+      "name": "幻雪的博客",
+      "url": "https://huanxueblog.top/",
+      "avatar": "https://testingcf.jsdelivr.net/gh/huanxueshengmou/picture-host/huanxueblog_avatar.webp",
+      "bio": "腐烂于花海，致死于所爱 🌹",
+      "visible": true,
+      "order": 13
+    }
+  ]
 }

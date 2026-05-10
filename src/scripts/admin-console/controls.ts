@@ -41,6 +41,11 @@ export type AdminThemeControls = RequiredElements<{
   socialCustomCountEl: HTMLElement | null;
   socialCustomAddBtn: HTMLButtonElement | null;
   socialCustomTemplate: HTMLTemplateElement | null;
+  friendLinksList: HTMLElement | null;
+  friendLinksHead: HTMLElement | null;
+  friendLinksCountEl: HTMLElement | null;
+  friendLinksAddBtn: HTMLButtonElement | null;
+  friendLinksTemplate: HTMLTemplateElement | null;
   inputSiteTitle: HTMLInputElement | null;
   inputSiteDescription: HTMLTextAreaElement | null;
   inputSiteDefaultLocale: HTMLInputElement | null;
@@ -123,6 +128,11 @@ export const queryAdminThemeControls = (): AdminThemeControls | null => {
     socialCustomCountEl: byId<HTMLElement>('site-social-custom-count'),
     socialCustomAddBtn: byId<HTMLButtonElement>('site-social-custom-add'),
     socialCustomTemplate: byId<HTMLTemplateElement>('site-social-custom-row-template'),
+    friendLinksList: byId<HTMLElement>('site-friend-links-list'),
+    friendLinksHead: byId<HTMLElement>('site-friend-links-head'),
+    friendLinksCountEl: byId<HTMLElement>('site-friend-links-count'),
+    friendLinksAddBtn: byId<HTMLButtonElement>('site-friend-links-add'),
+    friendLinksTemplate: byId<HTMLTemplateElement>('site-friend-links-row-template'),
     inputSiteTitle: byId<HTMLInputElement>('site-title'),
     inputSiteDescription: byId<HTMLTextAreaElement>('site-description'),
     inputSiteDefaultLocale: byId<HTMLInputElement>('site-default-locale'),

@@ -1,0 +1,176 @@
+---
+import AdminIcon from "./AdminIcon.astro";
+import {
+  ADMIN_FRIEND_LINK_BIO_MAX_LENGTH,
+  ADMIN_FRIEND_LINK_LIMIT,
+  ADMIN_FRIEND_LINK_NAME_MAX_LENGTH,
+  ADMIN_FRIEND_LINK_ORDER_MAX,
+} from "../../lib/admin-console/theme-shared";
+
+interface Props {
+  friendLinkLimit?: number;
+}
+
+const { friendLinkLimit = ADMIN_FRIEND_LINK_LIMIT } = Astro.props;
+---
+
+<fieldset class="admin-group">
+  <legend class="admin-group__legend">
+    <AdminIcon name="link" class="admin-group__legend-icon" size={14} />
+    <span class="admin-group__legend-copy">
+      <span class="admin-group__legend-zh">友链设置</span>
+      <span class="admin-group__legend-en">Friend Links</span>
+    </span>
+  </legend>
+
+  <div class="admin-social-panel admin-friend-links-panel">
+    <div class="admin-social-panel__head" id="site-friend-links-head" hidden>
+      <p class="admin-help">显示在 About 页面友链卡片区域，支持排序与隐藏。</p>
+      <span class="admin-help admin-social-count" id="site-friend-links-count"
+        >(0 / {friendLinkLimit})</span
+      >
+    </div>
+
+    <div class="admin-social-table">
+      <div class="admin-social-header admin-friend-links-header">
+        <span class="admin-social-header__order">位置</span>
+        <span class="admin-friend-links-header__name">名称</span>
+        <span class="admin-friend-links-header__url">站点链接</span>
+        <span class="admin-friend-links-header__avatar">头像</span>
+        <span class="admin-friend-links-header__bio">简介</span>
+        <span class="admin-social-header__actions">操作</span>
+      </div>
+      <div class="admin-social-list" id="site-friend-links-list"></div>
+    </div>
+
+    <div class="admin-social-actions">
+      <button
+        class="admin-btn admin-btn--ghost"
+        id="site-friend-links-add"
+        type="button">添加友链</button
+      >
+    </div>
+  </div>
+
+  <template id="site-friend-links-row-template">
+    <article
+      class="admin-row admin-row--interactive admin-row--table admin-social-row admin-friend-links-row"
+      data-friend-link-row
+    >
+      <label class="admin-field admin-social-field admin-social-field--order">
+        <span class="admin-social-cell-label">位置</span>
+        <span class="admin-social-order-frame">
+          <span class="admin-social-order-frame__mark" aria-hidden="true"
+            >[</span
+          >
+          <input
+            class="admin-field__control"
+            data-friend-link-field="order"
+            type="number"
+            min="1"
+            max={String(ADMIN_FRIEND_LINK_ORDER_MAX)}
+            step="1"
+            inputmode="numeric"
+          />
+          <span class="admin-social-order-frame__mark" aria-hidden="true"
+            >]</span
+          >
+        </span>
+      </label>
+
+      <label
+        class="admin-field admin-friend-links-field admin-friend-links-field--name"
+      >
+        <span class="admin-social-cell-label">名称</span>
+        <input
+          class="admin-field__control"
+          data-friend-link-field="name"
+          type="text"
+          maxlength={ADMIN_FRIEND_LINK_NAME_MAX_LENGTH}
+          autocomplete="off"
+          spellcheck="false"
+          placeholder="站点名称"
+        />
+      </label>
+
+      <label
+        class="admin-field admin-friend-links-field admin-friend-links-field--url"
+      >
+        <span class="admin-social-cell-label">站点链接</span>
+        <input
+          class="admin-field__control admin-field__control--soft"
+          data-friend-link-field="url"
+          type="url"
+          inputmode="url"
+          autocomplete="off"
+          spellcheck="false"
+          placeholder="https://example.com"
+        />
+      </label>
+
+      <label
+        class="admin-field admin-friend-links-field admin-friend-links-field--avatar"
+      >
+        <span class="admin-social-cell-label">头像</span>
+        <input
+          class="admin-field__control admin-field__control--soft"
+          data-friend-link-field="avatar"
+          type="url"
+          inputmode="url"
+          autocomplete="off"
+          spellcheck="false"
+          placeholder="https://example.com/avatar.png"
+        />
+      </label>
+
+      <label
+        class="admin-field admin-friend-links-field admin-friend-links-field--bio"
+      >
+        <span class="admin-social-cell-label">简介</span>
+        <input
+          class="admin-field__control admin-field__control--soft"
+          data-friend-link-field="bio"
+          type="text"
+          maxlength={ADMIN_FRIEND_LINK_BIO_MAX_LENGTH}
+          autocomplete="off"
+          spellcheck="false"
+          placeholder="一句话简介"
+        />
+      </label>
+
+      <div class="admin-social-field admin-social-field--actions">
+        <span class="admin-social-cell-label">操作</span>
+        <div class="admin-social-row-actions">
+          <input
+            data-friend-link-field="visible"
+            type="checkbox"
+            class="sr-only"
+          />
+          <button
+            class="admin-btn admin-btn--tool admin-btn--compact admin-btn--icon admin-social-action"
+            type="button"
+            data-friend-link-action="toggle-visible"
+            aria-pressed="true"
+          >
+            <AdminIcon name="eye" class="admin-social-action__icon" size={15} />
+            <span class="sr-only" data-friend-link-visible-label>隐藏友链</span>
+          </button>
+          <button
+            class="admin-btn admin-btn--tool admin-btn--compact admin-btn--icon admin-social-action admin-social-action--danger"
+            type="button"
+            data-friend-link-action="remove"
+            aria-label="删除友链"
+            title="删除友链"
+          >
+            <AdminIcon
+              name="trash"
+              class="admin-social-action__icon"
+              size={15}
+            />
+            <span class="sr-only">删除友链</span>
+          </button>
+        </div>
+      </div>
+    </article>
+  </template>
+</fieldset>

@@ -1,0 +1,35 @@
+---
+interface Props {
+  name: string;
+  url: string;
+  bio?: string;
+  avatar?: string | null;
+}
+
+const { name, url, bio = "", avatar = null } = Astro.props;
+
+const fallbackInitial = (name.trim().charAt(0) || "?").toUpperCase();
+const summary = bio.trim();
+---
+
+<a
+  class="friend-link-card"
+  href={url}
+  target="_blank"
+  rel="noopener noreferrer"
+  title={name}
+>
+  <span class="friend-link-card__avatar" aria-hidden="true">
+    {
+      avatar ? (
+        <img src={avatar} alt="" loading="lazy" decoding="async" />
+      ) : (
+        <span class="friend-link-card__fallback">{fallbackInitial}</span>
+      )
+    }
+  </span>
+  <span class="friend-link-card__meta">
+    <strong class="friend-link-card__name">{name}</strong>
+    {summary ? <span class="friend-link-card__bio">{summary}</span> : null}
+  </span>
+</a>

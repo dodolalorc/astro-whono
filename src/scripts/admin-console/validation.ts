@@ -17,6 +17,7 @@ type ValidationContext = {
   queryAll: QueryAll;
   footerStartYearMax: number;
   socialCustomAddBtn: HTMLButtonElement;
+  friendLinksAddBtn: HTMLButtonElement;
   inputSiteTitle: HTMLInputElement;
   inputSiteDescription: HTMLTextAreaElement;
   inputSiteDefaultLocale: HTMLInputElement;
@@ -65,6 +66,11 @@ type ValidationContext = {
     field: 'order' | 'iconKey' | 'id' | 'label' | 'href'
   ) => () => HTMLElement | null;
   getCustomVisibilityTarget: (index: number) => () => HTMLElement | null;
+  getFriendFieldTarget: (
+    index: number,
+    field: 'order' | 'name' | 'url' | 'avatar' | 'bio'
+  ) => () => HTMLElement | null;
+  getFriendVisibilityTarget: (index: number) => () => HTMLElement | null;
   getNavFieldTarget: (
     id: SidebarNavId,
     field: 'label' | 'ornament' | 'order' | 'visible'
@@ -73,6 +79,7 @@ type ValidationContext = {
 };
 
 const CUSTOM_ITEM_PATH_RE = /^site\.socialLinks\.custom\[(\d+)\](?:\.(id|label|href|iconKey|order|visible))?$/;
+const FRIEND_LINK_PATH_RE = /^site\.friendLinks\[(\d+)\](?:\.(order|name|url|avatar|bio|visible))?$/;
 const NAV_PATH_RE = /^shell\.nav(?:(?:\.([a-z]+))|\[(\d+)\])(?:\.(id|label|ornament|order|visible))?$/;
 const PAGE_TITLE_INPUT_KEYS = ['essay', 'archive', 'bits', 'memo', 'about'] as const;
 
@@ -81,6 +88,7 @@ export const createValidation = ({
   queryAll,
   footerStartYearMax,
   socialCustomAddBtn,
+  friendLinksAddBtn,
   inputSiteTitle,
   inputSiteDescription,
   inputSiteDefaultLocale,
@@ -126,6 +134,8 @@ export const createValidation = ({
   getPresetFieldTarget,
   getCustomFieldTarget,
   getCustomVisibilityTarget,
+  getFriendFieldTarget,
+  getFriendVisibilityTarget,
   getNavFieldTarget,
   getFirstNavLabelTarget
 }: ValidationContext) => {
@@ -193,6 +203,8 @@ export const createValidation = ({
         return () => inputSiteSocialEmail;
       case 'site.socialLinks.custom':
         return () => socialCustomAddBtn;
+      case 'site.friendLinks':
+        return () => friendLinksAddBtn;
       case 'shell.brandTitle':
         return () => inputShellBrandTitle;
       case 'shell.quote':
@@ -256,6 +268,16 @@ export const createValidation = ({
         return getCustomFieldTarget(index, field as 'id' | 'label' | 'href' | 'iconKey' | 'order');
       }
       return getCustomFieldTarget(index, 'id');
+    }
+
+    const friendMatch = path.match(FRIEND_LINK_PATH_RE);
+    if (friendMatch) {
+      const index = Number.parseInt(friendMatch[1] ?? '', 10);
+      const field = friendMatch[2];
+      if (!Number.isInteger(index)) return undefined;
+      if (field === 'visible') return getFriendVisibilityTarget(index);
+      if (field) return getFriendFieldTarget(index, field as 'order' | 'name' | 'url' | 'avatar' | 'bio');
+      return getFriendFieldTarget(index, 'name');
     }
 
     if (path === 'home.introMoreLinks' || path.startsWith('home.introMoreLinks[')) {
