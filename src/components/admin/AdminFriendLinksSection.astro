@@ -20,35 +20,33 @@ const { friendLinkLimit = ADMIN_FRIEND_LINK_LIMIT } = Astro.props;
     <span class="admin-group__legend-copy">
       <span class="admin-group__legend-zh">友链设置</span>
       <span class="admin-group__legend-en">Friend Links</span>
+      <span class="admin-help admin-social-count" id="site-friend-links-count"
+        >(0 / {friendLinkLimit})</span
+      >
     </span>
   </legend>
 
   <div class="admin-social-panel admin-friend-links-panel">
     <div class="admin-social-panel__head" id="site-friend-links-head" hidden>
       <p class="admin-help">显示在 About 页面友链卡片区域，支持排序与隐藏。</p>
-      <span class="admin-help admin-social-count" id="site-friend-links-count"
-        >(0 / {friendLinkLimit})</span
-      >
+      <div class="admin-social-actions">
+        <button
+          class="admin-btn admin-btn--ghost"
+          id="site-friend-links-add"
+          type="button">添加友链</button
+        >
+      </div>
     </div>
 
     <div class="admin-social-table">
       <div class="admin-social-header admin-friend-links-header">
         <span class="admin-social-header__order">位置</span>
         <span class="admin-friend-links-header__name">名称</span>
-        <span class="admin-friend-links-header__url">站点链接</span>
         <span class="admin-friend-links-header__avatar">头像</span>
-        <span class="admin-friend-links-header__bio">简介</span>
+        <span class="admin-friend-links-header__meta">头像 / 站点链接 / 简介</span>
         <span class="admin-social-header__actions">操作</span>
       </div>
       <div class="admin-social-list" id="site-friend-links-list"></div>
-    </div>
-
-    <div class="admin-social-actions">
-      <button
-        class="admin-btn admin-btn--ghost"
-        id="site-friend-links-add"
-        type="button">添加友链</button
-      >
     </div>
   </div>
 
@@ -94,48 +92,62 @@ const { friendLinkLimit = ADMIN_FRIEND_LINK_LIMIT } = Astro.props;
       </label>
 
       <label
-        class="admin-field admin-friend-links-field admin-friend-links-field--url"
-      >
-        <span class="admin-social-cell-label">站点链接</span>
-        <input
-          class="admin-field__control admin-field__control--soft"
-          data-friend-link-field="url"
-          type="url"
-          inputmode="url"
-          autocomplete="off"
-          spellcheck="false"
-          placeholder="https://example.com"
-        />
-      </label>
-
-      <label
         class="admin-field admin-friend-links-field admin-friend-links-field--avatar"
       >
         <span class="admin-social-cell-label">头像</span>
-        <input
-          class="admin-field__control admin-field__control--soft"
-          data-friend-link-field="avatar"
-          type="url"
-          inputmode="url"
-          autocomplete="off"
-          spellcheck="false"
-          placeholder="https://example.com/avatar.png"
-        />
+        <span
+          class="admin-friend-links-avatar-preview"
+          data-friend-link-avatar-preview
+        >
+          <img
+            alt=""
+            loading="lazy"
+            decoding="async"
+            data-friend-link-avatar-preview-img
+            hidden
+          />
+          <span
+            class="admin-friend-links-avatar-preview__placeholder"
+            data-friend-link-avatar-preview-placeholder
+          >
+            IMG
+          </span>
+        </span>
       </label>
 
       <label
-        class="admin-field admin-friend-links-field admin-friend-links-field--bio"
+        class="admin-field admin-friend-links-field admin-friend-links-field--meta"
       >
-        <span class="admin-social-cell-label">简介</span>
-        <input
-          class="admin-field__control admin-field__control--soft"
-          data-friend-link-field="bio"
-          type="text"
-          maxlength={ADMIN_FRIEND_LINK_BIO_MAX_LENGTH}
-          autocomplete="off"
-          spellcheck="false"
-          placeholder="一句话简介"
-        />
+        <span class="admin-social-cell-label">头像链接/站点链接/简介</span>
+        <span class="admin-friend-links-meta">
+          <input
+            class="admin-field__control admin-field__control--soft"
+            data-friend-link-field="avatar"
+            type="url"
+            inputmode="url"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="https://example.com/avatar.png"
+          />
+          <input
+            class="admin-field__control admin-field__control--soft"
+            data-friend-link-field="url"
+            type="url"
+            inputmode="url"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="https://example.com"
+          />
+          <input
+            class="admin-field__control admin-field__control--soft"
+            data-friend-link-field="bio"
+            type="text"
+            maxlength={ADMIN_FRIEND_LINK_BIO_MAX_LENGTH}
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="一句话简介"
+          />
+        </span>
       </label>
 
       <div class="admin-social-field admin-social-field--actions">

@@ -22,6 +22,9 @@ const parseOrder = (value: string | number | null | undefined, fallback: number)
     return Number.isFinite(next) ? next : fallback;
 };
 
+const isPreviewableAvatar = (value: string): boolean =>
+    value.startsWith('https://') || value.startsWith('/');
+
 export const createFriendLinks = ({
     query,
     queryAll,
@@ -69,8 +72,30 @@ export const createFriendLinks = ({
         toggleLabel.textContent = visible ? '隐藏友链' : '显示友链';
     };
 
+    const syncFriendAvatarPreview = (row: HTMLElement): void => {
+        const avatarInput = query<HTMLInputElement>(row, '[data-friend-link-field="avatar"]');
+        const previewImg = query<HTMLImageElement>(row, '[data-friend-link-avatar-preview-img]');
+        const placeholder = query<HTMLElement>(row, '[data-friend-link-avatar-preview-placeholder]');
+        if (!(avatarInput instanceof HTMLInputElement) || !(previewImg instanceof HTMLImageElement) || !(placeholder instanceof HTMLElement)) {
+            return;
+        }
+
+        const avatar = avatarInput.value.trim();
+        if (!avatar || !isPreviewableAvatar(avatar)) {
+            previewImg.hidden = true;
+            previewImg.removeAttribute('src');
+            placeholder.hidden = false;
+            return;
+        }
+
+        previewImg.src = avatar;
+        previewImg.hidden = false;
+        placeholder.hidden = true;
+    };
+
     const syncFriendRow = (row: HTMLElement): void => {
         syncFriendVisibilityButton(row);
+        syncFriendAvatarPreview(row);
     };
 
     const normalizeFriendOrders = (): void => {
