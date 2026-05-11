@@ -8,13 +8,15 @@ on:
 
 permissions:
   contents: read
+  pages: write
+  id-token: write
 
 concurrency:
   group: deploy-github-pages
   cancel-in-progress: false
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -35,15 +37,18 @@ jobs:
       - name: Build site
         run: npm run build
 
-      - name: Add CNAME
-        run: echo "blog.dodolalorc.cn" > dist/CNAME
-
-      - name: Deploy to external GitHub Pages repository
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v4
         with:
-          external_repository: dodolalorc/dodolalorc.github.io
-          personal_token: ${{ secrets.ACTION_ACCESS_TOKEN }}
-          publish_branch: main
-          publish_dir: ./dist/
-          keep_files: false
-          commit_message: "${{ github.event.head_commit.message || format('deploy: {0}', github.sha) }}"
+          path: dist
+
+  deploy:
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
