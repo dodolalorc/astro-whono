@@ -42,6 +42,19 @@ jobs:
         with:
           path: dist
 
+      - name: Add CNAME
+        run: echo "dodolalorc.cn" > dist/CNAME
+
+      - name: Deploy to external GitHub Pages repository
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          external_repository: dodolalorc/dodolalorc.github.io
+          personal_token: ${{ secrets.ACTION_ACCESS_TOKEN }}
+          publish_branch: main
+          publish_dir: ./dist/
+          keep_files: false
+          commit_message: "${{ github.event.head_commit.message || format('deploy: {0}', github.sha) }}"
+
   deploy:
     needs: build
     environment:
