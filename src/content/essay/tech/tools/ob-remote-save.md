@@ -6,7 +6,8 @@ lastmod: 2026-05-12T15:56:01+08:00
 draft: false
 authors: []
 description: ""
-tags: []
+tags:
+  - obsidian
 categories: []
 series: []
 hiddenFromHomePage: false
