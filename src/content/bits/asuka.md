@@ -1,7 +1,7 @@
 ---
 date: 2026-05-11T01:01:45+08:00
 tags:
-  - "loc:上海"
+  - "loc:吉林"
   - 二次元
 images:
   - src: bits/asuka-01.png
