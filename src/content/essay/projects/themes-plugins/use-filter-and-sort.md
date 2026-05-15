@@ -7,9 +7,9 @@ draft: false
 authors: 
 description: "有时候会更新一些目录页说明，更新说明时会出现博客左上角的“最"
 tags:
-  - "#tsx"
-  - "#博客主题"
-  - "#quartz主题"
+  - "tsx"
+  - "博客主题"
+  - "quartz主题"
 categories: 
 series: 
 hiddenFromHomePage: false
